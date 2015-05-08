@@ -10,8 +10,8 @@ import com.nuts.sample.R;
 import com.nuts.sample.ui.BaseActivity;
 import com.nuts.sample.utils.Dialogs;
 
-@ViewMapping(R.layout.activity_test_controller)
-public class TestControllerActivity extends BaseActivity {
+@ViewMapping(R.layout.activity_simple_controller)
+public class SimpleControllerActivity extends BaseActivity {
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {

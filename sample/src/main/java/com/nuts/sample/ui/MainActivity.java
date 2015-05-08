@@ -17,6 +17,6 @@ public class MainActivity extends BaseActivity {
 
     @OnClick(R.id.controller)
     public void gotoController() {
-        JUMPER.testController().startActivity(this);
+        JUMPER.viewController().startActivity(this);
     }
 }

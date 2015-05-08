@@ -17,9 +17,10 @@
             </intent-filter>
         </activity>
         <activity
-            android:name=".ui.controller.TestControllerActivity"
-            android:label="@string/title_activity_test_controller" >
-        </activity>
+            android:name=".ui.controller.SimpleControllerActivity"
+            android:label="@string/title_activity_simple_controller"/>
+        <activity android:name=".ui.controller.ControllerActivity"
+                  android:label="@string/title_activity_controller"/>
     </application>
 
 </manifest>
