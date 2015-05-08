@@ -1,17 +1,22 @@
 package com.nuts.sample.ui;
 
-import android.app.Activity;
 import android.os.Bundle;
 
+import com.nuts.lib.viewmapping.OnClick;
+import com.nuts.lib.viewmapping.ViewMapping;
 import com.nuts.sample.R;
 
 
-public class MainActivity extends Activity {
+@ViewMapping(R.layout.activity_main)
+public class MainActivity extends BaseActivity {
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_main);
     }
 
+    @OnClick(R.id.controller)
+    public void gotoController() {
+        JUMPER.testController().startActivity(this);
+    }
 }
