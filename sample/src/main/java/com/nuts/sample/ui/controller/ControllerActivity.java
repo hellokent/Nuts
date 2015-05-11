@@ -12,4 +12,9 @@ public class ControllerActivity extends BaseActivity {
     public void gotoSimple(){
         JUMPER.simpleController().startActivity(this);
     }
+
+    @OnClick(R.id.check_activity)
+    public void gotoCheckActivity() {
+        JUMPER.checkActivityController().startActivity(this);
+    }
 }

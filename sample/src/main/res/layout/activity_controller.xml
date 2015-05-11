@@ -5,12 +5,18 @@
 
     <LinearLayout android:layout_width="match_parent"
                   android:layout_height="match_parent"
+                  android:orientation="vertical"
                   android:layout_margin="16dp">
 
         <Button android:id="@+id/simple"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:text="@string/title_activity_simple_controller"/>
+
+        <Button android:id="@+id/check_activity"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="CheckActivity"/>
 
     </LinearLayout>
 

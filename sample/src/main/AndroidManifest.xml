@@ -21,6 +21,8 @@
             android:label="@string/title_activity_simple_controller"/>
         <activity android:name=".ui.controller.ControllerActivity"
                   android:label="@string/title_activity_controller"/>
+        <activity android:name=".ui.controller.CheckActivityControllerActivity"
+                  android:label="CheckActivity"/>
     </application>
 
 </manifest>
