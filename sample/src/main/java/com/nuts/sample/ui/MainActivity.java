@@ -19,4 +19,9 @@ public class MainActivity extends BaseActivity {
     public void gotoController() {
         JUMPER.viewController().startActivity(this);
     }
+
+    @OnClick(R.id.jumper)
+    public void gotoJumper() {
+        JUMPER.viewJumper().startActivity(this);
+    }
 }
