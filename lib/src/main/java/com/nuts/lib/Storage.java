@@ -40,7 +40,7 @@ public class Storage<T> {
             return;
         }
         CACHE_MAP.put(key, o);
-        SP.edit().putString(key, mGson.toJson(o)).commit();
+        SP.edit().putString(key, mGson.toJson(o)).apply();
     }
 
     public <T> T getJson(String key, Class<T> clz) {
@@ -54,7 +54,7 @@ public class Storage<T> {
 
     public static synchronized void delete(String key) {
         CACHE_MAP.remove(key);
-        SP.edit().remove(key).commit();
+        SP.edit().remove(key).apply();
     }
 
     public boolean contains() {

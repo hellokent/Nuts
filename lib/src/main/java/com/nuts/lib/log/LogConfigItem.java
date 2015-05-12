@@ -3,6 +3,7 @@ package com.nuts.lib.log;
 import android.text.TextUtils;
 
 import java.io.IOException;
+import java.util.Locale;
 
 import com.nuts.lib.BuildConfig;
 import org.xmlpull.v1.XmlPullParser;
@@ -37,15 +38,15 @@ class LogConfigItem {
                     }
                 }
             } else if ("min".equalsIgnoreCase(name)) {
-                mLevel = LogLevel.valueOf(value.toUpperCase());
+                mLevel = LogLevel.valueOf(value.toUpperCase(Locale.getDefault()));
             } else if ("enable".equalsIgnoreCase(name)) {
                 mEnable = Boolean.parseBoolean(value);
             } else if ("file".equalsIgnoreCase(name)) {
                 mFile = value;
             } else if ("upload".equalsIgnoreCase(name)) {
-                mUpload = Boolean.parseBoolean(value.toLowerCase());
+                mUpload = Boolean.parseBoolean(value.toLowerCase(Locale.getDefault()));
             } else if ("ui".equalsIgnoreCase(name)) {
-                mUi = Boolean.parseBoolean(value.toLowerCase());
+                mUi = Boolean.parseBoolean(value.toLowerCase(Locale.getDefault()));
             }
         }
         mTag = parser.nextText().trim();

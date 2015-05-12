@@ -4,7 +4,7 @@ import java.lang.annotation.Annotation;
 import java.lang.reflect.InvocationHandler;
 import java.lang.reflect.Method;
 import java.security.InvalidParameterException;
-import java.util.List;
+import java.util.ArrayList;
 import java.util.concurrent.Callable;
 
 import com.google.common.collect.Lists;
@@ -43,7 +43,7 @@ public class ApiInvokeHandler implements InvocationHandler {
 
         final Class<?> respClz = method.getReturnType();
 
-        final List<String> pathArgs = Lists.newLinkedList();
+        final ArrayList<String> pathArgs = Lists.newArrayList();
         if (!ReflectUtils.isSubclassOf(respClz, IResponse.class) && ReflectUtils.checkGenericType(method.getGenericReturnType(), IResponse.class)) {
             throw new InvalidParameterException("API:" + method.getName() + "，返回值必须继承IResponse");
         }
@@ -68,7 +68,7 @@ public class ApiInvokeHandler implements InvocationHandler {
             }
         }
 
-        builder.setUrl(String.format(url, pathArgs.toArray(new String[pathArgs.size()])));
+        builder.setUrl(String.format(url, pathArgs.toArray()));
 
         final Callable<IResponse> callable = new Callable<IResponse>() {
             @Override

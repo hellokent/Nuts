@@ -1,7 +1,7 @@
 package com.nuts.lib.viewmapping;
 
 import android.app.Activity;
-import android.app.Fragment;
+import android.util.SparseArray;
 import android.view.View;
 import android.view.View.OnClickListener;
 import android.view.ViewGroup;
@@ -9,7 +9,6 @@ import android.view.ViewGroup;
 import java.lang.reflect.InvocationHandler;
 import java.lang.reflect.Method;
 import java.lang.reflect.Proxy;
-import java.util.HashMap;
 
 /**
  * 用于设置一个类中View的点击事件，可以映射。使用方法如下： 1.将点击事件的方法上加上注解{@link ClickMapping}
@@ -40,12 +39,11 @@ public final class ClickMapping {
         assert o != null;
         Class<?> clazz = o.getClass();
         final ClickHandler clickHandler = new ClickHandler(o, findViewAbility);
-        final HashMap<Integer, Method> idMethodMap = clickHandler.kIdMethodMap;
+        final SparseArray<Method> idMethodMap = clickHandler.kIdMethodMap;
         final OnClickListener onClickListener = (OnClickListener) Proxy
                 .newProxyInstance(clazz.getClassLoader(),
                         HANDLER_INTERFACE_CLASS, clickHandler);
         while (clazz != null && !Activity.class.equals(clazz)
-                && !Fragment.class.equals(clazz)
                 && !View.class.equals(clazz) && !ViewGroup.class.equals(clazz)) {
             final Method[] methods = clazz.getDeclaredMethods();
             for (Method method : methods) {
@@ -60,7 +58,7 @@ public final class ClickMapping {
                     if (v == null) {
                         continue;
                     }
-                    if (idMethodMap.containsKey(viewId)) {
+                    if (idMethodMap.get(viewId) == null) {
                         continue;
                     }
                     idMethodMap.put(viewId, method);
@@ -89,7 +87,7 @@ public final class ClickMapping {
     }
 
     static class ClickHandler<T> implements InvocationHandler {
-        final HashMap<Integer, Method> kIdMethodMap = new HashMap<Integer, Method>();
+        final SparseArray<Method> kIdMethodMap = new SparseArray<>();
         T kType;
         FindViewAbility<T> kFindView;
 
@@ -103,15 +101,18 @@ public final class ClickMapping {
                              final Object[] args) throws Throwable {
             View view = (View) args[0];
             int viewId = view.getId();
-            if (!kIdMethodMap.containsKey(view.getId())) {
+            final Method $method = kIdMethodMap.get(viewId);
+
+            if ($method == null) {
                 return null;
             }
-            Method $method = kIdMethodMap.get(viewId);
+
             $method.setAccessible(true);
-            if ($method.getParameterTypes().length == 1)
+            if ($method.getParameterTypes().length == 1) {
                 $method.invoke(kType, args);
-            else
+            } else {
                 $method.invoke(kType);
+            }
             return null;
         }
     }

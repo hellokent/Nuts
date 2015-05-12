@@ -1,5 +1,6 @@
 package com.nuts.lib.task;
 
+import android.annotation.TargetApi;
 import android.os.AsyncTask;
 import android.os.Build;
 import android.os.Looper;
@@ -36,7 +37,9 @@ public abstract class SafeTask<Param, Result> extends AsyncTask<Param, Void, Res
             CORE_POOL_SIZE, MAXIMUM_POOL_SIZE, KEEP_ALIVE,
             TimeUnit.SECONDS, sPoolWorkQueue, sThreadFactory);
 
-    public void safeExecute(final Param... params) {
+    @SafeVarargs
+    @TargetApi(Build.VERSION_CODES.HONEYCOMB)
+    public final void safeExecute(final Param... params) {
         if (Thread.currentThread() == Looper.getMainLooper().getThread()) {
             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.HONEYCOMB) {
                 executeOnExecutor(THREAD_POOL_EXECUTOR, params);

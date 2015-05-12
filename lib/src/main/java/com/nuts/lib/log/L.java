@@ -161,6 +161,5 @@ public final class L {
 
     static void l(int level, String tag, String text) {
         Log.println(level, tag, text);
-        UiLog.INSTANCE.onLog(level, tag, text);
     }
 }
