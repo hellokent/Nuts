@@ -10,7 +10,7 @@ import java.util.TreeMap;
 import java.util.concurrent.TimeUnit;
 
 import com.google.common.base.Joiner;
-import com.nuts.lib.BaseApplication;
+import com.google.gson.Gson;
 import com.nuts.lib.log.L;
 import com.squareup.okhttp.Headers;
 import com.squareup.okhttp.MediaType;
@@ -45,7 +45,9 @@ class NetBuilder {
 
     final Object[] mArgs;
 
-    NetBuilder(INet net, String url, Class<?> respClz, Method method, Object[] args) {
+    final Gson mGson;
+
+    NetBuilder(final Gson gson, INet net, String url, Class<?> respClz, Method method, Object[] args) {
         mUrl = url;
         mNet = net;
         mRespClz = respClz;
@@ -55,6 +57,7 @@ class NetBuilder {
         mHttpClient.setReadTimeout(net.getReadTimeout(), TimeUnit.SECONDS);
         mMethod = method;
         mArgs = args;
+        mGson = gson;
     }
 
     public void addParam(Param param, Object object) {
@@ -102,9 +105,7 @@ class NetBuilder {
                     .body()
                     .string();
             L.i("<<< GET(%s):%s", mUrl, respStr);
-            return ofSuccess((IResponse) BaseApplication.getGlobalContext()
-                    .getGson()
-                    .fromJson(respStr, mRespClz));
+            return ofSuccess((IResponse) mGson.fromJson(respStr, mRespClz));
         } catch (Throwable e) {
             L.e("url:%s", mUrl);
             L.exception(e);
@@ -129,9 +130,7 @@ class NetBuilder {
                     .body()
                     .string();
             L.i("<<< POST(%s):%s", mUrl, respStr);
-            return ofSuccess((IResponse) BaseApplication.getGlobalContext()
-                    .getGson()
-                    .fromJson(respStr, mRespClz));
+            return ofSuccess((IResponse) mGson.fromJson(respStr, mRespClz));
         } catch (Exception e) {
             L.e("url:%s", mUrl);
             L.exception(e);
@@ -178,9 +177,7 @@ class NetBuilder {
                     .body()
                     .string();
             L.i("<<< MULTIPART(%s):%s", mUrl, respStr);
-            return ofSuccess((IResponse) BaseApplication.getGlobalContext()
-                    .getGson()
-                    .fromJson(respStr, mRespClz));
+            return ofSuccess((IResponse) mGson.fromJson(respStr, mRespClz));
         } catch (Exception e) {
             L.e("url:%s", mUrl);
             L.exception(e);

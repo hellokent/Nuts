@@ -8,6 +8,7 @@ import java.util.List;
 import java.util.concurrent.Callable;
 
 import com.google.common.collect.Lists;
+import com.google.gson.Gson;
 import com.nuts.lib.BuildConfig;
 import com.nuts.lib.ReflectUtils;
 import com.nuts.lib.controller.Return;
@@ -16,9 +17,11 @@ import com.nuts.lib.log.TimingLogger;
 public class ApiInvokeHandler implements InvocationHandler {
 
     public final INet mNet;
+    public final Gson mGson;
 
-    public ApiInvokeHandler(INet net) {
+    public ApiInvokeHandler(final INet net, final Gson gson) {
         mNet = net;
+        mGson = gson;
     }
 
     @Override
@@ -45,7 +48,7 @@ public class ApiInvokeHandler implements InvocationHandler {
             throw new InvalidParameterException("API:" + method.getName() + "，返回值必须继承IResponse");
         }
 
-        final NetBuilder builder = new NetBuilder(mNet, url,
+        final NetBuilder builder = new NetBuilder(mGson, mNet, url,
                 ReflectUtils.isSubclassOf(returnClz, Return.class) ?
                         (Class<?>) ReflectUtils.getGenericType(method.getGenericReturnType()) : respClz,
                 method, args);

@@ -3,7 +3,6 @@ package com.nuts.lib;
 import android.os.Handler;
 import android.os.Looper;
 
-import com.google.gson.Gson;
 import com.nuts.lib.eventbus.EventBus;
 import com.rits.cloning.Cloner;
 
@@ -12,8 +11,6 @@ import com.rits.cloning.Cloner;
  */
 public interface Globals {
     Handler UI_HANDLER = new Handler(Looper.getMainLooper());
-
-    Gson GSON = new Gson();
 
     Cloner CLONER = new Cloner();
 

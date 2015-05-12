@@ -6,8 +6,9 @@ import android.content.SharedPreferences;
 
 import java.util.HashMap;
 
+import com.google.common.collect.Maps;
+import com.google.gson.Gson;
 import static com.nuts.lib.Globals.CLONER;
-import static com.nuts.lib.Globals.GSON;
 
 /**
  * 基于SharePreference的存储
@@ -16,34 +17,36 @@ import static com.nuts.lib.Globals.GSON;
  */
 public class Storage<T> {
 
-    public static final HashMap<String, Object> CACHE_MAP = new HashMap<String, Object>();
+    public static final HashMap<String, Object> CACHE_MAP = Maps.newHashMap();
     static final Application APP = BaseApplication.getGlobalContext();
     static final SharedPreferences SP = APP.getSharedPreferences("json", Context.MODE_PRIVATE);
 
     Class<T> mClass;
     String mKey;
+    Gson mGson;
 
-    public Storage(Class<T> clz) {
-        this(clz, clz.getName());
+    public Storage(Gson gson, Class<T> clz) {
+        this(gson, clz, clz.getName());
     }
 
-    public Storage(Class<T> clz, String key) {
+    public Storage(Gson gson, Class<T> clz, String key) {
         mClass = clz;
         mKey = key;
+        mGson = gson;
     }
 
-    public static synchronized void saveJson(String key, Object o) {
+    public synchronized void saveJson(String key, Object o) {
         if (o == null) {
             return;
         }
         CACHE_MAP.put(key, o);
-        SP.edit().putString(key, GSON.toJson(o)).commit();
+        SP.edit().putString(key, mGson.toJson(o)).commit();
     }
 
-    public static <T> T getJson(String key, Class<T> clz) {
+    public <T> T getJson(String key, Class<T> clz) {
         Object o = CACHE_MAP.get(key);
         if (o == null) {
-            o = GSON.fromJson(SP.getString(key, ""), clz);
+            o = mGson.fromJson(SP.getString(key, ""), clz);
             CACHE_MAP.put(key, o);
         }
         return (T) o;

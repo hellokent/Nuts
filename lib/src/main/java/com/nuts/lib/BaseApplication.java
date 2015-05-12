@@ -4,8 +4,6 @@ import android.app.Application;
 import android.content.pm.PackageInfo;
 import android.content.pm.PackageManager;
 
-import com.google.gson.Gson;
-
 /**
  * Created by demor on 10/9/14.
  */
@@ -45,6 +43,4 @@ public abstract class BaseApplication extends Application {
             return "";
         }
     }
-
-    public abstract Gson getGson();
 }
