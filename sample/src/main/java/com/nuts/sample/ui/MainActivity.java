@@ -1,5 +1,6 @@
 package com.nuts.sample.ui;
 
+import android.content.Intent;
 import android.os.Bundle;
 
 import com.nuts.lib.viewmapping.OnClick;
@@ -11,13 +12,18 @@ import com.nuts.sample.R;
 public class MainActivity extends BaseActivity {
 
     @Override
-    protected void onCreate(Bundle savedInstanceState) {
+    protected void onCreate(final Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        try {
+            startActivity(new Intent(this, Class.forName("com.nuts.app.MainActivity")));
+        } catch (ClassNotFoundException e) {
+            e.printStackTrace();
+        }
     }
 
     @OnClick(R.id.controller)
     public void gotoController() {
-        JUMPER.viewController().startActivity(this);
+        //startActivity(JUMPER.viewController().getIntent());
     }
 
     @OnClick(R.id.jumper)

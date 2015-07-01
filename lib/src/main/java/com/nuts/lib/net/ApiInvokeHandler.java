@@ -53,8 +53,8 @@ public class ApiInvokeHandler implements InvocationHandler {
                         (Class<?>) ReflectUtils.getGenericType(method.getGenericReturnType()) : respClz,
                 method, args);
 
-        Annotation[][] annotations = method.getParameterAnnotations();
-        for (int i = 0; i < args.length; ++i) {
+        final Annotation[][] annotations = method.getParameterAnnotations();
+        for (int i = 0, n = args == null ? 0 : args.length; i < n; ++i) {
             final Annotation annotation = annotations[i][0];
             if (annotation instanceof Param) {
                 final Param param = (Param) annotation;

@@ -2,6 +2,8 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     package="com.nuts.sample" >
 
+    <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE"/>
+    <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE"/>
     <application
         android:name=".GlobalApplication"
         android:allowBackup="true"
@@ -19,9 +21,12 @@
         <activity
             android:name=".ui.controller.SimpleControllerActivity"
             android:label="@string/title_activity_simple_controller" />
+
+        <!--
         <activity
             android:name=".ui.controller.ControllerActivity"
             android:label="@string/title_activity_controller" />
+        -->
         <activity
             android:name=".ui.controller.CheckActivityControllerActivity"
             android:label="CheckActivity" />

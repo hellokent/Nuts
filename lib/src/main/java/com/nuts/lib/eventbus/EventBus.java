@@ -2,8 +2,11 @@ package com.nuts.lib.eventbus;
 
 import java.lang.reflect.Method;
 import java.util.ArrayList;
+import java.util.Iterator;
+import java.util.List;
 import java.util.Map;
 
+import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
 import com.nuts.lib.Globals;
 import com.nuts.lib.ReflectUtils;
@@ -15,6 +18,8 @@ public final class EventBus implements Globals {
     final static Map<Class, ClassContext> CACHE_MAP = Maps.newConcurrentMap();
 
     final Map<Object, ArrayList<MethodContext>> mSlotMap = Maps.newConcurrentMap();
+
+    final List<BaseEvent> mStickEvent = Lists.newCopyOnWriteArrayList();
 
     public final synchronized void register(final Object o) {
         if (o == null) {
@@ -32,30 +37,50 @@ public final class EventBus implements Globals {
         }
 
         mSlotMap.put(o, cc.mMethodList);
+
+        for (Iterator<BaseEvent> i = mStickEvent.iterator(); i.hasNext(); ) {
+            for (MethodContext methodContext : cc.mMethodList) {
+                final BaseEvent event = i.next();
+                if (ReflectUtils.isSubclassOf(event.getClass(), methodContext.mEventType)) {
+                    methodContext.call(event, o);
+                    i.remove();
+                    break;
+                }
+            }
+        }
     }
 
     public final synchronized void unregister(final Object o) {
         mSlotMap.remove(o);
     }
 
-    public final synchronized void post(final BaseEvent event) {
+    public final synchronized boolean post(final BaseEvent event) {
         if (event == null) {
-            return;
+            return false;
         }
         final Class<?> clz = event.getClass();
         L.v("event:%s from:%s", clz.getSimpleName(), Thread.currentThread()
                 .getStackTrace()[3].toString());
-        for (Map.Entry<Object, ArrayList<MethodContext>> entry: mSlotMap.entrySet()) {
-            for(MethodContext method : entry.getValue()) {
+        boolean post = false;
+        for (Map.Entry<Object, ArrayList<MethodContext>> entry : mSlotMap.entrySet()) {
+            for (MethodContext method : entry.getValue()) {
                 if (method.mEventType == clz) {
                     method.call(event, entry.getKey());
+                    post = true;
                 }
             }
+        }
+        return post;
+    }
+
+    public final synchronized void postStick(final BaseEvent event) {
+        if (!post(event)) {
+            mStickEvent.add(event);
         }
     }
 
     static class ClassContext {
-        public ArrayList<MethodContext> mMethodList = new ArrayList<MethodContext>();
+        public ArrayList<MethodContext> mMethodList = new ArrayList<>();
 
         public ClassContext(Class<?> clz) {
             while (clz != null) {
@@ -85,7 +110,9 @@ public final class EventBus implements Globals {
 
     static class MethodContext {
         private final Method mMethod;
+
         private final Event mEvent;
+
         private final Class<?> mEventType;
 
         MethodContext(final Method method) {
@@ -134,7 +161,8 @@ public final class EventBus implements Globals {
         public String toString() {
             return "MethodContext{" +
                     "mMethod=" + mMethod.getName() +
-                    ", mEvent=" + mEvent.runOn().name() +
+                    ", mEvent=" + mEvent.runOn()
+                    .name() +
                     ", mEventType=" + mEventType.getSimpleName() +
                     '}';
         }

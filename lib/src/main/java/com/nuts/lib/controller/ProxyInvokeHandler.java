@@ -5,6 +5,7 @@ import java.lang.reflect.Method;
 import java.lang.reflect.Proxy;
 import java.util.concurrent.Callable;
 
+import com.nuts.lib.Globals;
 import com.nuts.lib.ReflectUtils;
 
 /**
@@ -22,6 +23,17 @@ public class ProxyInvokeHandler<I> implements InvocationHandler {
     }
 
     public I createProxy() {
+        final Class[] interfaces = mClz.getInterfaces();
+        for (Class i : interfaces) {
+            for (Method method : i.getDeclaredMethods()) {
+                final Class[] exceptions = method.getExceptionTypes();
+                if (exceptions != null && exceptions.length > 0) {
+                    throw new Error("invalid method:" + method.getName() + ", in " + i.getName() + ", " +
+                            "because of throwing exceptions");
+                }
+            }
+        }
+        Globals.BUS.register(mInterface);
         return (I) Proxy.newProxyInstance(ProxyInvokeHandler.class.getClassLoader(), mClz.getInterfaces(), this);
     }
 

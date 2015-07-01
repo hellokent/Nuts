@@ -6,12 +6,11 @@ import android.util.Log;
 
 import java.io.IOException;
 import java.io.InputStream;
-import java.util.ArrayList;
 import java.util.List;
 
 import com.google.common.base.Throwables;
+import com.google.common.collect.Lists;
 import com.nuts.lib.BaseApplication;
-import com.nuts.lib.BuildConfig;
 import org.xmlpull.v1.XmlPullParser;
 import org.xmlpull.v1.XmlPullParserException;
 import org.xmlpull.v1.XmlPullParserFactory;
@@ -24,11 +23,24 @@ public final class L {
     static final String DEFAULT_TAG = "log";
     static final Context CONTEXT = BaseApplication.getGlobalContext();
     static final int STACK_DEPTH = 4;
-    static final List<LogConfigItem> CONFIG_ITEMS = new ArrayList<LogConfigItem>();
+
+    static final List<LogConfigItem> CONFIG_ITEMS = Lists.newArrayList();
+
+    static boolean sInited = false;
 
     static {
+        init();
+    }
+
+    private L() {
+    }
+
+    static void init() {
         InputStream is = null;
         try {
+            if (CONTEXT == null || CONTEXT.getAssets() == null) {
+                return;
+            }
             is = CONTEXT.getAssets().open("log.xml");
             final XmlPullParser parser = XmlPullParserFactory.newInstance().newPullParser();
             parser.setInput(is, "UTF-8");
@@ -56,9 +68,8 @@ public final class L {
                 }
                 eventType = parser.next();
             }
-        } catch (IOException e) {
-            e.printStackTrace();
-        } catch (XmlPullParserException e) {
+            sInited = true;
+        } catch (IOException | XmlPullParserException e) {
             e.printStackTrace();
         } finally {
             if (is != null) {
@@ -68,9 +79,6 @@ public final class L {
                 }
             }
         }
-    }
-
-    private L() {
     }
 
     /**
@@ -118,6 +126,15 @@ public final class L {
     private static void log(int level, Throwable throwable, String msg, Object... arg) {
         final String logText = throwable == null ? String.format(msg, arg) :
                 Throwables.getStackTraceAsString(throwable) + "\n" + String.format(msg, arg);
+        if (!sInited) {
+            init();
+
+            if (!sInited) {
+                l(level, DEFAULT_TAG, logText);
+                return;
+            }
+
+        }
 
         final String className = Thread.currentThread().getStackTrace()[STACK_DEPTH].getClassName();
 
@@ -137,15 +154,10 @@ public final class L {
             LogWriter.INSTANCE.postUploadLog((logConfig.getTag()) + "\t" + logText);
         }
 
-        if (!BuildConfig.DEBUG) {
-            return;
-        }
-
         if (logConfig == null) {
             l(level, DEFAULT_TAG, logText);
             return;
         }
-
 
         // 过滤level & enable
         if (!logConfig.getLevel().isValidLevel(level) && !logConfig.isEnable()) {

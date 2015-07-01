@@ -1,0 +1,4 @@
+<?xml version="1.0" encoding="utf-8"?>
+<log_config package="com.nuts">
+    <item range=".">log</item>
+</log_config>

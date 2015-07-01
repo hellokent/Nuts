@@ -19,8 +19,6 @@ class ControllerCallable implements Callable<Object> {
         mMethod.setAccessible(true);
     }
 
-
-
     @Override
     public Object call() throws InvocationTargetException, IllegalAccessException {
         return mMethod.invoke(mImpl, mArgs);
