@@ -2,7 +2,7 @@ package com.nuts.sample.controller;
 
 import java.util.concurrent.TimeUnit;
 
-import com.nuts.lib.controller.CheckActivity;
+import com.nuts.lib.annotation.controller.CheckActivity;
 import com.nuts.lib.controller.Return;
 import com.nuts.lib.controller.VoidReturn;
 import com.nuts.lib.log.L;

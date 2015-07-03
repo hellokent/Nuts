@@ -1,4 +1,4 @@
-package com.nuts.lib.jumper;
+package com.nuts.lib.annotation.jumper;
 
 import android.app.Activity;
 

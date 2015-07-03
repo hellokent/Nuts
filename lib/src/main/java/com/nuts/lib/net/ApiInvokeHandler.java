@@ -11,6 +11,12 @@ import com.google.common.collect.Lists;
 import com.google.gson.Gson;
 import com.nuts.lib.BuildConfig;
 import com.nuts.lib.ReflectUtils;
+import com.nuts.lib.annotation.net.Get;
+import com.nuts.lib.annotation.net.Multipart;
+import com.nuts.lib.annotation.net.Param;
+import com.nuts.lib.annotation.net.Path;
+import com.nuts.lib.annotation.net.Post;
+import com.nuts.lib.annotation.net.Retry;
 import com.nuts.lib.controller.Return;
 import com.nuts.lib.log.TimingLogger;
 

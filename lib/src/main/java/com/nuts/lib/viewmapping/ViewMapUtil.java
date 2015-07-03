@@ -11,6 +11,7 @@ import android.view.ViewGroup;
 import java.lang.reflect.Field;
 
 import com.nuts.lib.BaseApplication;
+import com.nuts.lib.annotation.viewmapping.ViewMapping;
 
 public final class ViewMapUtil {
 

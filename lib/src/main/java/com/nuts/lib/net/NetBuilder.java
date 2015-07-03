@@ -11,6 +11,7 @@ import java.util.concurrent.TimeUnit;
 
 import com.google.common.base.Joiner;
 import com.google.gson.Gson;
+import com.nuts.lib.annotation.net.Param;
 import com.nuts.lib.log.L;
 import com.squareup.okhttp.Headers;
 import com.squareup.okhttp.MediaType;
@@ -24,10 +25,6 @@ import static com.nuts.lib.net.NetResult.ofSuccess;
 class NetBuilder {
 
     private static final MediaType CONTENT_TYPE = MediaType.parse("application/x-www-form-urlencoded");
-
-    static final String DEFAULT_TYPE = "image/*";
-
-    protected String mUrl;
 
     protected final TreeMap<String, String> mParams = new TreeMap<>();
 
@@ -46,6 +43,8 @@ class NetBuilder {
     final Object[] mArgs;
 
     final Gson mGson;
+
+    protected String mUrl;
 
     NetBuilder(final Gson gson, INet net, String url, Class<?> respClz, Method method, Object[] args) {
         mUrl = url;

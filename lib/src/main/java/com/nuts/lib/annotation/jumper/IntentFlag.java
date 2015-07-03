@@ -1,4 +1,4 @@
-package com.nuts.lib.jumper;
+package com.nuts.lib.annotation.jumper;
 
 import java.lang.annotation.ElementType;
 import java.lang.annotation.Retention;

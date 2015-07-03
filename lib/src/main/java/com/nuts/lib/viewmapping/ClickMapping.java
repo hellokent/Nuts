@@ -10,6 +10,8 @@ import java.lang.reflect.InvocationHandler;
 import java.lang.reflect.Method;
 import java.lang.reflect.Proxy;
 
+import com.nuts.lib.annotation.viewmapping.OnClick;
+
 /**
  * 用于设置一个类中View的点击事件，可以映射。使用方法如下： 1.将点击事件的方法上加上注解{@link ClickMapping}
  * ，在注解里设置对应View的id，可以设置多个Id，多个Id表示这些View共享一个点击事件 2.调用map方法，

@@ -1,4 +1,4 @@
-package com.nuts.lib.net;
+package com.nuts.lib.annotation.net;
 
 import java.lang.annotation.ElementType;
 import java.lang.annotation.Retention;
@@ -7,6 +7,6 @@ import java.lang.annotation.Target;
 
 @Target(ElementType.METHOD)
 @Retention(RetentionPolicy.RUNTIME)
-public @interface Post {
+public @interface Get {
     String value();
 }

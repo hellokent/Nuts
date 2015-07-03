@@ -7,8 +7,8 @@ import android.content.IntentFilter;
 import android.os.Bundle;
 
 import com.nuts.lib.ToastUtil;
-import com.nuts.lib.viewmapping.OnClick;
-import com.nuts.lib.viewmapping.ViewMapping;
+import com.nuts.lib.annotation.viewmapping.OnClick;
+import com.nuts.lib.annotation.viewmapping.ViewMapping;
 import com.nuts.sample.R;
 import com.nuts.sample.config.IntentNames;
 import com.nuts.sample.ui.BaseActivity;

@@ -1,11 +1,14 @@
-package com.nuts.lib.controller;
+package com.nuts.lib.annotation.eventbus;
 
 import java.lang.annotation.ElementType;
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 
+import com.nuts.lib.eventbus.ThreadType;
+
 @Retention(RetentionPolicy.RUNTIME)
 @Target(ElementType.METHOD)
-public @interface CheckActivity {
+public @interface Event {
+    ThreadType runOn();
 }

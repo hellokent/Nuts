@@ -1,11 +1,11 @@
 package com.nuts.sample.ui.controller;
 
 import com.nuts.lib.ToastUtil;
+import com.nuts.lib.annotation.viewmapping.OnClick;
+import com.nuts.lib.annotation.viewmapping.ViewMapping;
 import com.nuts.lib.controller.ControllerCallback;
 import com.nuts.lib.controller.ControllerListener;
 import com.nuts.lib.log.L;
-import com.nuts.lib.viewmapping.OnClick;
-import com.nuts.lib.viewmapping.ViewMapping;
 import com.nuts.sample.R;
 import com.nuts.sample.ui.BaseActivity;
 

@@ -25,6 +25,12 @@ import com.google.common.collect.Lists;
 import com.nuts.lib.BaseApplication;
 import com.nuts.lib.BuildConfig;
 import com.nuts.lib.ReflectUtils;
+import com.nuts.lib.annotation.jumper.ActivityInfo;
+import com.nuts.lib.annotation.jumper.BroadcastInfo;
+import com.nuts.lib.annotation.jumper.Extra;
+import com.nuts.lib.annotation.jumper.IntentFlag;
+import com.nuts.lib.annotation.jumper.IntentType;
+import com.nuts.lib.annotation.jumper.IntentUri;
 import static com.nuts.lib.ReflectUtils.checkGenericType;
 import static com.nuts.lib.ReflectUtils.isSubclassOf;
 
@@ -75,6 +81,8 @@ public class JumperInvokeHandler implements InvocationHandler {
         }
     };
 
+    final static Intent INVALID_INTENT = new Intent();
+
     static {
         Method[] methods = Intent.class.getMethods();
         for (Method m : methods) {
@@ -84,7 +92,7 @@ public class JumperInvokeHandler implements InvocationHandler {
         }
     }
 
-    final static Intent INVALID_INTENT = new Intent();
+    final Context mContext;
 
     final HashMap<Method, Intent> INTENT_CACHE = new HashMap<Method, Intent>() {
 
@@ -130,8 +138,6 @@ public class JumperInvokeHandler implements InvocationHandler {
 
         }
     };
-
-    final Context mContext;
 
     public JumperInvokeHandler(Application application) {
         mContext = application;

@@ -10,6 +10,7 @@ import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
 import com.nuts.lib.Globals;
 import com.nuts.lib.ReflectUtils;
+import com.nuts.lib.annotation.eventbus.Event;
 import com.nuts.lib.log.L;
 import com.nuts.lib.task.RunnableTask;
 

@@ -1,18 +1,14 @@
-package com.nuts.lib.jumper;
+package com.nuts.lib.annotation.net;
 
 import java.lang.annotation.ElementType;
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 
-/**
- * 描述广播的发送
- * Created by demor on 14-3-7.
- */
-@Target(ElementType.METHOD)
+@Target(ElementType.PARAMETER)
 @Retention(RetentionPolicy.RUNTIME)
-public @interface BroadcastInfo {
+public @interface Param {
     String value();
 
-    boolean local() default true;
+    String mediaType() default "image/*";
 }
