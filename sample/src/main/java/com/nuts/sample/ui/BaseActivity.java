@@ -17,7 +17,6 @@ public class BaseActivity extends Activity implements Const {
         ClickMapping.map(this);
     }
 
-
     @Override
     protected void onDestroy() {
         super.onDestroy();

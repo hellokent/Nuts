@@ -18,18 +18,18 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
+
+        <activity android:name=".ui.controller.ControllerActivity"
+                  android:label="Controller"/>
+
         <activity
-            android:name=".ui.controller.SimpleControllerActivity"
+                android:name=".ui.controller.ControllerSimpleActivity"
             android:label="@string/title_activity_simple_controller" />
 
-        <!--
         <activity
-            android:name=".ui.controller.ControllerActivity"
-            android:label="@string/title_activity_controller" />
-        -->
-        <activity
-            android:name=".ui.controller.CheckActivityControllerActivity"
+                android:name=".ui.controller.ControllerCheckActivityActivity"
             android:label="CheckActivity" />
+
         <activity
             android:name=".ui.jumper.JumperActivity"
             android:label="@string/title_activity_jumper"/>

@@ -8,7 +8,7 @@ import com.nuts.sample.R;
 import com.nuts.sample.ui.BaseActivity;
 
 @ViewMapping(R.layout.activity_check_activity)
-public class CheckActivityControllerActivity extends BaseActivity{
+public class ControllerCheckActivityActivity extends BaseActivity {
 
     @OnClick(R.id.async_run)
     void run() {

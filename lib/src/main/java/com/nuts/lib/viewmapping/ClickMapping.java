@@ -38,7 +38,7 @@ public final class ClickMapping {
     public static <T> void map(Object o, T t, FindViewAbility<T> findViewAbility) {
         assert o != null;
         Class<?> clazz = o.getClass();
-        final ClickHandler clickHandler = new ClickHandler(o, findViewAbility);
+        final ClickHandler clickHandler = new ClickHandler<T>((T) o, findViewAbility);
         final SparseArray<Method> idMethodMap = clickHandler.kIdMethodMap;
         final OnClickListener onClickListener = (OnClickListener) Proxy
                 .newProxyInstance(clazz.getClassLoader(),
@@ -58,7 +58,7 @@ public final class ClickMapping {
                     if (v == null) {
                         continue;
                     }
-                    if (idMethodMap.get(viewId) == null) {
+                    if (idMethodMap.get(viewId) != null) {
                         continue;
                     }
                     idMethodMap.put(viewId, method);

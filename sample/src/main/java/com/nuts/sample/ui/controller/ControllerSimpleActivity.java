@@ -11,7 +11,7 @@ import com.nuts.sample.ui.BaseActivity;
 import com.nuts.sample.utils.Dialogs;
 
 @ViewMapping(R.layout.activity_simple_controller)
-public class SimpleControllerActivity extends BaseActivity {
+public class ControllerSimpleActivity extends BaseActivity {
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
