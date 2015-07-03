@@ -7,4 +7,7 @@
     <string name="title_activity_controller">Controller</string>
     <string name="dialog_loading">加载中…</string>
     <string name="title_activity_jumper">Jumper</string>
+    <string name="check_activity">Check Activity</string>
+    <string name="life_circle">Life Circle</string>
+    <string name="title_activity_controller_life_circle">ControllerLifeCircleActivity</string>
 </resources>

@@ -5,6 +5,7 @@ import com.nuts.lib.jumper.Extra;
 import com.nuts.lib.jumper.IntentHandler;
 import com.nuts.sample.ui.controller.ControllerActivity;
 import com.nuts.sample.ui.controller.ControllerCheckActivityActivity;
+import com.nuts.sample.ui.controller.ControllerLifeCircleActivity;
 import com.nuts.sample.ui.controller.ControllerSimpleActivity;
 import com.nuts.sample.ui.jumper.JumperActivity;
 import com.nuts.sample.ui.jumper.JumperSimpleActivity;
@@ -25,6 +26,9 @@ public interface Jumper {
 
     @ActivityInfo(clz = JumperSimpleActivity.class)
     IntentHandler viewJumperSimple(@Extra(IntentNames.COUNT) int count);
+
+    @ActivityInfo(clz = ControllerLifeCircleActivity.class)
+    IntentHandler viewControllerLifeCircle();
 
     @ActivityInfo(action = "action")
     IntentHandler sendBroadcast();

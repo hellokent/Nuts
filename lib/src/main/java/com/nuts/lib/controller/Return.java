@@ -68,14 +68,8 @@ public class Return<T> implements Globals {
                     performEnd(mData);
                     return mData;
                 } catch (final Exception e) {
-                    e.printStackTrace();
-
                     performException(e);
-                    if (ReflectUtils.checkGenericType(mMethod.getGenericReturnType(), Boolean.class)) {
-                        mData = (T) Boolean.FALSE;
-                        return mData;
-                    }
-                    throw new Error(e);
+                    throw e;
                 } finally {
                     UI_HANDLER.post(new Runnable() {
                         @Override
@@ -99,14 +93,7 @@ public class Return<T> implements Globals {
             return mData;
         }
         try {
-            Object o = mFuture.get();
-            if (o == null) {
-                return null;
-            } else if (ReflectUtils.isSubclassOf(o.getClass(), Return.class)) {
-                mData = (T) ((Return) o).mData;
-            } else {
-                mData = (T) o;
-            }
+            mData = mFuture.get();
             return mData;
         } catch (Exception e) {
             e.printStackTrace();
@@ -118,16 +105,14 @@ public class Return<T> implements Globals {
         }
     }
 
-    public final void async() {
-        asyncUI(null);
-    }
-
     public final void asyncUI(final ControllerCallback<T> callback) {
         asyncUIWithDialog(callback, null);
     }
 
-    public final synchronized void asyncUIWithDialog(final ControllerCallback<T> callback, Dialog dialog) {
-        addListener(new DialogListenerImpl<T>(dialog));
+    public final void asyncUIWithDialog(final ControllerCallback<T> callback, final Dialog dialog) {
+        if (dialog != null) {
+            addListener(new DialogListenerImpl<T>(dialog));
+        }
         if (mFuture.isDone()) {
             UI_HANDLER.post(new Runnable() {
                 @Override

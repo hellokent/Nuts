@@ -17,4 +17,10 @@ public class ControllerActivity extends BaseActivity {
     public void gotoCheckActivity() {
         JUMPER.checkActivityController().startActivity(this);
     }
+
+    @OnClick(R.id.life_circle)
+    public void lifeCircle() {
+        JUMPER.viewControllerLifeCircle()
+                .startActivity(this);
+    }
 }
