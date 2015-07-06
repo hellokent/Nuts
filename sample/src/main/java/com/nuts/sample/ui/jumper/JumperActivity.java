@@ -16,7 +16,7 @@ import com.nuts.sample.ui.BaseActivity;
 @ViewMapping(R.layout.activity_jumper)
 public class JumperActivity extends BaseActivity{
 
-    BroadcastReceiver mReceiver = new BroadcastReceiver() {
+    final BroadcastReceiver mReceiver = new BroadcastReceiver() {
         @Override
         public void onReceive(final Context context, final Intent intent) {
             ToastUtil.showMessage("onReceive Broadcast");
@@ -26,7 +26,7 @@ public class JumperActivity extends BaseActivity{
     @Override
     protected void onCreate(final Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        IntentFilter filter = new IntentFilter();
+        final IntentFilter filter = new IntentFilter();
         filter.addAction("action");
         registerReceiver(mReceiver, filter);
     }

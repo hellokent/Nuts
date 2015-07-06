@@ -32,7 +32,6 @@ proguard/
 ### JetBrains template
 # Covers JetBrains IDEs: IntelliJ, RubyMine, PhpStorm, AppCode, PyCharm
 
-*.iml
 
 ## Directory-based project format:
 .idea/
@@ -58,8 +57,9 @@ proguard/
 # .idea/mongoSettings.xml
 
 ## File-based project format:
-*.ipr
-*.iws
+**.ipr
+**.iws
+**.iml
 
 ## Plugin-specific files:
 
@@ -82,13 +82,11 @@ crashlytics-build.properties
 *.pydevproject
 .metadata
 .gradle
-bin/
 tmp/
 *.tmp
 *.bak
 *.swp
 *~.nib
-local.properties
 .settings/
 .loadpath
 
@@ -117,19 +115,11 @@ local.properties
 .texlipse
 
 
-### Gradle template
-.gradle
-build/
-
 # Ignore Gradle GUI config
 gradle-app.setting
 
 # Avoid ignoring Gradle wrapper jar file (.jar files are usually ignored)
 !gradle-wrapper.jar
-
-
-### Java template
-*.class
 
 # Mobile Tools for Java (J2ME)
 .mtj.tmp/

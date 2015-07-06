@@ -81,7 +81,6 @@ class NetBuilder {
         }
     }
 
-
     public void setUrl(final String url) {
         mUrl = url;
     }

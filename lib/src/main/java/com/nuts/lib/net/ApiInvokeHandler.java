@@ -5,13 +5,16 @@ import java.lang.reflect.InvocationHandler;
 import java.lang.reflect.Method;
 import java.security.InvalidParameterException;
 import java.util.ArrayList;
+import java.util.List;
 import java.util.concurrent.Callable;
 
+import com.google.common.base.Splitter;
 import com.google.common.collect.Lists;
 import com.google.gson.Gson;
 import com.nuts.lib.BuildConfig;
 import com.nuts.lib.ReflectUtils;
 import com.nuts.lib.annotation.net.Get;
+import com.nuts.lib.annotation.net.Header;
 import com.nuts.lib.annotation.net.Multipart;
 import com.nuts.lib.annotation.net.Param;
 import com.nuts.lib.annotation.net.Path;
@@ -36,6 +39,7 @@ public class ApiInvokeHandler implements InvocationHandler {
         final Post post = method.getAnnotation(Post.class);
         final Multipart multipart = method.getAnnotation(Multipart.class);
         final Class<?> returnClz = method.getReturnType();
+        final Header header = method.getAnnotation(Header.class);
         final int tryCount = method.getAnnotation(Retry.class) == null ? 1 : method.getAnnotation(Retry.class).value();
 
         final String url;
@@ -58,6 +62,18 @@ public class ApiInvokeHandler implements InvocationHandler {
                 ReflectUtils.isSubclassOf(returnClz, Return.class) ?
                         (Class<?>) ReflectUtils.getGenericType(method.getGenericReturnType()) : respClz,
                 method, args);
+
+        if (header != null) {
+            for (final String header1 : header.value()) {
+                final List<String> pair = Splitter.on(":")
+                        .trimResults()
+                        .splitToList(header1);
+                if (pair.size() < 2) {
+                    continue;
+                }
+                builder.mHeaders.put(pair.get(0), pair.get(1));
+            }
+        }
 
         final Annotation[][] annotations = method.getParameterAnnotations();
         for (int i = 0, n = args == null ? 0 : args.length; i < n; ++i) {

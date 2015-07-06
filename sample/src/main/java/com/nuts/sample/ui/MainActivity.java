@@ -10,8 +10,8 @@ public class MainActivity extends BaseActivity {
 
     @OnClick(R.id.controller)
     public void gotoController() {
-        startActivity(JUMPER.viewController()
-                .getIntent());
+        JUMPER.viewController()
+                .startActivity(this);
     }
 
     @OnClick(R.id.jumper)

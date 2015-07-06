@@ -27,9 +27,8 @@ public final class ViewMapUtil {
 
         while (clazz != null &&
                 clazz != Activity.class &&
-                clazz != View.class) { // TODO 2.3的机型没有Fragment，需要做版本验证
-            Field[] fields = clazz.getDeclaredFields();// 必须是public
-            for (Field f : fields) {
+                clazz != View.class) {
+            for (Field f : clazz.getDeclaredFields()) {
                 ViewMapping mapping = f.getAnnotation(ViewMapping.class);
                 int id = 0;
                 if (mapping == null) {
