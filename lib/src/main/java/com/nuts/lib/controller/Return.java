@@ -17,10 +17,6 @@ import com.nuts.lib.ReflectUtils;
 import com.nuts.lib.annotation.controller.CheckActivity;
 import com.nuts.lib.task.SafeTask;
 
-/**
- * Created by 陈阳(chenyang@edaijia-staff.cn>)
- * Date: 6/24/14 11:03 AM.
- */
 public class Return<T> implements Globals {
 
     final boolean mCreatedByConstructor;

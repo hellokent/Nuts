@@ -9,7 +9,6 @@ import java.lang.annotation.Target;
 
 /**
  * 描述Activity信息
- * Created by chenyang.coder@gmail.com on 14-3-2 下午2:45.
  */
 @Retention(RetentionPolicy.RUNTIME)
 @Target(ElementType.METHOD)

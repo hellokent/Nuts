@@ -2,10 +2,6 @@ package com.nuts.lib.log;
 
 import android.util.Log;
 
-/**
- * Created by 陈阳(chenyang@edaijia-staff.cn>)
- * Date: 6/5/14 11:41 AM.
- */
 enum LogLevel {
     VERBOSE(Log.VERBOSE),
     DEBUG(Log.DEBUG),
@@ -16,7 +12,7 @@ enum LogLevel {
 
     private final int mLevel;
 
-    private LogLevel(int level) {
+    LogLevel(int level) {
         mLevel = level;
     }
 

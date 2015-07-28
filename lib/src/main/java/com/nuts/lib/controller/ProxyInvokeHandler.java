@@ -8,10 +8,6 @@ import java.util.concurrent.Callable;
 import com.nuts.lib.Globals;
 import com.nuts.lib.ReflectUtils;
 
-/**
- * Created by 陈阳(chenyang@edaijia-staff.cn>)
- * Date: 6/6/14 10:32 AM.
- */
 public class ProxyInvokeHandler<I> implements InvocationHandler {
 
     final I mInterface;

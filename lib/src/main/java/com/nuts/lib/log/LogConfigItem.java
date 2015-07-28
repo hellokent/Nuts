@@ -9,10 +9,6 @@ import com.nuts.lib.BuildConfig;
 import org.xmlpull.v1.XmlPullParser;
 import org.xmlpull.v1.XmlPullParserException;
 
-/**
- * Created by 陈阳(chenyang@edaijia-staff.cn>)
- * Date: 6/5/14 11:41 AM.
- */
 class LogConfigItem {
     LogLevel mLevel = BuildConfig.DEBUG ? LogLevel.VERBOSE : LogLevel.WARN;
     String mTag;

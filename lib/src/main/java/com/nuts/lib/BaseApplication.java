@@ -4,9 +4,6 @@ import android.app.Application;
 import android.content.pm.PackageInfo;
 import android.content.pm.PackageManager;
 
-/**
- * Created by demor on 10/9/14.
- */
 public abstract class BaseApplication extends Application {
     static BaseApplication sBaseApplication;
 

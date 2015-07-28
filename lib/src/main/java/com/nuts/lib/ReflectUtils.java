@@ -7,7 +7,6 @@ import java.lang.reflect.WildcardType;
 
 /**
  * 反射相关的工具方法
- * Created by chenyang on 14-2-7.
  */
 public final class ReflectUtils {
     private ReflectUtils() {
@@ -56,7 +55,8 @@ public final class ReflectUtils {
             argumentClasses[i] = arg[i].getClass();
         }
 
-        return clazz.getDeclaredConstructor(argumentClasses).newInstance(arg);
+        return (T) clazz.getDeclaredConstructor(argumentClasses)
+                .newInstance(arg);
     }
 
     public static Type getGenericType(final Type t) {

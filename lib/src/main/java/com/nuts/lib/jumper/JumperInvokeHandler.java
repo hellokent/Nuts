@@ -35,8 +35,7 @@ import static com.nuts.lib.ReflectUtils.checkGenericType;
 import static com.nuts.lib.ReflectUtils.isSubclassOf;
 
 /**
- * ActivityJumper模块的反射代理实现
- * Created by chenyang.coder@gmail.com on 14-3-2 下午3:03.
+ * Jumper模块的反射代理实现
  */
 public class JumperInvokeHandler implements InvocationHandler {
 

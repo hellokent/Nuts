@@ -8,10 +8,6 @@ import java.lang.reflect.Method;
 
 import com.nuts.lib.BaseApplication;
 
-/**
- * Package: com.douban.ask.utils.jumper
- * Created by demor(chenyang@douban.com) on 4/29/14 3:40 PM.
- */
 public class IntentHandler {
     final Intent mIntent;
     final Method mMethod;

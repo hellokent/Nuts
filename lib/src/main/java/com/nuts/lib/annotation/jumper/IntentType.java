@@ -7,7 +7,6 @@ import java.lang.annotation.Target;
 
 /**
  * Intent的Type
- * Created by chenyang.coder@gmail.com on 14-3-2 下午11:25.
  */
 @Retention(RetentionPolicy.RUNTIME)
 @Target({ElementType.PARAMETER, ElementType.METHOD})

@@ -15,10 +15,6 @@ import org.xmlpull.v1.XmlPullParser;
 import org.xmlpull.v1.XmlPullParserException;
 import org.xmlpull.v1.XmlPullParserFactory;
 
-/**
- * Created by 陈阳(chenyang@edaijia-staff.cn>)
- * Date: 6/5/14 11:35 AM.
- */
 public final class L {
     static final String DEFAULT_TAG = "log";
     static final Context CONTEXT = BaseApplication.getGlobalContext();

@@ -6,9 +6,6 @@ import android.os.Looper;
 import com.nuts.lib.eventbus.EventBus;
 import com.rits.cloning.Cloner;
 
-/**
- * Created by demor on 10/9/14.
- */
 public interface Globals {
     Handler UI_HANDLER = new Handler(Looper.getMainLooper());
 

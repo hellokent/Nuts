@@ -7,7 +7,6 @@ import java.lang.annotation.Target;
 
 /**
  * 描述广播的发送
- * Created by demor on 14-3-7.
  */
 @Target(ElementType.METHOD)
 @Retention(RetentionPolicy.RUNTIME)

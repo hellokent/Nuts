@@ -14,10 +14,6 @@ import java.util.Locale;
 
 import com.google.common.io.Files;
 
-/**
- * Created by 陈阳(chenyang@edaijia-staff.cn>)
- * Date: 6/5/14 4:16 PM.
- */
 public enum LogWriter {
     INSTANCE;
 

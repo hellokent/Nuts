@@ -8,11 +8,6 @@ import com.nuts.lib.storage.IStorageEngine;
 import com.nuts.lib.storage.SharedPerferenceStorageEngine;
 import static com.nuts.lib.Globals.CLONER;
 
-/**
- * 基于SharePreference的存储
- * Created by 陈阳(chenyang@edaijia-staff.cn>)
- * Date: 6/13/14 10:35 AM.
- */
 public class Storage<T> {
 
     private static final HashMap<String, Object> CACHE_MAP = Maps.newHashMap();
