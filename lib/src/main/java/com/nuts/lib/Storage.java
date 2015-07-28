@@ -5,14 +5,16 @@ import java.util.HashMap;
 import com.google.common.collect.Maps;
 import com.google.gson.Gson;
 import com.nuts.lib.storage.IStorageEngine;
-import com.nuts.lib.storage.SharedPerferenceStorageEngine;
+import com.nuts.lib.storage.SharedPreferenceStorageEngine;
 import static com.nuts.lib.Globals.CLONER;
 
 public class Storage<T> {
 
     private static final HashMap<String, Object> CACHE_MAP = Maps.newHashMap();
 
-    IStorageEngine mStorageEngine = new SharedPerferenceStorageEngine();
+    private static final Gson GSON = new Gson();
+
+    IStorageEngine mStorageEngine = new SharedPreferenceStorageEngine();
 
     Class<T> mClass;
 
@@ -34,7 +36,7 @@ public class Storage<T> {
     public Storage(Gson gson, Class<T> clz, String key) {
         mClass = clz;
         mKey = key;
-        mGson = gson == null ? new Gson() : gson;
+        mGson = gson == null ? GSON : gson;
     }
 
     public synchronized boolean contains() {
@@ -65,13 +67,13 @@ public class Storage<T> {
 
     public static class Builder<R> {
 
-        private IStorageEngine mStorageEngine = new SharedPerferenceStorageEngine();
+        private IStorageEngine mStorageEngine = new SharedPreferenceStorageEngine();
 
         private Class<R> mClass;
 
         private String mKey;
 
-        private Storage<R> mStorage = new Storage<R>();
+        private Storage<R> mStorage = new Storage<>();
 
         public Builder<R> setClass(Class<R> clz) {
             mStorage.mClass = clz;

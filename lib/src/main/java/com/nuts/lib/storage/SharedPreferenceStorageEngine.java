@@ -5,7 +5,7 @@ import android.content.SharedPreferences;
 
 import com.nuts.lib.BaseApplication;
 
-public class SharedPerferenceStorageEngine implements IStorageEngine {
+public class SharedPreferenceStorageEngine implements IStorageEngine {
 
     static final SharedPreferences SP = BaseApplication.getGlobalContext()
             .getSharedPreferences("json", Context.MODE_PRIVATE);
