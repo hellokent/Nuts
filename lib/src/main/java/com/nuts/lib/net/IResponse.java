@@ -7,4 +7,6 @@ public interface IResponse extends Serializable {
     int BAD_NETWORK = -1024;
 
     void setErrorCode(int errorCode);
+
+    void setStatusCode(int statusCode);
 }

@@ -19,4 +19,8 @@ public abstract class INet {
     protected int getReadTimeout() {
         return 120;
     }
+
+    protected String getLogTag(String url, Method method, Object[] args) {
+        return url;
+    }
 }

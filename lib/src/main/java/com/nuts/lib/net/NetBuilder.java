@@ -1,6 +1,7 @@
 package com.nuts.lib.net;
 
 import java.io.File;
+import java.io.IOException;
 import java.io.UnsupportedEncodingException;
 import java.lang.reflect.Method;
 import java.net.URLEncoder;
@@ -19,6 +20,7 @@ import com.squareup.okhttp.MultipartBuilder;
 import com.squareup.okhttp.OkHttpClient;
 import com.squareup.okhttp.Request;
 import com.squareup.okhttp.RequestBody;
+import com.squareup.okhttp.Response;
 import static com.nuts.lib.net.NetResult.ofFailed;
 import static com.nuts.lib.net.NetResult.ofSuccess;
 
@@ -44,7 +46,11 @@ class NetBuilder {
 
     final Gson mGson;
 
+    final String mLogTag;
+
     protected String mUrl;
+
+    int mStatusCode = -1;
 
     NetBuilder(final Gson gson, INet net, String url, Class<?> respClz, Method method, Object[] args) {
         mUrl = url;
@@ -57,6 +63,8 @@ class NetBuilder {
         mMethod = method;
         mArgs = args;
         mGson = gson;
+
+        mLogTag = mNet.getLogTag(mUrl, mMethod, mArgs);
     }
 
     public void addParam(Param param, Object object) {
@@ -87,58 +95,52 @@ class NetBuilder {
 
     public NetResult get() {
         initParam();
-        L.i(">>> GET(%s):%s", mUrl, Joiner.on(",")
+        L.i(">>> GET(%s):%s", mLogTag, Joiner.on(",")
                 .withKeyValueSeparator("=")
                 .join(mParams));
         try {
-            final String respStr = mHttpClient.newCall(new Request.Builder().url(mUrl + "?" +
+            final String respStr = executeNet(new Request.Builder().url(mUrl + "?" +
                     Joiner.on("&")
                             .withKeyValueSeparator("=")
                             .useForNull("")
                             .join(getEncodedParam()))
                     .headers(getHeaders())
                     .get()
-                    .build())
-                    .execute()
-                    .body()
-                    .string();
-            L.i("<<< GET(%s):%s", mUrl, respStr);
+                    .build());
+            L.i("<<< GET(%s):%s", mLogTag, respStr);
             return ofSuccess((IResponse) mGson.fromJson(respStr, mRespClz));
         } catch (Throwable e) {
-            L.e("url:%s", mUrl);
+            L.e("!!! ERROR GET(%s), %s", mLogTag, e.getMessage());
             L.exception(e);
-            return ofFailed(createInvalidResponse());
+            return ofFailed(createInvalidResponse(), mStatusCode);
         }
     }
 
     public NetResult post() {
         initParam();
-        L.i(">>> POST(%s):%s", mUrl, Joiner.on(",")
+        L.i(">>> POST(%s):%s", mLogTag, Joiner.on(",")
                 .withKeyValueSeparator("=")
                 .join(mParams));
         try {
-            final String respStr = mHttpClient.newCall(new Request.Builder().url(mUrl)
+            final String respStr = executeNet(new Request.Builder().url(mUrl)
                     .headers(getHeaders())
                     .post(RequestBody.create(CONTENT_TYPE, Joiner.on("&")
                             .withKeyValueSeparator("=")
                             .useForNull("")
                             .join(mParams)))
-                    .build())
-                    .execute()
-                    .body()
-                    .string();
-            L.i("<<< POST(%s):%s", mUrl, respStr);
+                    .build());
+            L.i("<<< POST(%s):%s", mLogTag, respStr);
             return ofSuccess((IResponse) mGson.fromJson(respStr, mRespClz));
         } catch (Exception e) {
-            L.e("url:%s", mUrl);
+            L.e("!!! ERROR POST(%s), %s", mLogTag, e.getMessage());
             L.exception(e);
-            return ofFailed(createInvalidResponse());
+            return ofFailed(createInvalidResponse(), mStatusCode);
         }
     }
 
     public NetResult multipart() {
         initParam();
-        L.i(">>> MULTIPART(%s):%s;FILE:%s", mUrl,
+        L.i(">>> MULTIPART(%s):%s;FILE:%s", mLogTag,
                 Joiner.on(",")
                         .withKeyValueSeparator("=")
                         .join(mParams),
@@ -170,17 +172,22 @@ class NetBuilder {
                     .post(builder.build())
                     .build();
 
-            final String respStr = mHttpClient.newCall(request)
-                    .execute()
-                    .body()
-                    .string();
-            L.i("<<< MULTIPART(%s):%s", mUrl, respStr);
+            final String respStr = executeNet(request);
+            L.i("<<< MULTIPART(%s):%s", mLogTag, respStr);
             return ofSuccess((IResponse) mGson.fromJson(respStr, mRespClz));
         } catch (Exception e) {
-            L.e("url:%s", mUrl);
+            L.e("!!! ERROR MULTIPART(%s), %s", mLogTag, e.getMessage());
             L.exception(e);
-            return ofFailed(createInvalidResponse());
+            return ofFailed(createInvalidResponse(), mStatusCode);
         }
+    }
+
+    String executeNet(Request request) throws IOException {
+        final Response response = mHttpClient.newCall(request)
+                .execute();
+        mStatusCode = response.code();
+        return response.body()
+                .string();
     }
 
     Map<String, String> getEncodedParam() {

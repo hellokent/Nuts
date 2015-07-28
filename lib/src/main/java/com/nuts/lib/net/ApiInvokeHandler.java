@@ -121,6 +121,11 @@ public class ApiInvokeHandler implements InvocationHandler {
                 if (response == null) {
                     response = builder.createInvalidResponse();
                 }
+
+                if (result != null) {
+                    response.setErrorCode(result.mStatusCode);
+                }
+
                 return response;
             }
         };
