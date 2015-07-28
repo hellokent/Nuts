@@ -60,22 +60,23 @@ public class Return<T> implements Globals {
 
                 try {
                     performBegin();
-                    try {
-                        Object o = callable.call();
-                        if (o == null) {
-                            return null;
-                        } else if (ReflectUtils.isSubclassOf(o.getClass(), Return.class)) {
-                            mData = (T) ((Return) o).mData;
-                        } else {
-                            mData = (T) o;
-                        }
-                        performEnd(mData);
-                    } catch (ExceptionWrapper exceptionWrapper) {
-                        mException = exceptionWrapper.mException;
+                    Object o = callable.call();
+                    if (o == null) {
+                        return null;
+                    } else if (ReflectUtils.isSubclassOf(o.getClass(), Return.class)) {
+                        mData = (T) ((Return) o).mData;
+                    } else {
+                        mData = (T) o;
                     }
+                    performEnd(mData);
                     return mData;
                 } catch (final Exception e) {
-                    performException(e);
+                    performEnd(mData);
+                    if (e.getCause() instanceof ExceptionWrapper) {
+                        mException = ((ExceptionWrapper) e.getCause()).mException;
+                    } else {
+                        performException(e);
+                    }
                     throw e;
                 } finally {
                     UI_HANDLER.post(new Runnable() {

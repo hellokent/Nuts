@@ -19,4 +19,9 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:text="@string/life_circle"/>
+
+    <Button android:id="@+id/run_exception"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="@string/run_exception"/>
 </LinearLayout>
