@@ -39,6 +39,8 @@ public class Return<T> implements Globals {
 
     Future<T> mFuture;
 
+    Exception mException;
+
     public Return(final T data) {
         mData = data;
         mCreatedByConstructor = true;
@@ -58,15 +60,19 @@ public class Return<T> implements Globals {
 
                 try {
                     performBegin();
-                    Object o = callable.call();
-                    if (o == null) {
-                        return null;
-                    } else if (ReflectUtils.isSubclassOf(o.getClass(), Return.class)) {
-                        mData = (T) ((Return) o).mData;
-                    } else {
-                        mData = (T) o;
+                    try {
+                        Object o = callable.call();
+                        if (o == null) {
+                            return null;
+                        } else if (ReflectUtils.isSubclassOf(o.getClass(), Return.class)) {
+                            mData = (T) ((Return) o).mData;
+                        } else {
+                            mData = (T) o;
+                        }
+                        performEnd(mData);
+                    } catch (ExceptionWrapper exceptionWrapper) {
+                        mException = exceptionWrapper.mException;
                     }
-                    performEnd(mData);
                     return mData;
                 } catch (final Exception e) {
                     performException(e);
@@ -79,9 +85,7 @@ public class Return<T> implements Globals {
                                 return;
                             }
 
-                            if (mCallback != null) {
-                                mCallback.onResult(mData);
-                            }
+                            performResult(mCallback);
                         }
                     });
                 }
@@ -118,7 +122,7 @@ public class Return<T> implements Globals {
             UI_HANDLER.post(new Runnable() {
                 @Override
                 public void run() {
-                    callback.onResult(mData);
+                    performResult(callback);
                 }
             });
         } else {
@@ -159,6 +163,17 @@ public class Return<T> implements Globals {
     private void performException(Throwable throwable) {
         for (ControllerListener<T> l : mListeners) {
             l.onException(throwable);
+        }
+    }
+
+    private void performResult(ControllerCallback<T> callback) {
+        if (callback == null) {
+            return;
+        }
+        if (mException == null) {
+            callback.onResult(mData);
+        } else {
+            callback.handleException(mException);
         }
     }
 

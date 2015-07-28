@@ -1,13 +1,11 @@
 package com.nuts.lib;
 
-import android.app.Application;
-import android.content.Context;
-import android.content.SharedPreferences;
-
 import java.util.HashMap;
 
 import com.google.common.collect.Maps;
 import com.google.gson.Gson;
+import com.nuts.lib.storage.IStorageEngine;
+import com.nuts.lib.storage.SharedPerferenceStorageEngine;
 import static com.nuts.lib.Globals.CLONER;
 
 /**
@@ -17,13 +15,22 @@ import static com.nuts.lib.Globals.CLONER;
  */
 public class Storage<T> {
 
-    public static final HashMap<String, Object> CACHE_MAP = Maps.newHashMap();
-    static final Application APP = BaseApplication.getGlobalContext();
-    static final SharedPreferences SP = APP.getSharedPreferences("json", Context.MODE_PRIVATE);
+    private static final HashMap<String, Object> CACHE_MAP = Maps.newHashMap();
+
+    IStorageEngine mStorageEngine = new SharedPerferenceStorageEngine();
 
     Class<T> mClass;
+
     String mKey;
+
     Gson mGson;
+
+    private Storage() {
+    }
+
+    public Storage(Class<T> clz) {
+        this(null, clz);
+    }
 
     public Storage(Gson gson, Class<T> clz) {
         this(gson, clz, clz.getName());
@@ -32,48 +39,62 @@ public class Storage<T> {
     public Storage(Gson gson, Class<T> clz, String key) {
         mClass = clz;
         mKey = key;
-        mGson = gson;
+        mGson = gson == null ? new Gson() : gson;
     }
 
-    public synchronized void saveJson(String key, Object o) {
+    public synchronized boolean contains() {
+        return get() != null;
+    }
+
+    public synchronized T get() {
+        T o = (T) CACHE_MAP.get(mKey);
         if (o == null) {
-            return;
+            o = mGson.fromJson(mStorageEngine.get(mKey), mClass);
+            CACHE_MAP.put(mKey, o);
         }
-        CACHE_MAP.put(key, o);
-        SP.edit().putString(key, mGson.toJson(o)).apply();
+        return CLONER.deepClone(o);
     }
 
-    public <T> T getJson(String key, Class<T> clz) {
-        Object o = CACHE_MAP.get(key);
-        if (o == null) {
-            o = mGson.fromJson(SP.getString(key, ""), clz);
-            CACHE_MAP.put(key, o);
-        }
-        return (T) o;
-    }
-
-    public static synchronized void delete(String key) {
-        CACHE_MAP.remove(key);
-        SP.edit().remove(key).apply();
-    }
-
-    public boolean contains() {
-        return SP.contains(mKey);
-    }
-
-    public T get() {
-        return CLONER.deepClone(getJson(mKey, mClass));
-    }
-
-    public void save(T t) {
+    public synchronized void save(T t) {
         if (t == null) {
             return;
         }
-        saveJson(mKey, t);
+        CACHE_MAP.put(mKey, t);
+        mStorageEngine.set(mKey, mGson.toJson(t));
     }
 
-    public void delete() {
-        delete(mKey);
+    public synchronized void delete() {
+        CACHE_MAP.remove(mKey);
+        mStorageEngine.delete(mKey);
     }
 
+    public static class Builder<R> {
+
+        private IStorageEngine mStorageEngine = new SharedPerferenceStorageEngine();
+
+        private Class<R> mClass;
+
+        private String mKey;
+
+        private Storage<R> mStorage = new Storage<R>();
+
+        public Builder<R> setClass(Class<R> clz) {
+            mStorage.mClass = clz;
+            return this;
+        }
+
+        public Builder<R> setName(String name) {
+            mStorage.mKey = name;
+            return this;
+        }
+
+        public Builder<R> setStorageEngine(IStorageEngine engine) {
+            mStorage.mStorageEngine = engine;
+            return this;
+        }
+
+        public Storage<R> build() {
+            return mStorage;
+        }
+    }
 }
