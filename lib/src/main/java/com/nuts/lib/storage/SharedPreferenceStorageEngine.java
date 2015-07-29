@@ -3,11 +3,11 @@ package com.nuts.lib.storage;
 import android.content.Context;
 import android.content.SharedPreferences;
 
-import com.nuts.lib.BaseApplication;
+import com.nuts.lib.NutsApplication;
 
 public class SharedPreferenceStorageEngine implements IStorageEngine {
 
-    static final SharedPreferences SP = BaseApplication.getGlobalContext()
+    static final SharedPreferences SP = NutsApplication.getGlobalContext()
             .getSharedPreferences("json", Context.MODE_PRIVATE);
 
     @Override

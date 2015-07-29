@@ -10,12 +10,12 @@ import com.nuts.lib.ReflectUtils;
 
 public class ProxyInvokeHandler<I> implements InvocationHandler {
 
-    final I mInterface;
+    final I mImpl;
     final Class<?> mClz;
 
-    public ProxyInvokeHandler(I interfaceInstance) {
-        mInterface = interfaceInstance;
-        mClz = mInterface.getClass();
+    public ProxyInvokeHandler(I impl) {
+        mImpl = impl;
+        mClz = mImpl.getClass();
     }
 
     public I createProxy() {
@@ -29,7 +29,7 @@ public class ProxyInvokeHandler<I> implements InvocationHandler {
                 }
             }
         }
-        Globals.BUS.register(mInterface);
+        Globals.BUS.register(mImpl);
         return (I) Proxy.newProxyInstance(ProxyInvokeHandler.class.getClassLoader(), mClz.getInterfaces(), this);
     }
 
@@ -38,9 +38,9 @@ public class ProxyInvokeHandler<I> implements InvocationHandler {
         final Class<?> returnClz = method.getReturnType();
         if (ReflectUtils.isSubclassOf(returnClz, Return.class)) {
             return returnClz.getConstructor(Callable.class, Method.class)
-                    .newInstance(new ControllerCallable(method, mInterface, args), method);
+                    .newInstance(new ControllerCallable(method, mImpl, args), method);
         } else {
-            return new ControllerCallable(method, mInterface, args).call();
+            return new ControllerCallable(method, mImpl, args).call();
         }
     }
 }

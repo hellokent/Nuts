@@ -1,7 +1,7 @@
 package com.nuts.sample;
 
-import com.nuts.lib.BaseApplication;
+import com.nuts.lib.NutsApplication;
 
-public class GlobalApplication extends BaseApplication {
+public class GlobalApplication extends NutsApplication {
 
 }

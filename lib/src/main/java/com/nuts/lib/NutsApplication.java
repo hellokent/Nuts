@@ -4,11 +4,11 @@ import android.app.Application;
 import android.content.pm.PackageInfo;
 import android.content.pm.PackageManager;
 
-public abstract class BaseApplication extends Application {
-    static BaseApplication sBaseApplication;
+public class NutsApplication extends Application {
+    static NutsApplication sApplication;
 
-    public static BaseApplication getGlobalContext() {
-        return sBaseApplication;
+    public static NutsApplication getGlobalContext() {
+        return sApplication;
     }
 
     public static <T> T getService(String name) {
@@ -18,7 +18,7 @@ public abstract class BaseApplication extends Application {
     @Override
     public void onCreate() {
         super.onCreate();
-        sBaseApplication = this;
+        sApplication = this;
     }
 
     public final int getVersionCode() {

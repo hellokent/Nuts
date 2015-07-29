@@ -7,7 +7,7 @@ import java.nio.charset.Charset;
 import com.google.common.base.Joiner;
 import com.google.common.base.Strings;
 import com.google.common.io.Files;
-import com.nuts.lib.BaseApplication;
+import com.nuts.lib.NutsApplication;
 import com.nuts.lib.log.L;
 
 public class FileEngine implements IStorageEngine {
@@ -22,7 +22,7 @@ public class FileEngine implements IStorageEngine {
         if (Strings.isNullOrEmpty(dirName)) {
             throw new RuntimeException("invalid dir name");
         }
-        File cacheDir = BaseApplication.getGlobalContext()
+        File cacheDir = NutsApplication.getGlobalContext()
                 .getCacheDir();
         mFolder = new File(cacheDir, dirName);
         if (!mFolder.exists()) {

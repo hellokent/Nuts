@@ -10,14 +10,15 @@ import java.util.List;
 
 import com.google.common.base.Throwables;
 import com.google.common.collect.Lists;
-import com.nuts.lib.BaseApplication;
+import com.nuts.lib.NutsApplication;
 import org.xmlpull.v1.XmlPullParser;
 import org.xmlpull.v1.XmlPullParserException;
 import org.xmlpull.v1.XmlPullParserFactory;
 
 public final class L {
     static final String DEFAULT_TAG = "log";
-    static final Context CONTEXT = BaseApplication.getGlobalContext();
+
+    static final Context CONTEXT = NutsApplication.getGlobalContext();
     static final int STACK_DEPTH = 4;
 
     static final List<LogConfigItem> CONFIG_ITEMS = Lists.newArrayList();

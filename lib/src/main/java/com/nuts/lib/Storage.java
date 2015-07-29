@@ -40,7 +40,7 @@ public class Storage<T> {
     }
 
     public synchronized boolean contains() {
-        return get() != null;
+        return mStorageEngine.contains(mKey);
     }
 
     public synchronized T get() {

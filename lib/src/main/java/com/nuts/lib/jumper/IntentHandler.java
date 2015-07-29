@@ -6,7 +6,7 @@ import android.content.Intent;
 
 import java.lang.reflect.Method;
 
-import com.nuts.lib.BaseApplication;
+import com.nuts.lib.NutsApplication;
 
 public class IntentHandler {
     final Intent mIntent;
@@ -57,7 +57,8 @@ public class IntentHandler {
     }
 
     public void sendBroadcast() {
-        BaseApplication.getGlobalContext().sendBroadcast(mIntent);
+        NutsApplication.getGlobalContext()
+                .sendBroadcast(mIntent);
     }
 
 }

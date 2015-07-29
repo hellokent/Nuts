@@ -7,6 +7,7 @@ import android.view.View;
 
 import java.lang.reflect.Field;
 import java.lang.reflect.Method;
+import java.lang.reflect.Type;
 import java.util.List;
 import java.util.concurrent.Callable;
 import java.util.concurrent.Future;
@@ -99,8 +100,9 @@ public class Return<T> implements Globals {
             return mData;
         } catch (Exception e) {
             e.printStackTrace();
-            if (mData instanceof Boolean || ReflectUtils.checkGenericType(mMethod.getGenericReturnType(), Boolean
-                    .class)) {
+            final Type returnType = mMethod.getGenericReturnType();
+            if (mData instanceof Boolean || ReflectUtils.checkGenericType(returnType, Boolean.class) || ReflectUtils
+                    .checkGenericType(returnType, boolean.class)) {
                 return (T) Boolean.FALSE;
             }
             throw new Error(e);

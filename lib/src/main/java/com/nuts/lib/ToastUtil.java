@@ -40,12 +40,13 @@ public class ToastUtil {
         if (sToast != null) {
             sToast.cancel();
         }
-        sToast = Toast.makeText(BaseApplication.getGlobalContext(), msg, len);
+        sToast = Toast.makeText(NutsApplication.getGlobalContext(), msg, len);
         sToast.show();
     }
 
     public static void showMessage(final int msg,
                                    final int len) {
-        showMessage(BaseApplication.getGlobalContext().getString(msg), len);
+        showMessage(NutsApplication.getGlobalContext()
+                .getString(msg), len);
     }
 }
