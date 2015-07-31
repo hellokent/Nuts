@@ -22,12 +22,14 @@ public class ControllerCheckActivityActivity extends BaseActivity {
 
     @OnClick(R.id.async_run_finish)
     void runAndFinish() {
-        TEST_CONTROLLER.runCheckActivity().asyncUI(new ControllerCallback<Void>() {
-            @Override
-            public void onResult(final Void aVoid) {
-                ToastUtil.showMessage("onResult");
-            }
-        });
+        TEST_CONTROLLER.run(1)
+                .setNeedCheckActivity(true)
+                .asyncUI(new ControllerCallback<String>() {
+                    @Override
+                    public void onResult(final String s) {
+                        ToastUtil.showMessage("onResult");
+                    }
+                });
         finish();
     }
 }

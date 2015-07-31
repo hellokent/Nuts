@@ -97,8 +97,15 @@ public class Return<T> implements Globals {
         }
         try {
             mData = mFuture.get();
+
+            if (mException != null) {
+                throw mException;
+            }
             return mData;
         } catch (Exception e) {
+            if (mException != null) {
+                throw new ExceptionWrapper(mException);
+            }
             e.printStackTrace();
             final Type returnType = mMethod.getGenericReturnType();
             if (mData instanceof Boolean || ReflectUtils.checkGenericType(returnType, Boolean.class) || ReflectUtils
