@@ -13,11 +13,11 @@
 
 ## Nuts实现的特性
 
-Nuts认为，处理耗时任务最简单方便的方法，就是全部是同步调用。一个业务逻辑的实现里面，无论是网络、DB或者是线程操作，同步操作简单可靠。
+Nuts认为，处理耗时任务最简单方便的方法，是同步调用。无论是网络、DB或者是线程操作，同步操作是最简单可靠的。
 
-随着业务规模的发展，业务之间肯定会有相互调用的情况，比如业务A需要调用业务B的逻辑。假如业务逻辑里面网络、DB请求都是同步调用，那么用同步的方式调用其他业务的逻辑，也是顺利成章的事情。
+复杂的需求里面，业务之间肯定会有相互调用的情况。业务逻辑里面的耗时请求都是同步调用的话，那么也应该同样用同步的方式调用其他业务的逻辑。
 
-假如UI调用业务逻辑需要异步访问，业务之间的调用需要同步访问，这样就要求一个业务逻辑需要同时支持同步异步调用。
+UI需要异步调用业务逻辑（否则会ANR），然而业务之间的调用需要同步访问，这样就要求一个业务逻辑需要同时支持同步异步调用。
 
 重要的话说三遍：
 
@@ -33,13 +33,14 @@ Nuts认为，处理耗时任务最简单方便的方法，就是全部是同步�
 
 ### 定义业务
 
-Nuts认为，一个业务是有一系列业务逻辑组成，业务对外暴露一个接口。外界通过这个接口访问具体的业务逻辑。
+Nuts认为，一个业务是有一系列业务逻辑组成。业务逻辑就是业务接口里面的方法。外界通过业务里面的接口方法访问具体的业务逻辑。
 
-业务的实现，需要写一个实现类。业务实例对外用动态代理生成一个实例。
+业务的实现，需要写一个业务接口的实现类。
 
-每回创建实例会略耗时，而且考虑到业务间互相调用，所以需要将业务实例成为静态变量。
+用动态代理生成一个业务实例。
 
-举例：
+每回创建业务实例会略耗时，同时为了方便业务间互相调用，所以需要将业务实例成为静态变量。
+
 <pre><code>
 public interface Const {
     AccountController ACCOUNT_CONTROLLER = new ProxyInvokeHandler<AccountController>(new AccountControllerImpl()).createProxy();
@@ -48,13 +49,11 @@ public interface Const {
 
 ### 定义业务逻辑
 
-业务逻辑，简单得说就是Nus接口下的一个函数声明和具体实现。
+业务逻辑，是指业务接口的函数声明及其具体实现。
 
 在接口里声明函数的时候，对于不需要同步异步调用的方法，就直接声明实现即可。
 
 需要支持同步异步调用的函数，需要用Return对象封装一下函数返回值，对于void类型的返回值，使用VoidReturn对象。
-
-举例：
 
 <pre><code>
 public interface AccountController {
@@ -69,7 +68,7 @@ public interface AccountController {
 
 ### 实现业务逻辑
 
-在业务逻辑的实现中，假如返回值类型被Return包装过的，那么返回的对象也需要包装一次。
+返回值需要被Return对象包装一次再返回出来，示例如下：
 
 <pre><code>
 public class AccountControllerImpl implements AccountController {
@@ -88,7 +87,7 @@ public class AccountControllerImpl implements AccountController {
 }
 </code></pre>
 
-假如是不需要Return保证的，直接返回即可，示例如下：
+假如是没有被Return包装的，直接返回即可，示例如下：
 
 <pre><code>
 @Override
@@ -99,9 +98,9 @@ public String token() {
 
 ### 调用方式
 
-通过刚刚生成的实例调用方法，返回的其实是Return对象。调用之后，该方法会马上在一个线程池中执行。
+调用业务实例里面的调用方法，返回的其实是Return对象，并不是调用方需要的返回值，需要知道同步异步方法之后，才能获取到真正的返回值。
 
-同步调用，就是阻塞当前线程，直到方法在线程池中执行结束，然后将执行结果传至当前线程，然后恢复执行。
+同步调用，就是阻塞当前线程，直到方法在线程池中执行结束，最后将执行结果传至当前线程。
 
 异步调用，就是不阻塞UI线程，方法执行接收后，将方法的执行结果通知给预先注册好的Callback。
 
@@ -111,20 +110,23 @@ public String token() {
 
 业务逻辑的方法一经调用，就马上会在线程池中执行，这个是最简单的异步调用。
 
-异步调用，就是Return对象async开头的函数族。
+异步调用通过Return对象async开头的函数族来实现。
 
 很多时候，调用方都会关心方法执行的结果：
 
 <pre><code>
-ACCOUNT_CONTROLLER.logout().asyncUI(new ControllerCallback<Void>() {
-    @Override
-    public void onResult(final Void aVoid) {
-        // 回调方法执行处，这里的代码会在UI线程中执行
-    }
-});
+ACCOUNT_CONTROLLER.login(account, password)
+        .asyncUIWithDialog(new ControllerCallback<Boolean>() {
+            @Override
+            public void onResult(final Boolean result) {
+                //TODO 
+            }
+        },);
 </code></pre>
 
-在很多时候，调用前后会显示一个Dialog提示用户：
+在很多时候，调用前后会显示一个Dialog，可以使用asyncUIWithDialog方法。
+
+asyncUIWithDialog这个方法需要传入一个Dialog参数，用来通知Nuts在方法调用前后需要展示和消失哪个Dialog。
 
 <pre><code>
 ACCOUNT_CONTROLLER.logout().asyncUIWithDialog(new ControllerCallback<Void>() {
@@ -135,11 +137,9 @@ ACCOUNT_CONTROLLER.logout().asyncUIWithDialog(new ControllerCallback<Void>() {
 }, Dialogs.createLoadingDialog(this));
 </code></pre>
 
-asyncUIWithDialog这个方法需要传入一个Dialog参数，用来通知Nuts在方法调用前后需要展示和消失哪个Dialog。
-
 #### 2. 同步调用
 
-同步调用最简单，sync方法：
+同步调用很简单，sync方法：
 
 <pre><code>
 ACCOUNT_CONTROLLER.logout().sync();
@@ -159,19 +159,13 @@ public interface TestController {
 TEST_CONTROLLER.run(1)
         .addListener(new ControllerListener<String>() {
             @Override
-            public void onBegin() {
-                L.v("onBegin");
-            }
+            public void onBegin() {}
 
             @Override
-            public void onEnd(final String response) {
-                L.v("onEnd:%s", response);
-            }
+            public void onEnd(final String response) {}
 
             @Override
-            public void onException(final Throwable throwable) {
-                ToastUtil.showMessage("onException");
-            }
+            public void onException(final Throwable throwable) {}
         })
         .asyncUI(new ControllerCallback<String>() {
             @Override
@@ -227,5 +221,10 @@ TEST_CONTROLLER.run(1)
 public void handleException(Exception e) {}
 </code></pre>
 
+## 最佳实践
 
+1. 业务里面的方法，需要跟着需求来，而不是跟着服务器接口来定义
 
+2. 对于特别复杂的业务逻辑方法，可以试着拆分，定义一些简单的方法，然后慢慢组合出复杂的方法。
+
+3. 一个业务接口可以对应多个业务实现，比如定位业务，可以有百度和高德的不同实现。这样假如产品要求更新地图，只要替换不同实现类就可以。
