@@ -50,7 +50,10 @@ class NetBuilder {
 
     int mStatusCode = -1;
 
-    NetBuilder(final Gson gson, INet net, String url, Class<?> respClz, Method method, Object[] args) {
+    HttpMethod mHttpMethod;
+
+    NetBuilder(final Gson gson, INet net, String url, Class<?> respClz, HttpMethod httpMethod, Method method,
+               Object[] args) {
         mUrl = url;
         mNet = net;
         mRespClz = respClz;
@@ -61,7 +64,7 @@ class NetBuilder {
         mMethod = method;
         mArgs = args;
         mGson = gson;
-
+        mHttpMethod = httpMethod;
         mLogTag = mNet.getLogTag(mUrl, mMethod, mArgs);
     }
 
@@ -91,66 +94,8 @@ class NetBuilder {
         mUrl = url;
     }
 
-    public NetResult get() {
-        try {
-            return ofSuccess(executeNet(new Request.Builder().url(mUrl + "?" + getURLParam())
-                    .headers(getHeaders())
-                    .get()
-                    .build(), "GET"));
-        } catch (Throwable e) {
-            L.e("!!! ERROR GET(%s), %s", mLogTag, e.getMessage());
-            L.exception(e);
-            return ofFailed();
-        }
-    }
-
-    public NetResult post() {
-        try {
-            return ofSuccess(executeNet(new Request.Builder().url(mUrl)
-                    .headers(getHeaders())
-                    .post(RequestBody.create(CONTENT_TYPE, getURLParam()))
-                    .build(), "POST"));
-        } catch (Exception e) {
-            L.e("!!! ERROR POST(%s), %s", mLogTag, e.getMessage());
-            L.exception(e);
-            return ofFailed();
-        }
-    }
-
-    public NetResult multipart() {
-        try {
-            final MultipartBuilder builder = new MultipartBuilder().type(MultipartBuilder.FORM);
-
-            for (Map.Entry<String, String> entry : mParams.entrySet()) {
-                builder.addFormDataPart(entry.getKey(), entry.getValue());
-            }
-
-            for (Map.Entry<String, UploadFileRequest> entry : mFiles.entrySet()) {
-                if (entry.getValue() == null) {
-                    continue;
-                }
-                final UploadFileRequest uploadFileRequest = entry.getValue();
-                final File file = uploadFileRequest.mFile;
-                final MediaType type = MediaType.parse(uploadFileRequest.mType);
-                if (uploadFileRequest.mListener == null) {
-                    builder.addFormDataPart(entry.getKey(), file.getPath(), RequestBody.create(type, file));
-                } else {
-                    builder.addFormDataPart(entry.getKey(), file.getPath(), new CountingFileRequestBody(type, file,
-                            uploadFileRequest.mListener));
-                }
-            }
-
-            final Request request = new Request.Builder().url(mUrl)
-                    .headers(getHeaders())
-                    .post(builder.build())
-                    .build();
-
-            return ofSuccess(executeNet(request, "MULTIPART"));
-        } catch (Exception e) {
-            L.e("!!! ERROR MULTIPART(%s), %s", mLogTag, e.getMessage());
-            L.exception(e);
-            return ofFailed();
-        }
+    public NetResult execute() {
+        return mHttpMethod.execute(this);
     }
 
     String getLog4Param() {
@@ -168,21 +113,28 @@ class NetBuilder {
     }
 
 
-    String executeNet(Request request, String method) throws IOException {
-        L.i(">>> %s(%s):%s", method, mLogTag, getLog4Param());
-        if (!mFiles.isEmpty()) {
-            L.i(">>> %s(%s):%s;FILE:%s", method, mLogTag, getLog4Param(), Joiner.on(",")
-                    .withKeyValueSeparator("=")
-                    .useForNull("")
-                    .join(mFiles));
+    NetResult load(Request request) {
+        try {
+            L.i(">>> %s(%s):%s", mHttpMethod.name(), mLogTag, getLog4Param());
+            if (!mFiles.isEmpty()) {
+                L.i(">>> %s(%s):%s;FILE:%s", mHttpMethod.name(), mLogTag, getLog4Param(), Joiner.on(",")
+                        .withKeyValueSeparator("=")
+                        .useForNull("")
+                        .join(mFiles));
+            }
+            final Response response;
+            response = mHttpClient.newCall(request)
+                    .execute();
+            mStatusCode = response.code();
+            final String result = response.body()
+                    .string();
+            L.i("<<< %s(%s) CODE:%s, TEXT:%s", mHttpMethod.name(), mLogTag, mStatusCode, response);
+            return ofSuccess(result);
+        } catch (IOException e) {
+            L.e("!!! ERROR %s(%s), %s", mHttpMethod.name(), mLogTag, e.getMessage());
+            L.exception(e);
+            return ofFailed();
         }
-        final Response response = mHttpClient.newCall(request)
-                .execute();
-        mStatusCode = response.code();
-        final String result = response.body()
-                .string();
-        L.i("<<< %s(%s) CODE:%s, TEXT:%s", method, mLogTag, mStatusCode, response);
-        return result;
     }
 
     NetResult ofSuccess(String str) {
@@ -228,9 +180,68 @@ class NetBuilder {
         mNet.onCreateParams(mParams, mHeaders, mMethod, mArgs);
     }
 
+    enum HttpMethod implements INetExecutor {
+        GET {
+            @Override
+            public NetResult execute(final NetBuilder builder) {
+                return builder.load(new Request.Builder().url(builder.mUrl + "?" + builder.getURLParam())
+                        .headers(builder.getHeaders())
+                        .get()
+                        .build());
+            }
+        },
+        POST {
+            @Override
+            public NetResult execute(final NetBuilder builder) {
+                return builder.load(new Request.Builder().url(builder.mUrl)
+                        .headers(builder.getHeaders())
+                        .post(RequestBody.create(CONTENT_TYPE, builder.getURLParam()))
+                        .build());
+            }
+        },
+        MULTIPART {
+            @Override
+            public NetResult execute(final NetBuilder builder) {
+                final MultipartBuilder multipartBuilder = new MultipartBuilder().type(MultipartBuilder.FORM);
+
+                for (Map.Entry<String, String> entry : builder.mParams.entrySet()) {
+                    multipartBuilder.addFormDataPart(entry.getKey(), entry.getValue());
+                }
+
+                for (Map.Entry<String, UploadFileRequest> entry : builder.mFiles.entrySet()) {
+                    if (entry.getValue() == null) {
+                        continue;
+                    }
+                    final UploadFileRequest uploadFileRequest = entry.getValue();
+                    final File file = uploadFileRequest.mFile;
+                    final MediaType type = MediaType.parse(uploadFileRequest.mType);
+                    if (uploadFileRequest.mListener == null) {
+                        multipartBuilder.addFormDataPart(entry.getKey(), file.getPath(), RequestBody.create(type,
+                                file));
+                    } else {
+                        multipartBuilder.addFormDataPart(entry.getKey(), file.getPath(), new CountingFileRequestBody
+                                (type, file, uploadFileRequest.mListener));
+                    }
+                }
+
+                final Request request = new Request.Builder().url(builder.mUrl)
+                        .headers(builder.getHeaders())
+                        .post(multipartBuilder.build())
+                        .build();
+
+                return builder.load(request);
+            }
+        },
+    }
+
+    interface INetExecutor {
+        NetResult execute(NetBuilder builder);
+    }
+
     static class UploadFileRequest{
         public File mFile;
         public ProgressListener mListener;
         public String mType;
     }
+
 }

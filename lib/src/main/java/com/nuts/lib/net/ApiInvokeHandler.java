@@ -22,15 +22,23 @@ import com.nuts.lib.annotation.net.Post;
 import com.nuts.lib.annotation.net.Retry;
 import com.nuts.lib.controller.Return;
 import com.nuts.lib.log.TimingLogger;
+import com.nuts.lib.net.NetBuilder.HttpMethod;
 
 public class ApiInvokeHandler implements InvocationHandler {
 
     public final INet mNet;
     public final Gson mGson;
 
+    public ApiCallback mCallback = new ApiCallback();
+
     public ApiInvokeHandler(final INet net, final Gson gson) {
         mNet = net;
         mGson = gson;
+    }
+
+    public ApiInvokeHandler setApiCallback(ApiCallback callback) {
+        mCallback = callback;
+        return this;
     }
 
     @Override
@@ -57,10 +65,17 @@ public class ApiInvokeHandler implements InvocationHandler {
         if (!ReflectUtils.isSubclassOf(respClz, IResponse.class) && ReflectUtils.checkGenericType(method.getGenericReturnType(), IResponse.class)) {
             throw new InvalidParameterException("API:" + method.getName() + "，返回值必须继承IResponse");
         }
-
+        final HttpMethod m;
+        if (get != null) {
+            m = HttpMethod.GET;
+        } else if (multipart != null) {
+            m = HttpMethod.MULTIPART;
+        } else {
+            m = HttpMethod.POST;
+        }
         final NetBuilder builder = new NetBuilder(mGson, mNet, url,
-                ReflectUtils.isSubclassOf(returnClz, Return.class) ?
-                        (Class<?>) ReflectUtils.getGenericType(method.getGenericReturnType()) : respClz,
+                ReflectUtils.isSubclassOf(returnClz, Return.class) ? (Class<?>) ReflectUtils.getGenericType(method
+                        .getGenericReturnType()) : respClz, m,
                 method, args);
 
         if (header != null) {
@@ -99,33 +114,22 @@ public class ApiInvokeHandler implements InvocationHandler {
                 timingLogger.addSplit("parse params");
                 int count = Math.max(0, tryCount);
                 builder.initParam();
+
                 NetResult result;
+                final ApiProcess process = new ApiProcess(builder);
                 do {
-                    if (get != null){
-                        result= builder.get();
-                    } else if (multipart != null) {
-                        result = builder.multipart();
-                    } else {
-                        result = builder.post();
-                    }
+                    result = mCallback.handle(process, builder.mUrl, builder.mParams, builder.mHeaders, builder
+                            .mMethod.getName());
                     --count;
+                    timingLogger.addSplit("network(" + count + ")");
+                    result.mIResponse.setErrorCode(result.mStatusCode);
                 } while (count > 0 && !result.mIsSuccess);
 
-                timingLogger.addSplit("network");
                 if (BuildConfig.DEBUG) {
                     timingLogger.dumpToLog();
                 }
-                IResponse response = result == null ? null : result.mIResponse;
 
-                if (response == null) {
-                    response = builder.createInvalidResponse();
-                }
-
-                if (result != null) {
-                    response.setErrorCode(result.mStatusCode);
-                }
-
-                return response;
+                return result.mIResponse;
             }
         };
 
