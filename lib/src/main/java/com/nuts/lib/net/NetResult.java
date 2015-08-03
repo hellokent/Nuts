@@ -1,5 +1,8 @@
 package com.nuts.lib.net;
 
+import com.google.common.collect.ArrayListMultimap;
+import com.google.common.collect.Multimap;
+
 class NetResult {
 
     public IResponse mIResponse;
@@ -8,9 +11,7 @@ class NetResult {
 
     public int mStatusCode;
 
-    public NetResult(final IResponse IResponse, final boolean isSuccess, final int statusCode) {
-        mIResponse = IResponse;
-        mIsSuccess = isSuccess;
-        mStatusCode = statusCode;
-    }
+    public String mStrResult;
+
+    public Multimap<String, String> mHeader = ArrayListMultimap.create();
 }

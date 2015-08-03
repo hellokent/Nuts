@@ -122,14 +122,13 @@ class NetBuilder {
                         .useForNull("")
                         .join(mFiles));
             }
-            final Response response;
-            response = mHttpClient.newCall(request)
+            final Response response = mHttpClient.newCall(request)
                     .execute();
             mStatusCode = response.code();
             final String result = response.body()
                     .string();
             L.i("<<< %s(%s) CODE:%s, TEXT:%s", mHttpMethod.name(), mLogTag, mStatusCode, response);
-            return ofSuccess(result);
+            return ofSuccess(response, result);
         } catch (IOException e) {
             L.e("!!! ERROR %s(%s), %s", mHttpMethod.name(), mLogTag, e.getMessage());
             L.exception(e);
@@ -137,12 +136,26 @@ class NetBuilder {
         }
     }
 
-    NetResult ofSuccess(String str) {
-        return new NetResult((IResponse) mGson.fromJson(str, mRespClz), true, mStatusCode);
+    NetResult ofSuccess(Response response, String str) {
+        final NetResult result = new NetResult();
+        result.mIsSuccess = true;
+        result.mStrResult = str;
+        result.mIResponse = (IResponse) mGson.fromJson(str, mRespClz);
+        result.mStatusCode = response.code();
+
+        for (String name : response.headers()
+                .names()) {
+            result.mHeader.put(name, response.header(name));
+        }
+        return result;
     }
 
     NetResult ofFailed() {
-        return new NetResult(createInvalidResponse(), false, mStatusCode);
+        final NetResult result = new NetResult();
+        result.mIsSuccess = false;
+        result.mIResponse = createInvalidResponse();
+        result.mStatusCode = mStatusCode;
+        return result;
     }
 
     Map<String, String> getEncodedParam() {
