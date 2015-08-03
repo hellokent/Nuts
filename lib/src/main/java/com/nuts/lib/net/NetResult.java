@@ -13,12 +13,4 @@ class NetResult {
         mIsSuccess = isSuccess;
         mStatusCode = statusCode;
     }
-
-    static NetResult ofSuccess(IResponse iResponse) {
-        return new NetResult(iResponse, true, 200);
-    }
-
-    static NetResult ofFailed(IResponse iResponse, int statusCode) {
-        return new NetResult(iResponse, false, statusCode);
-    }
 }

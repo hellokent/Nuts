@@ -94,13 +94,12 @@ public class ApiInvokeHandler implements InvocationHandler {
 
         final Callable<IResponse> callable = new Callable<IResponse>() {
             @Override
-            public IResponse call() throws Exception {
+            public IResponse call() {
                 final TimingLogger timingLogger = new TimingLogger("api", url);
                 timingLogger.addSplit("parse params");
                 int count = Math.max(0, tryCount);
-
+                builder.initParam();
                 NetResult result;
-
                 do {
                     if (get != null){
                         result= builder.get();
@@ -110,7 +109,7 @@ public class ApiInvokeHandler implements InvocationHandler {
                         result = builder.post();
                     }
                     --count;
-                }while (count > 0);
+                } while (count > 0 && !result.mIsSuccess);
 
                 timingLogger.addSplit("network");
                 if (BuildConfig.DEBUG) {

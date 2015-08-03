@@ -21,8 +21,6 @@ import com.squareup.okhttp.OkHttpClient;
 import com.squareup.okhttp.Request;
 import com.squareup.okhttp.RequestBody;
 import com.squareup.okhttp.Response;
-import static com.nuts.lib.net.NetResult.ofFailed;
-import static com.nuts.lib.net.NetResult.ofSuccess;
 
 class NetBuilder {
 
@@ -94,61 +92,33 @@ class NetBuilder {
     }
 
     public NetResult get() {
-        initParam();
-        L.i(">>> GET(%s):%s", mLogTag, Joiner.on(",")
-                .withKeyValueSeparator("=")
-                .join(mParams));
         try {
-            final String respStr = executeNet(new Request.Builder().url(mUrl + "?" +
-                    Joiner.on("&")
-                            .withKeyValueSeparator("=")
-                            .useForNull("")
-                            .join(getEncodedParam()))
+            return ofSuccess(executeNet(new Request.Builder().url(mUrl + "?" + getURLParam())
                     .headers(getHeaders())
                     .get()
-                    .build());
-            L.i("<<< GET(%s):%s", mLogTag, respStr);
-            return ofSuccess((IResponse) mGson.fromJson(respStr, mRespClz));
+                    .build(), "GET"));
         } catch (Throwable e) {
             L.e("!!! ERROR GET(%s), %s", mLogTag, e.getMessage());
             L.exception(e);
-            return ofFailed(createInvalidResponse(), mStatusCode);
+            return ofFailed();
         }
     }
 
     public NetResult post() {
-        initParam();
-        L.i(">>> POST(%s):%s", mLogTag, Joiner.on(",")
-                .withKeyValueSeparator("=")
-                .join(mParams));
         try {
-            final String respStr = executeNet(new Request.Builder().url(mUrl)
+            return ofSuccess(executeNet(new Request.Builder().url(mUrl)
                     .headers(getHeaders())
-                    .post(RequestBody.create(CONTENT_TYPE, Joiner.on("&")
-                            .withKeyValueSeparator("=")
-                            .useForNull("")
-                            .join(mParams)))
-                    .build());
-            L.i("<<< POST(%s):%s", mLogTag, respStr);
-            return ofSuccess((IResponse) mGson.fromJson(respStr, mRespClz));
+                    .post(RequestBody.create(CONTENT_TYPE, getURLParam()))
+                    .build(), "POST"));
         } catch (Exception e) {
             L.e("!!! ERROR POST(%s), %s", mLogTag, e.getMessage());
             L.exception(e);
-            return ofFailed(createInvalidResponse(), mStatusCode);
+            return ofFailed();
         }
     }
 
     public NetResult multipart() {
-        initParam();
-        L.i(">>> MULTIPART(%s):%s;FILE:%s", mLogTag,
-                Joiner.on(",")
-                        .withKeyValueSeparator("=")
-                        .join(mParams),
-                Joiner.on(",")
-                        .withKeyValueSeparator("=")
-                        .join(mFiles));
         try {
-
             final MultipartBuilder builder = new MultipartBuilder().type(MultipartBuilder.FORM);
 
             for (Map.Entry<String, String> entry : mParams.entrySet()) {
@@ -156,14 +126,17 @@ class NetBuilder {
             }
 
             for (Map.Entry<String, UploadFileRequest> entry : mFiles.entrySet()) {
+                if (entry.getValue() == null) {
+                    continue;
+                }
                 final UploadFileRequest uploadFileRequest = entry.getValue();
                 final File file = uploadFileRequest.mFile;
                 final MediaType type = MediaType.parse(uploadFileRequest.mType);
                 if (uploadFileRequest.mListener == null) {
                     builder.addFormDataPart(entry.getKey(), file.getPath(), RequestBody.create(type, file));
                 } else {
-                    builder.addFormDataPart(entry.getKey(), file.getPath(),
-                            new CountingFileRequestBody(type, file, uploadFileRequest.mListener));
+                    builder.addFormDataPart(entry.getKey(), file.getPath(), new CountingFileRequestBody(type, file,
+                            uploadFileRequest.mListener));
                 }
             }
 
@@ -172,22 +145,52 @@ class NetBuilder {
                     .post(builder.build())
                     .build();
 
-            final String respStr = executeNet(request);
-            L.i("<<< MULTIPART(%s):%s", mLogTag, respStr);
-            return ofSuccess((IResponse) mGson.fromJson(respStr, mRespClz));
+            return ofSuccess(executeNet(request, "MULTIPART"));
         } catch (Exception e) {
             L.e("!!! ERROR MULTIPART(%s), %s", mLogTag, e.getMessage());
             L.exception(e);
-            return ofFailed(createInvalidResponse(), mStatusCode);
+            return ofFailed();
         }
     }
 
-    String executeNet(Request request) throws IOException {
+    String getLog4Param() {
+        return Joiner.on(",")
+                .withKeyValueSeparator("=")
+                .useForNull("")
+                .join(mParams);
+    }
+
+    String getURLParam() {
+        return Joiner.on("&")
+                .withKeyValueSeparator("=")
+                .useForNull("")
+                .join(getEncodedParam());
+    }
+
+
+    String executeNet(Request request, String method) throws IOException {
+        L.i(">>> %s(%s):%s", method, mLogTag, getLog4Param());
+        if (!mFiles.isEmpty()) {
+            L.i(">>> %s(%s):%s;FILE:%s", method, mLogTag, getLog4Param(), Joiner.on(",")
+                    .withKeyValueSeparator("=")
+                    .useForNull("")
+                    .join(mFiles));
+        }
         final Response response = mHttpClient.newCall(request)
                 .execute();
         mStatusCode = response.code();
-        return response.body()
+        final String result = response.body()
                 .string();
+        L.i("<<< %s(%s) CODE:%s, TEXT:%s", method, mLogTag, mStatusCode, response);
+        return result;
+    }
+
+    NetResult ofSuccess(String str) {
+        return new NetResult((IResponse) mGson.fromJson(str, mRespClz), true, mStatusCode);
+    }
+
+    NetResult ofFailed() {
+        return new NetResult(createInvalidResponse(), false, mStatusCode);
     }
 
     Map<String, String> getEncodedParam() {
@@ -220,7 +223,7 @@ class NetBuilder {
         }
     }
 
-    private void initParam() {
+    public void initParam() {
         mUrl = mNet.onCreateUrl(mUrl, mMethod, mArgs);
         mNet.onCreateParams(mParams, mHeaders, mMethod, mArgs);
     }
