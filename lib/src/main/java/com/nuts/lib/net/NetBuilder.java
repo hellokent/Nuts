@@ -245,6 +245,36 @@ class NetBuilder {
                 return builder.load(request);
             }
         },
+
+        PUT {
+            @Override
+            public NetResult execute(final NetBuilder builder) {
+                return builder.load(new Request.Builder().url(builder.mUrl)
+                        .headers(builder.getHeaders())
+                        .put(RequestBody.create(CONTENT_TYPE, builder.getURLParam()))
+                        .build());
+            }
+        },
+
+        DELETE {
+            @Override
+            public NetResult execute(final NetBuilder builder) {
+                return builder.load(new Request.Builder().url(builder.mUrl + "?" + builder.getURLParam())
+                        .headers(builder.getHeaders())
+                        .delete()
+                        .build());
+            }
+        },
+
+        PATCH {
+            @Override
+            public NetResult execute(final NetBuilder builder) {
+                return builder.load(new Request.Builder().url(builder.mUrl)
+                        .headers(builder.getHeaders())
+                        .patch(RequestBody.create(CONTENT_TYPE, builder.getURLParam()))
+                        .build());
+            }
+        }
     }
 
     interface INetExecutor {
