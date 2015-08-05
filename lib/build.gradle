@@ -20,6 +20,11 @@ android {
         minSdkVersion 9
         versionCode 1
         versionName "1.0"
+
+        //testPackageName "com.nuts.test"
+        testInstrumentationRunner "android.test.InstrumentationTestRunner"
+        testHandleProfiling true
+        testFunctionalTest true
     }
     buildTypes {
         release {
