@@ -1,7 +1,6 @@
 package com.nuts.lib.net;
 
 import java.io.File;
-import java.io.IOException;
 import java.io.UnsupportedEncodingException;
 import java.lang.reflect.Method;
 import java.net.URLEncoder;
@@ -129,7 +128,7 @@ class NetBuilder {
                     .string();
             L.i("<<< %s(%s) CODE:%s, TEXT:%s", mHttpMethod.name(), mLogTag, mStatusCode, response);
             return ofSuccess(response, result);
-        } catch (IOException e) {
+        } catch (Exception e) {
             L.e("!!! ERROR %s(%s), %s", mHttpMethod.name(), mLogTag, e.getMessage());
             L.exception(e);
             return ofFailed();

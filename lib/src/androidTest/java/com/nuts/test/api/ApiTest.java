@@ -11,6 +11,7 @@ import com.google.common.reflect.Reflection;
 import com.google.gson.Gson;
 import com.nuts.lib.net.ApiInvokeHandler;
 import com.nuts.lib.net.INet;
+import com.nuts.lib.net.IResponse;
 import com.squareup.okhttp.mockwebserver.MockResponse;
 import com.squareup.okhttp.mockwebserver.MockWebServer;
 import com.squareup.okhttp.mockwebserver.RecordedRequest;
@@ -21,7 +22,7 @@ public class ApiTest extends AndroidTestCase {
 
     final MockWebServer mServer = new MockWebServer();
 
-    MockApi mApi;
+    TestApi mApi;
 
     @Override
     public void setUp() throws Exception {
@@ -29,7 +30,7 @@ public class ApiTest extends AndroidTestCase {
 
         mServer.start();
 
-        mApi = Reflection.newProxy(MockApi.class, new ApiInvokeHandler(new INet() {
+        mApi = Reflection.newProxy(TestApi.class, new ApiInvokeHandler(new INet() {
             @Override
             protected String onCreateUrl(final String url, final Method method, final Object[] args) {
                 return mServer.getUrl("/" + url)
@@ -50,8 +51,10 @@ public class ApiTest extends AndroidTestCase {
     }
 
     public void testGet() throws Exception {
-        mServer.enqueue(new MockResponse().setBody(mGson.toJson(new BaseResponse())));
-        assertEquals("hello", mApi.test("a1", "b2").msg);
+        BaseResponse response = new BaseResponse();
+        response.msg = "asdf";
+        mServer.enqueue(new MockResponse().setBody(mGson.toJson(response)));
+        assertEquals("asdf", mApi.test("a1", "b2").msg);
         final RecordedRequest request = mServer.takeRequest();
         assertTrue(request.getPath()
                 .startsWith("/test"));
@@ -74,5 +77,11 @@ public class ApiTest extends AndroidTestCase {
 
         BaseResponse response = mApi.test("a", "b");
         assertEquals(502, response.getStatusCode());
+    }
+
+    public void testInvalidJson() throws Exception {
+        mServer.enqueue(new MockResponse().setBody(mGson.toJson("<>")));
+        BaseResponse response = mApi.test("", "");
+        assertEquals(IResponse.BAD_NETWORK, response.getErrorCode());
     }
 }
