@@ -130,7 +130,7 @@ public class ApiInvokeHandler implements InvocationHandler {
                     result = mCallback.handle(process, builder.mUrl, builder.mParams, builder.mHeaders, builder
                             .mMethod.getName());
                     --count;
-                    result.mIResponse.setErrorCode(result.mStatusCode);
+                    result.mIResponse.setStatusCode(result.mStatusCode);
                 } while (count > 0 && !result.mIsSuccess);
                 return result.mIResponse;
             }

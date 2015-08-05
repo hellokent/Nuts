@@ -51,7 +51,7 @@ public class ApiTest extends AndroidTestCase {
 
     public void testGet() throws Exception {
         mServer.enqueue(new MockResponse().setBody(mGson.toJson(new BaseResponse())));
-        assertEquals(mApi.test("a1", "b2").msg, "hello");
+        assertEquals("hello", mApi.test("a1", "b2").msg);
         final RecordedRequest request = mServer.takeRequest();
         assertTrue(request.getPath()
                 .startsWith("/test"));
@@ -62,9 +62,17 @@ public class ApiTest extends AndroidTestCase {
 
         assertTrue(queryMap.containsKey("a"));
         assertTrue(queryMap.containsKey("b"));
-        assertEquals(queryMap.get("a"), "a1");
-        assertEquals(queryMap.get("b"), "b2");
+        assertEquals("a1", queryMap.get("a"));
+        assertEquals("b2", queryMap.get("b"));
         assertEquals(request.getMethod()
                 .toLowerCase(), "get");
+    }
+
+    public void test502() throws Exception {
+        mServer.enqueue(new MockResponse().setResponseCode(502)
+                .setBody(mGson.toJson(new BaseResponse())));
+
+        BaseResponse response = mApi.test("a", "b");
+        assertEquals(502, response.getStatusCode());
     }
 }
