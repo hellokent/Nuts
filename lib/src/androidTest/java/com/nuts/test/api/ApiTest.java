@@ -9,9 +9,12 @@ import java.util.TreeMap;
 import com.google.common.base.Splitter;
 import com.google.common.reflect.Reflection;
 import com.google.gson.Gson;
+import com.nuts.lib.net.ApiCallback;
 import com.nuts.lib.net.ApiInvokeHandler;
+import com.nuts.lib.net.ApiProcess;
 import com.nuts.lib.net.INet;
 import com.nuts.lib.net.IResponse;
+import com.nuts.lib.net.NetResult;
 import com.squareup.okhttp.mockwebserver.MockResponse;
 import com.squareup.okhttp.mockwebserver.MockWebServer;
 import com.squareup.okhttp.mockwebserver.RecordedRequest;
@@ -33,8 +36,15 @@ public class ApiTest extends AndroidTestCase {
         mApi = Reflection.newProxy(TestApi.class, new ApiInvokeHandler(new INet() {
             @Override
             protected String onCreateUrl(final String url, final Method method, final Object[] args) {
-                return mServer.getUrl("/" + url)
-                        .toString();
+                switch (url) {
+                    case "url":
+                        return "http://localhost:1234/invalidUrl";
+                    case "empty":
+                        return "";
+                    default:
+                        return mServer.getUrl("/" + url)
+                                .toString();
+                }
             }
 
             @Override
@@ -42,7 +52,13 @@ public class ApiTest extends AndroidTestCase {
                     headers, final Method method, final Object[] args) {
 
             }
-        }, mGson));
+        }, mGson).setApiCallback(new ApiCallback() {
+            @Override
+            public NetResult handle(final ApiProcess process, final String url, final Map<String, ?> param, final
+            Map<String, String> header, final String method) {
+                return super.handle(process, url, param, header, method);
+            }
+        }));
     }
 
     @Override
@@ -74,7 +90,6 @@ public class ApiTest extends AndroidTestCase {
     public void test502() throws Exception {
         mServer.enqueue(new MockResponse().setResponseCode(502)
                 .setBody(mGson.toJson(new BaseResponse())));
-
         BaseResponse response = mApi.test("a", "b");
         assertEquals(502, response.getStatusCode());
     }
@@ -83,5 +98,18 @@ public class ApiTest extends AndroidTestCase {
         mServer.enqueue(new MockResponse().setBody(mGson.toJson("<>")));
         BaseResponse response = mApi.test("", "");
         assertEquals(IResponse.BAD_NETWORK, response.getErrorCode());
+    }
+
+    public void testUrl() throws Exception {
+        {
+            BaseResponse response = mApi.testUrl();
+            assertEquals(IResponse.BAD_NETWORK, response.getErrorCode());
+        }
+
+        {
+            BaseResponse response = mApi.emptyUrl();
+            assertEquals(IResponse.BAD_NETWORK, response.getErrorCode());
+        }
+
     }
 }

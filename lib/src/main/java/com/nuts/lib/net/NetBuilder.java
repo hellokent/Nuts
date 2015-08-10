@@ -94,7 +94,11 @@ class NetBuilder {
     }
 
     public NetResult execute() {
-        return mHttpMethod.execute(this);
+        try {
+            return mHttpMethod.execute(this);
+        } catch (IllegalArgumentException e) {
+            return ofFailed();
+        }
     }
 
     String getLog4Param() {

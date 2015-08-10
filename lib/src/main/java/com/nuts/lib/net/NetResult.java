@@ -3,7 +3,7 @@ package com.nuts.lib.net;
 import com.google.common.collect.ArrayListMultimap;
 import com.google.common.collect.Multimap;
 
-class NetResult {
+public class NetResult {
 
     public IResponse mIResponse;
 

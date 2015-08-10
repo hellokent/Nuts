@@ -7,4 +7,10 @@ public interface TestApi {
 
     @Get("test")
     BaseResponse test(@Param("a") String a, @Param("b") String b);
+
+    @Get("url")
+    BaseResponse testUrl();
+
+    @Get("empty")
+    BaseResponse emptyUrl();
 }
