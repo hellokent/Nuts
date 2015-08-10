@@ -6,7 +6,7 @@ import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 
 @Retention(RetentionPolicy.RUNTIME)
-@Target(ElementType.PARAMETER)
-public @interface Header {
-    String value();
+@Target(ElementType.METHOD)
+public @interface Headers {
+    String[] value();
 }

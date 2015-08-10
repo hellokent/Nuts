@@ -1,7 +1,8 @@
 package com.nuts.lib.net;
 
-import com.google.common.collect.ArrayListMultimap;
-import com.google.common.collect.Multimap;
+import java.util.HashMap;
+
+import com.google.common.collect.Maps;
 
 public class NetResult {
 
@@ -13,5 +14,7 @@ public class NetResult {
 
     public String mStrResult;
 
-    public Multimap<String, String> mHeader = ArrayListMultimap.create();
+    public HashMap<String, String> mHeader = Maps.newHashMap();
+
+    public Exception mException;
 }

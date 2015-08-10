@@ -15,6 +15,7 @@ import com.nuts.lib.ReflectUtils;
 import com.nuts.lib.annotation.net.Delete;
 import com.nuts.lib.annotation.net.Get;
 import com.nuts.lib.annotation.net.Header;
+import com.nuts.lib.annotation.net.Headers;
 import com.nuts.lib.annotation.net.Multipart;
 import com.nuts.lib.annotation.net.Param;
 import com.nuts.lib.annotation.net.Patch;
@@ -52,7 +53,7 @@ public class ApiInvokeHandler implements InvocationHandler {
         final Delete delete = method.getAnnotation(Delete.class);
 
         final Class<?> returnClz = method.getReturnType();
-        final Header header = method.getAnnotation(Header.class);
+        final Headers headers = method.getAnnotation(Headers.class);
         final int tryCount = method.getAnnotation(Retry.class) == null ? 1 : method.getAnnotation(Retry.class).value();
 
         final String url;
@@ -90,8 +91,8 @@ public class ApiInvokeHandler implements InvocationHandler {
                 .class) ? (Class<?>) ReflectUtils.getGenericType(method.getGenericReturnType()) : returnClz, m,
                 method, args);
 
-        if (header != null) {
-            for (final String header1 : header.value()) {
+        if (headers != null) {
+            for (final String header1 : headers.value()) {
                 final List<String> pair = Splitter.on(":")
                         .trimResults()
                         .splitToList(header1);
@@ -114,6 +115,8 @@ public class ApiInvokeHandler implements InvocationHandler {
                 }
             } else if (annotation instanceof Path){
                 pathArgs.add(args[i] == null ? "" : args[i].toString());
+            } else if (annotation instanceof Header) {
+                builder.mHeaders.put(((Header) annotation).value(), args[i].toString());
             }
         }
 
@@ -130,7 +133,6 @@ public class ApiInvokeHandler implements InvocationHandler {
                     result = mCallback.handle(process, builder.mUrl, builder.mParams, builder.mHeaders, builder
                             .mMethod.getName());
                     --count;
-                    result.mIResponse.setStatusCode(result.mStatusCode);
                 } while (count > 0 && !result.mIsSuccess);
                 return result.mIResponse;
             }

@@ -1,5 +1,9 @@
 package com.nuts.test.api;
 
+import java.util.HashMap;
+
+import com.google.common.collect.Maps;
+import com.google.gson.annotations.Expose;
 import com.nuts.lib.net.IResponse;
 
 public class BaseResponse implements IResponse {
@@ -8,9 +12,14 @@ public class BaseResponse implements IResponse {
 
     public String msg = "hello";
 
+    @Expose(serialize = false, deserialize = false)
     private int mStatusCode;
 
+    @Expose(serialize = false, deserialize = false)
     private int mErrorCode;
+
+    @Expose(serialize = false, deserialize = false)
+    private HashMap<String, String> mHeader = Maps.newHashMap();
 
     public int getStatusCode() {
         return mStatusCode;
@@ -21,6 +30,11 @@ public class BaseResponse implements IResponse {
         mStatusCode = statusCode;
     }
 
+    @Override
+    public void setHeader(final HashMap<String, String> header) {
+        mHeader.putAll(header);
+    }
+
     public int getErrorCode() {
         return mErrorCode;
     }
@@ -28,5 +42,9 @@ public class BaseResponse implements IResponse {
     @Override
     public void setErrorCode(final int errorCode) {
         mErrorCode = errorCode;
+    }
+
+    public String getHeader(String key) {
+        return mHeader.get(key);
     }
 }

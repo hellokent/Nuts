@@ -97,7 +97,7 @@ class NetBuilder {
         try {
             return mHttpMethod.execute(this);
         } catch (IllegalArgumentException e) {
-            return ofFailed();
+            return ofFailed(e);
         }
     }
 
@@ -135,7 +135,7 @@ class NetBuilder {
         } catch (Exception e) {
             L.e("!!! ERROR %s(%s), %s", mHttpMethod.name(), mLogTag, e.getMessage());
             L.exception(e);
-            return ofFailed();
+            return ofFailed(e);
         }
     }
 
@@ -143,21 +143,32 @@ class NetBuilder {
         final NetResult result = new NetResult();
         result.mIsSuccess = true;
         result.mStrResult = str;
-        result.mIResponse = (IResponse) mGson.fromJson(str, mRespClz);
         result.mStatusCode = response.code();
 
         for (String name : response.headers()
                 .names()) {
             result.mHeader.put(name, response.header(name));
         }
+
+        result.mIResponse = (IResponse) mGson.fromJson(str, mRespClz);
+        if (result.mIResponse == null) {
+            result.mIResponse = createInvalidResponse();
+        }
+        result.mIResponse.setStatusCode(result.mStatusCode);
+        result.mIResponse.setHeader(result.mHeader);
         return result;
     }
 
-    NetResult ofFailed() {
+    NetResult ofFailed(Exception e) {
         final NetResult result = new NetResult();
         result.mIsSuccess = false;
-        result.mIResponse = createInvalidResponse();
         result.mStatusCode = mStatusCode;
+        result.mException = e;
+
+        result.mIResponse = createInvalidResponse();
+        result.mIResponse.setErrorCode(IResponse.BAD_NETWORK);
+        result.mIResponse.setStatusCode(result.mStatusCode);
+        result.mIResponse.setHeader(result.mHeader);
         return result;
     }
 
@@ -183,9 +194,7 @@ class NetBuilder {
 
     IResponse createInvalidResponse() {
         try {
-            IResponse result = (IResponse) mRespClz.newInstance();
-            result.setErrorCode(IResponse.BAD_NETWORK);
-            return result;
+            return (IResponse) mRespClz.newInstance();
         } catch (Exception e) {
             throw new Error(e);
         }

@@ -6,12 +6,16 @@ import java.lang.reflect.Method;
 import java.util.Map;
 import java.util.TreeMap;
 
+import com.google.common.base.Joiner;
 import com.google.common.base.Splitter;
 import com.google.common.reflect.Reflection;
 import com.google.gson.Gson;
+import com.google.gson.GsonBuilder;
 import com.nuts.lib.net.ApiCallback;
 import com.nuts.lib.net.ApiInvokeHandler;
 import com.nuts.lib.net.ApiProcess;
+import com.nuts.lib.net.GsonDeserializeExclusionStrategy;
+import com.nuts.lib.net.GsonSerializeExclusionStrategy;
 import com.nuts.lib.net.INet;
 import com.nuts.lib.net.IResponse;
 import com.nuts.lib.net.NetResult;
@@ -21,7 +25,9 @@ import com.squareup.okhttp.mockwebserver.RecordedRequest;
 
 public class ApiTest extends AndroidTestCase {
 
-    final Gson mGson = new Gson();
+    final Gson mGson = new GsonBuilder().addSerializationExclusionStrategy(new GsonSerializeExclusionStrategy())
+            .addDeserializationExclusionStrategy(new GsonDeserializeExclusionStrategy())
+            .create();
 
     final MockWebServer mServer = new MockWebServer();
 
@@ -56,7 +62,18 @@ public class ApiTest extends AndroidTestCase {
             @Override
             public NetResult handle(final ApiProcess process, final String url, final Map<String, ?> param, final
             Map<String, String> header, final String method) {
-                return super.handle(process, url, param, header, method);
+                System.out.printf("url:%s, param:%s, header:%s\n", url, Joiner.on(",")
+                                .withKeyValueSeparator("=")
+                                .join(param), Joiner.on(",")
+                                .withKeyValueSeparator("=")
+                                .join(header));
+                final NetResult result = process.execute();
+                if (result.mIsSuccess) {
+                    System.out.printf("OK: code:%s, msg:%s\n", result.mStatusCode, result.mStrResult);
+                } else {
+                    System.out.printf("FAILED: e:%s\n", result.mException.getMessage());
+                }
+                return result;
             }
         }));
     }
@@ -110,6 +127,30 @@ public class ApiTest extends AndroidTestCase {
             BaseResponse response = mApi.emptyUrl();
             assertEquals(IResponse.BAD_NETWORK, response.getErrorCode());
         }
+    }
 
+    public void testHeader() throws Exception {
+        BaseResponse response = new BaseResponse();
+        response.msg = "msg";
+        mServer.enqueue(new MockResponse().addHeader("h1", "v1")
+                .addHeader("h2", "v2")
+                .setBody(mGson.toJson(response)));
+
+        response = mApi.header();
+
+        RecordedRequest request = mServer.takeRequest();
+        assertEquals("h1", request.getHeader("r1"));
+        assertEquals("h2", request.getHeader("r2"));
+        assertNotSame("h3", request.getHeader("r3"));
+
+        assertEquals("v1", response.getHeader("h1"));
+        assertEquals("v2", response.getHeader("h2"));
+    }
+
+    public void testGson() {
+        BaseResponse response = new BaseResponse();
+        String json = mGson.toJson(response)
+                .toLowerCase();
+        assertFalse(json.contains("header"));
     }
 }
