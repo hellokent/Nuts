@@ -1,7 +1,7 @@
 package com.nuts.lib.net;
 
 import java.io.Serializable;
-import java.util.HashMap;
+import java.util.Map;
 
 public interface IResponse extends Serializable {
 
@@ -11,5 +11,5 @@ public interface IResponse extends Serializable {
 
     void setStatusCode(int statusCode);
 
-    void setHeader(HashMap<String, String> header);
+    void setHeader(Map<String, String> header);
 }

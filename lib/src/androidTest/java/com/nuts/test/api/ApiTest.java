@@ -153,4 +153,14 @@ public class ApiTest extends AndroidTestCase {
                 .toLowerCase();
         assertFalse(json.contains("header"));
     }
+
+    public void testParamUrl() throws Exception {
+        BaseResponse response = new BaseResponse();
+        mServer.enqueue(new MockResponse().setBody(mGson.toJson(response)));
+
+        mApi.testParamUrl("123");
+
+        RecordedRequest request = mServer.takeRequest();
+        assertEquals("/123/user", request.getPath());
+    }
 }
