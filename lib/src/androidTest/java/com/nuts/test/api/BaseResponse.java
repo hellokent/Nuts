@@ -1,6 +1,7 @@
 package com.nuts.test.api;
 
 import java.util.HashMap;
+import java.util.Map;
 
 import com.google.common.collect.Maps;
 import com.google.gson.annotations.Expose;
@@ -31,7 +32,7 @@ public class BaseResponse implements IResponse {
     }
 
     @Override
-    public void setHeader(final HashMap<String, String> header) {
+    public void setHeader(final Map<String, String> header) {
         mHeader.putAll(header);
     }
 
