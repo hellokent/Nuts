@@ -104,19 +104,24 @@ public class ApiInvokeHandler implements InvocationHandler {
         }
 
         final Annotation[][] annotations = method.getParameterAnnotations();
-        for (int i = 0, n = args == null ? 0 : args.length; i < n; ++i) {
-            final Annotation annotation = annotations[i][0];
-            if (annotation instanceof Param) {
-                final Param param = (Param) annotation;
-                if (args[i] == null) {
-                    builder.addParam(param, "");
-                } else {
-                    builder.addParam(param, args[i]);
+        if (annotations.length != 0) {
+            for (int i = 0, n = args == null ? 0 : args.length; i < n; ++i) {
+                if (annotations[i].length == 0) {
+                    continue;
                 }
-            } else if (annotation instanceof Path){
-                pathArgs.add(args[i] == null ? "" : args[i].toString());
-            } else if (annotation instanceof Header) {
-                builder.mHeaders.put(((Header) annotation).value(), args[i].toString());
+                final Annotation annotation = annotations[i][0];
+                if (annotation instanceof Param) {
+                    final Param param = (Param) annotation;
+                    if (args[i] == null) {
+                        builder.addParam(param, "");
+                    } else {
+                        builder.addParam(param, args[i]);
+                    }
+                } else if (annotation instanceof Path) {
+                    pathArgs.add(args[i] == null ? "" : args[i].toString());
+                } else if (annotation instanceof Header) {
+                    builder.mHeaders.put(((Header) annotation).value(), args[i].toString());
+                }
             }
         }
 

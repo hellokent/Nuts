@@ -6,6 +6,7 @@ import android.os.Build;
 import android.os.Looper;
 
 import java.util.concurrent.LinkedBlockingQueue;
+import java.util.concurrent.RejectedExecutionHandler;
 import java.util.concurrent.ThreadFactory;
 import java.util.concurrent.ThreadPoolExecutor;
 import java.util.concurrent.TimeUnit;
@@ -27,6 +28,12 @@ public abstract class SafeTask<Param, Result> extends AsyncTask<Param, Void, Res
 
         public Thread newThread(Runnable r) {
             return new Thread(r, "后台线程 #" + mCount.getAndIncrement());
+        }
+    }, new RejectedExecutionHandler() {
+        @Override
+        public void rejectedExecution(final Runnable r, final ThreadPoolExecutor executor) {
+            executor.setMaximumPoolSize(executor.getMaximumPoolSize() + 16);
+            executor.execute(r);
         }
     });
 
