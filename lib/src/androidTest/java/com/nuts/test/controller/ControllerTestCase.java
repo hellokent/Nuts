@@ -7,7 +7,10 @@ import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.TimeUnit;
 
 import com.nuts.lib.controller.ControllerCallback;
+import com.nuts.lib.controller.ControllerListener;
 import com.nuts.lib.controller.ProxyInvokeHandler;
+import com.nuts.lib.controller.Return;
+import com.nuts.test.TestUtil;
 import com.nuts.test.api.BaseResponse;
 
 public class ControllerTestCase extends AndroidTestCase {
@@ -51,6 +54,7 @@ public class ControllerTestCase extends AndroidTestCase {
                     .asyncUI(new ControllerCallback<Integer>() {
                         @Override
                         public void onResult(final Integer integer) {
+                            assertTrue(TestUtil.inUIThread());
                             assertNotNull(integer);
                             assertEquals(tmp + 1, integer.intValue());
                         }
@@ -58,5 +62,77 @@ public class ControllerTestCase extends AndroidTestCase {
         }
         latch.await();
         assertEquals(0, latch.getCount());
+    }
+
+    public void testControllerLifeCircle() throws Exception {
+        final CountDownLatch begin = new CountDownLatch(3);
+        final CountDownLatch end = new CountDownLatch(3);
+
+        class ListenerImpl implements ControllerListener<BaseResponse> {
+            @Override
+            public void onBegin() {
+                begin.countDown();
+            }
+
+            @Override
+            public void onEnd(final BaseResponse response) {
+                end.countDown();
+            }
+
+            @Override
+            public void onException(final Throwable throwable) {
+
+            }
+        }
+
+        mController.load()
+                .addListener(new ListenerImpl())
+                .addListener(new ListenerImpl())
+                .addListener(new ListenerImpl());
+
+        begin.await(3, TimeUnit.SECONDS);
+        end.await(3, TimeUnit.SECONDS);
+
+        assertEquals(0, begin.getCount());
+        assertEquals(0, end.getCount());
+    }
+
+    public void testControllerLifeCircleWithDelay() throws Exception {
+        final int count = 3;
+        final CountDownLatch begin = new CountDownLatch(count);
+        final CountDownLatch end = new CountDownLatch(count);
+
+        class ListenerImpl implements ControllerListener<BaseResponse> {
+            @Override
+            public void onBegin() {
+                begin.countDown();
+            }
+
+            @Override
+            public void onEnd(final BaseResponse response) {
+                assertNotNull(response);
+                end.countDown();
+            }
+
+            @Override
+            public void onException(final Throwable throwable) {
+
+            }
+        }
+
+        Return<BaseResponse> responseReturn = mController.load();
+
+        Thread.sleep(3000);
+
+        for (int i = 0; i < count; ++i) {
+            responseReturn.addListener(new ListenerImpl());
+            Thread.sleep(1000);
+        }
+
+        begin.await(3, TimeUnit.SECONDS);
+        end.await(3, TimeUnit.SECONDS);
+
+        assertEquals(0, begin.getCount());
+        assertEquals(0, end.getCount());
     }
 }

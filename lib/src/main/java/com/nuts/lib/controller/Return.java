@@ -36,7 +36,13 @@ public class Return<T> implements Globals {
 
     Future<T> mFuture;
 
-    Exception mException;
+    Exception mWrappedException;
+
+    Throwable mHappenedThrowable;
+
+    volatile boolean mStarted;
+
+    volatile boolean mEnded;
 
     public Return(final T data) {
         mData = data;
@@ -70,7 +76,7 @@ public class Return<T> implements Globals {
                 } catch (final Exception e) {
                     performEnd(mData);
                     if (e.getCause() instanceof ExceptionWrapper) {
-                        mException = ((ExceptionWrapper) e.getCause()).mException;
+                        mWrappedException = ((ExceptionWrapper) e.getCause()).mException;
                     } else {
                         performException(e);
                     }
@@ -98,13 +104,13 @@ public class Return<T> implements Globals {
         try {
             mData = mFuture.get();
 
-            if (mException != null) {
-                throw mException;
+            if (mWrappedException != null) {
+                throw mWrappedException;
             }
             return mData;
         } catch (Exception e) {
-            if (mException != null) {
-                throw new ExceptionWrapper(mException);
+            if (mWrappedException != null) {
+                throw new ExceptionWrapper(mWrappedException);
             }
             e.printStackTrace();
             final Type returnType = mMethod.getGenericReturnType();
@@ -151,6 +157,16 @@ public class Return<T> implements Globals {
 
     public Return<T> addListener(final ControllerListener<T> listener) {
         mListeners.add(listener);
+        if (mStarted) {
+            listener.onBegin();
+        }
+        if (mEnded) { //TODO 异常处理不合适
+            if (mHappenedThrowable == null) {
+                listener.onEnd(mData);
+            } else {
+                listener.onException(mHappenedThrowable);
+            }
+        }
         return this;
     }
 
@@ -158,28 +174,31 @@ public class Return<T> implements Globals {
         for (ControllerListener<T> l : mListeners) {
             l.onBegin();
         }
+        mStarted = true;
     }
 
     private void performEnd(T data) {
         for (ControllerListener<T> l : mListeners) {
             l.onEnd(data);
         }
+        mEnded = true;
     }
 
     private void performException(Throwable throwable) {
         for (ControllerListener<T> l : mListeners) {
             l.onException(throwable);
         }
+        mHappenedThrowable = throwable;
     }
 
     private void performResult(ControllerCallback<T> callback) {
         if (callback == null) {
             return;
         }
-        if (mException == null) {
+        if (mWrappedException == null) {
             callback.onResult(mData);
         } else {
-            callback.handleException(mException);
+            callback.handleException(mWrappedException);
         }
     }
 
