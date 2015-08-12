@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
-    package="com.nuts.sample" >
+          package="io.demor.nuts.sample">
 
     <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE"/>
     <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE"/>
@@ -25,22 +25,17 @@
                 android:label="Controller"/>
         <activity
                 android:name=".ui.controller.ControllerSimpleActivity"
-            android:label="@string/title_activity_simple_controller" />
+                android:label="@string/title_activity_simple_controller"/>
         <activity
                 android:name=".ui.controller.ControllerCheckActivityActivity"
-            android:label="CheckActivity" />
+                android:label="CheckActivity"/>
         <activity
             android:name=".ui.jumper.JumperActivity"
             android:label="@string/title_activity_jumper"/>
         <activity android:name=".ui.jumper.JumperSimpleActivity"/>
         <activity
                 android:name=".ui.controller.ControllerLifeCircleActivity"
-                android:label="@string/title_activity_controller_life_circle"
-                android:parentActivityName=".ui.BaseActivity">
-            <meta-data
-                    android:name="android.support.PARENT_ACTIVITY"
-                    android:value="com.nuts.sample.ui.BaseActivity"/>
-        </activity>
+                android:label="@string/title_activity_controller_life_circle"/>
     </application>
 
 </manifest>

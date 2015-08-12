@@ -4,7 +4,7 @@
               android:layout_height="match_parent"
               android:padding="@dimen/activity_horizontal_margin"
               android:orientation="vertical"
-              tools:context="com.nuts.sample.ui.controller.ControllerLifeCircleActivity">
+              tools:context="io.demor.nuts.sample.ui.controller.ControllerLifeCircleActivity">
 
     <Button android:id="@+id/run"
             android:layout_width="match_parent"
