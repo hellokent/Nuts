@@ -2,7 +2,7 @@ package com.nuts.lib.eventbus;
 
 import java.lang.reflect.Method;
 import java.util.ArrayList;
-import java.util.Iterator;
+import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 
@@ -39,15 +39,18 @@ public final class EventBus implements Globals {
 
         mSlotMap.put(o, cc.mMethodList);
 
-        for (Iterator<BaseEvent> i = mStickEvent.iterator(); i.hasNext(); ) {
+        final LinkedList<BaseEvent> deletedEvent = Lists.newLinkedList();
+        for (final BaseEvent event : mStickEvent) {
             for (MethodContext methodContext : cc.mMethodList) {
-                final BaseEvent event = i.next();
                 if (ReflectUtils.isSubclassOf(event.getClass(), methodContext.mEventType)) {
                     methodContext.call(event, o);
-                    i.remove();
+                    deletedEvent.add(event);
                     break;
                 }
             }
+        }
+        for (BaseEvent event : deletedEvent) {
+            mStickEvent.remove(event);
         }
     }
 
@@ -78,6 +81,10 @@ public final class EventBus implements Globals {
         if (!post(event)) {
             mStickEvent.add(event);
         }
+    }
+
+    public final int getStickyEventCount() {
+        return mStickEvent.size();
     }
 
     static class ClassContext {
