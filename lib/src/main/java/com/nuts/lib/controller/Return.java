@@ -6,10 +6,11 @@ import android.content.Context;
 import android.view.View;
 
 import java.lang.reflect.Field;
+import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
-import java.lang.reflect.Type;
 import java.util.List;
 import java.util.concurrent.Callable;
+import java.util.concurrent.ExecutionException;
 import java.util.concurrent.Future;
 
 import com.google.common.collect.Lists;
@@ -61,8 +62,9 @@ public class Return<T> implements Globals {
                     return null;
                 }
 
+                performLiftCircleBegin();
+
                 try {
-                    performBegin();
                     Object o = callable.call();
                     if (o == null) {
                         return null;
@@ -71,28 +73,22 @@ public class Return<T> implements Globals {
                     } else {
                         mData = (T) o;
                     }
-                    performEnd(mData);
-                    return mData;
-                } catch (final Exception e) {
-                    performEnd(mData);
-                    if (e.getCause() instanceof ExceptionWrapper) {
-                        mWrappedException = ((ExceptionWrapper) e.getCause()).mException;
-                    } else {
-                        performException(e);
-                    }
-                    throw e;
-                } finally {
-                    UI_HANDLER.post(new Runnable() {
-                        @Override
-                        public void run() {
-                            if (mNeedCheckActivity && isActivityFinishing()) {
-                                return;
-                            }
-
-                            performResult(mCallback);
+                } catch (final Throwable e) {
+                    if (e instanceof InvocationTargetException) {
+                        Throwable cause = e.getCause();
+                        if (cause instanceof ExceptionWrapper) {
+                            mWrappedException = (Exception) cause.getCause();
+                            performLiftCircleException(cause.getCause());
+                        } else {
+                            performLiftCircleException(cause);
                         }
-                    });
+                    } else {
+                        performLiftCircleException(e);
+                    }
                 }
+                performResult(mCallback);
+                performLiftCircleEnd(mData);
+                return mData;
             }
         });
     }
@@ -103,23 +99,13 @@ public class Return<T> implements Globals {
         }
         try {
             mData = mFuture.get();
-
-            if (mWrappedException != null) {
-                throw mWrappedException;
+            if (mData != null) {
+                return mData;
             }
-            return mData;
-        } catch (Exception e) {
-            if (mWrappedException != null) {
-                throw new ExceptionWrapper(mWrappedException);
-            }
+        } catch (InterruptedException | ExecutionException e) {
             e.printStackTrace();
-            final Type returnType = mMethod.getGenericReturnType();
-            if (mData instanceof Boolean || ReflectUtils.checkGenericType(returnType, Boolean.class) || ReflectUtils
-                    .checkGenericType(returnType, boolean.class)) {
-                return (T) Boolean.FALSE;
-            }
-            throw new Error(e);
         }
+        throw new ExceptionWrapper(mWrappedException == null ? mHappenedThrowable : mWrappedException);
     }
 
     public final void asyncUI(final ControllerCallback<T> callback) {
@@ -157,49 +143,81 @@ public class Return<T> implements Globals {
 
     public Return<T> addListener(final ControllerListener<T> listener) {
         mListeners.add(listener);
-        if (mStarted) {
-            listener.onBegin();
-        }
-        if (mEnded) { //TODO 异常处理不合适
-            if (mHappenedThrowable == null) {
-                listener.onEnd(mData);
-            } else {
-                listener.onException(mHappenedThrowable);
+        Globals.UI_HANDLER.post(new Runnable() {
+            @Override
+            public void run() {
+                if (mStarted) {
+                    listener.onBegin();
+                }
+                if (mEnded) {
+                    if (mHappenedThrowable == null) {
+                        listener.onEnd(mData);
+                    } else {
+                        listener.onException(mHappenedThrowable);
+                    }
+                }
             }
-        }
+        });
         return this;
     }
 
-    private void performBegin() {
-        for (ControllerListener<T> l : mListeners) {
-            l.onBegin();
-        }
-        mStarted = true;
+    private void performLiftCircleBegin() {
+        Globals.UI_HANDLER.post(new Runnable() {
+            @Override
+            public void run() {
+                for (ControllerListener<T> l : mListeners) {
+                    l.onBegin();
+                }
+                mStarted = true;
+            }
+        });
+
     }
 
-    private void performEnd(T data) {
-        for (ControllerListener<T> l : mListeners) {
-            l.onEnd(data);
-        }
-        mEnded = true;
+    private void performLiftCircleEnd(final T data) {
+        Globals.UI_HANDLER.post(new Runnable() {
+            @Override
+            public void run() {
+                for (ControllerListener<T> l : mListeners) {
+                    l.onEnd(data);
+                }
+                mEnded = true;
+            }
+        });
     }
 
-    private void performException(Throwable throwable) {
-        for (ControllerListener<T> l : mListeners) {
-            l.onException(throwable);
-        }
+    private void performLiftCircleException(final Throwable throwable) {
         mHappenedThrowable = throwable;
+        Globals.UI_HANDLER.post(new Runnable() {
+            @Override
+            public void run() {
+                for (ControllerListener<T> l : mListeners) {
+                    l.onException(throwable);
+                }
+            }
+        });
     }
 
-    private void performResult(ControllerCallback<T> callback) {
-        if (callback == null) {
+    private void performResult(final ControllerCallback<T> callback) {
+        if (callback == null || (mNeedCheckActivity && isActivityFinishing())) {
             return;
         }
-        if (mWrappedException == null) {
-            callback.onResult(mData);
-        } else {
-            callback.handleException(mWrappedException);
-        }
+
+        UI_HANDLER.post(new Runnable() {
+            @Override
+            public void run() {
+                if (mData == null) {
+                    if (mHappenedThrowable != null) {
+                        callback.onException(mHappenedThrowable);
+                    } else if (mWrappedException != null) {
+                        callback.onException(mWrappedException);
+                    }
+                } else {
+                    callback.onResult(mData);
+                }
+            }
+        });
+
     }
 
     private boolean isActivityFinishing() {

@@ -38,8 +38,8 @@ public class ControllerActivity extends BaseActivity {
                     }
 
                     @Override
-                    public void handleException(final Exception e) {
-                        super.handleException(e);
+                    public void onException(final Throwable e) {
+                        super.onException(e);
                         if (e instanceof DemoException) {
                             ToastUtil.showMessage(((DemoException) e).getMsg());
                         }

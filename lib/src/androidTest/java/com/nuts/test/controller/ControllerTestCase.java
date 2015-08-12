@@ -1,6 +1,5 @@
 package com.nuts.test.controller;
 
-import android.os.Looper;
 import android.test.AndroidTestCase;
 
 import java.util.concurrent.CountDownLatch;
@@ -23,8 +22,7 @@ public class ControllerTestCase extends AndroidTestCase {
                 .asyncUI(new ControllerCallback<BaseResponse>() {
                     @Override
                     public void onResult(final BaseResponse baseResponse) {
-                        assertEquals(Looper.getMainLooper()
-                                .getThread(), Thread.currentThread());
+                        assertTrue(TestUtil.inUIThread());
                         latch.countDown();
                     }
                 });
@@ -71,17 +69,20 @@ public class ControllerTestCase extends AndroidTestCase {
         class ListenerImpl implements ControllerListener<BaseResponse> {
             @Override
             public void onBegin() {
+                assertTrue(TestUtil.inUIThread());
                 begin.countDown();
             }
 
             @Override
             public void onEnd(final BaseResponse response) {
+                assertTrue(TestUtil.inUIThread());
+                assertNotNull(response);
                 end.countDown();
             }
 
             @Override
             public void onException(final Throwable throwable) {
-
+                assertTrue(TestUtil.inUIThread());
             }
         }
 
@@ -105,18 +106,21 @@ public class ControllerTestCase extends AndroidTestCase {
         class ListenerImpl implements ControllerListener<BaseResponse> {
             @Override
             public void onBegin() {
+                assertTrue(TestUtil.inUIThread());
                 begin.countDown();
             }
 
             @Override
             public void onEnd(final BaseResponse response) {
+                assertTrue(TestUtil.inUIThread());
                 assertNotNull(response);
                 end.countDown();
             }
 
             @Override
             public void onException(final Throwable throwable) {
-
+                assertNotNull(throwable);
+                assertTrue(TestUtil.inUIThread());
             }
         }
 

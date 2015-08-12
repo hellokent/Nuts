@@ -119,7 +119,6 @@ ACCOUNT_CONTROLLER.login(account, password)
         .asyncUIWithDialog(new ControllerCallback<Boolean>() {
             @Override
             public void onResult(final Boolean result) {
-                //TODO 
             }
         },);
 </code></pre>
@@ -215,10 +214,10 @@ TEST_CONTROLLER.run(1)
 
 抛异常的时候，需要用ExceptionWrapper包装过后才能抛出，在接口和实现的方法声明处不需要用throws声明异常。
 
-当是异步调用时，需要实现传入的ControllerListener里面有handleException的方法：
+当是异步调用时，需要实现传入的ControllerListener里面有`onException`的方法：
 
 <pre><code>
-public void handleException(Exception e) {}
+public void onException(Exception e) {}
 </code></pre>
 
 ## 最佳实践

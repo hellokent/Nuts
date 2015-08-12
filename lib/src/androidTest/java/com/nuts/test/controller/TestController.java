@@ -2,6 +2,7 @@ package com.nuts.test.controller;
 
 import java.util.concurrent.CountDownLatch;
 
+import com.nuts.lib.controller.ExceptionWrapper;
 import com.nuts.lib.controller.Return;
 import com.nuts.lib.controller.VoidReturn;
 import com.nuts.test.api.BaseResponse;
@@ -42,6 +43,26 @@ public interface TestController {
         public Return<BaseResponse> single(final TestApi2 api, final int count) {
             return new Return<>(api.get(count));
         }
+
+        @Override
+        public VoidReturn runThrowWrappedException() {
+            try {
+                Thread.sleep(100);
+            } catch (InterruptedException e) {
+                e.printStackTrace();
+            }
+            throw new ExceptionWrapper(new IllegalArgumentException());
+        }
+
+        @Override
+        public VoidReturn runThrowRuntimeException() {
+            try {
+                Thread.sleep(100);
+            } catch (InterruptedException e) {
+                e.printStackTrace();
+            }
+            throw new NullPointerException("just test");
+        }
     };
 
     Return<BaseResponse> load();
@@ -51,4 +72,8 @@ public interface TestController {
     Return<Integer> run(CountDownLatch latch, int start);
 
     Return<BaseResponse> single(TestApi2 api, int count);
+
+    VoidReturn runThrowWrappedException();
+
+    VoidReturn runThrowRuntimeException();
 }
