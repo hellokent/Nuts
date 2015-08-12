@@ -21,7 +21,7 @@ android {
         versionCode 1
         versionName "1.0"
 
-        //testPackageName "com.nuts.test"
+        //testPackageName "io.demor.nuts.test"
         testInstrumentationRunner "android.test.InstrumentationTestRunner"
         testHandleProfiling true
         testFunctionalTest true

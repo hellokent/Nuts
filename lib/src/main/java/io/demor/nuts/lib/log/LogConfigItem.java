@@ -5,7 +5,7 @@ import android.text.TextUtils;
 import java.io.IOException;
 import java.util.Locale;
 
-import com.nuts.lib.BuildConfig;
+import io.demor.nuts.lib.BuildConfig;
 import org.xmlpull.v1.XmlPullParser;
 import org.xmlpull.v1.XmlPullParserException;
 

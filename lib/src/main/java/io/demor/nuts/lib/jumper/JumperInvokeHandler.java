@@ -22,7 +22,7 @@ import java.util.LinkedList;
 import java.util.Map;
 
 import com.google.common.collect.Lists;
-import com.nuts.lib.BuildConfig;
+import io.demor.nuts.lib.BuildConfig;
 import io.demor.nuts.lib.NutsApplication;
 import io.demor.nuts.lib.ReflectUtils;
 import io.demor.nuts.lib.annotation.jumper.ActivityInfo;
