@@ -9,6 +9,8 @@ import com.nuts.lib.controller.ControllerCallback;
 import com.nuts.lib.controller.ControllerListener;
 import com.nuts.lib.controller.ExceptionWrapper;
 import com.nuts.lib.controller.ProxyInvokeHandler;
+import com.nuts.lib.controller.VoidReturn;
+import com.nuts.test.TestUtil;
 
 public class ControllerExceptionTestCase extends AndroidTestCase {
 
@@ -179,4 +181,44 @@ public class ControllerExceptionTestCase extends AndroidTestCase {
         assertEquals(0, latch2.getCount());
     }
 
+    public void testAsyncRuntimeException2() throws Exception {
+        try {
+            mController.runThrowRuntimeException()
+                    .sync();
+        } catch (ExceptionWrapper wrapper) {
+            assertTrue(wrapper.getCause() instanceof NullPointerException);
+            return;
+        }
+        assertTrue(false);
+    }
+
+    public void testAsyncRuntimeException3() throws Exception {
+        final int count = 5;
+        final CountDownLatch latch = new CountDownLatch(count);
+        VoidReturn voidReturn = mController.runThrowRuntimeException();
+        for (int i = 0; i < count; ++i) {
+            Thread.sleep(100);
+            voidReturn.addListener(new ControllerListener<Void>() {
+                @Override
+                public void onBegin() {
+
+                }
+
+                @Override
+                public void onEnd(final Void response) {
+
+                }
+
+                @Override
+                public void onException(final Throwable throwable) {
+                    assertTrue(TestUtil.inUIThread());
+                    assertTrue(throwable instanceof NullPointerException);
+                    latch.countDown();
+                }
+            });
+        }
+
+        latch.await(3, TimeUnit.SECONDS);
+        assertEquals(0, latch.getCount());
+    }
 }

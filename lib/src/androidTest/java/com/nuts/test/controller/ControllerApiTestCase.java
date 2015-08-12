@@ -61,7 +61,7 @@ public class ControllerApiTestCase extends AndroidTestCase {
     }
 
     public void testMultiTask() throws Exception {
-        final int count = 500;
+        final int count = 100;
 
         final CountDownLatch latch = new CountDownLatch(count);
 
