@@ -8,10 +8,12 @@ import android.view.View;
 import java.lang.reflect.Field;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
+import java.util.Date;
 import java.util.List;
 import java.util.concurrent.Callable;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.Future;
+import java.util.concurrent.TimeUnit;
 
 import com.google.common.collect.Lists;
 import io.demor.nuts.lib.Globals;
@@ -25,6 +27,12 @@ public class Return<T> implements Globals {
 
     final List<ControllerListener<T>> mListeners = Lists.newCopyOnWriteArrayList();
 
+    volatile ControllerCallback<T> mCallback;
+
+    volatile boolean mStarted;
+
+    volatile boolean mEnded;
+
     T mData;
 
     boolean mNeedCheckActivity = false;
@@ -33,17 +41,19 @@ public class Return<T> implements Globals {
 
     Method mMethod;
 
-    volatile ControllerCallback<T> mCallback;
-
     Future<T> mFuture;
 
     Exception mWrappedException;
 
     Throwable mHappenedThrowable;
 
-    volatile boolean mStarted;
+    Date mBeginTime;
 
-    volatile boolean mEnded;
+    Date mEndTime;
+
+    long mTimeoutMillis = -1;
+
+    TimeoutListener mTimeoutListener;
 
     public Return(final T data) {
         mData = data;
@@ -63,6 +73,7 @@ public class Return<T> implements Globals {
                 }
 
                 performLiftCircleBegin();
+                mBeginTime = new Date();
 
                 try {
                     Object o = callable.call();
@@ -85,7 +96,10 @@ public class Return<T> implements Globals {
                     } else {
                         performLiftCircleException(e);
                     }
+                } finally {
+                    mEndTime = new Date();
                 }
+
                 performResult(mCallback);
                 performLiftCircleEnd(mData);
                 return mData;
@@ -161,6 +175,12 @@ public class Return<T> implements Globals {
         return this;
     }
 
+    public Return<T> setTimeout(int time, TimeUnit unit, TimeoutListener listener) {
+        mTimeoutMillis = unit.toMillis(time);
+        mTimeoutListener = listener;
+        return this;
+    }
+
     private void performLiftCircleBegin() {
         Globals.UI_HANDLER.post(new Runnable() {
             @Override
@@ -203,20 +223,30 @@ public class Return<T> implements Globals {
             return;
         }
 
+        if (isTimeout() && !mTimeoutListener.onTimeout(mBeginTime, mEndTime)) {
+            return;
+        }
+
         UI_HANDLER.post(new Runnable() {
             @Override
             public void run() {
                 if (mData == null) {
                     if (mHappenedThrowable != null) {
                         callback.onException(mHappenedThrowable);
+                        return;
                     } else if (mWrappedException != null) {
                         callback.onException(mWrappedException);
+                        return;
                     }
-                } else {
-                    callback.onResult(mData);
                 }
+                callback.onResult(mData);
             }
         });
+    }
+
+    private boolean isTimeout() {
+        return mBeginTime != null && mEndTime != null && (mEndTime.getTime() - mBeginTime.getTime()) > mTimeoutMillis
+                && mTimeoutListener != null;
 
     }
 

@@ -220,6 +220,10 @@ TEST_CONTROLLER.run(1)
 public void onException(Exception e) {}
 </code></pre>
 
+//TODO 异步处理回调，同步异常处理，异常包装 
+
+### 超时设置
+
 ## 最佳实践
 
 1. 业务里面的方法，需要跟着需求来，而不是跟着服务器接口来定义

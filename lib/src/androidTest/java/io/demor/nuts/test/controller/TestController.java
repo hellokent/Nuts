@@ -1,6 +1,7 @@
 package io.demor.nuts.test.controller;
 
 import java.util.concurrent.CountDownLatch;
+import java.util.concurrent.TimeUnit;
 
 import io.demor.nuts.lib.controller.ExceptionWrapper;
 import io.demor.nuts.lib.controller.Return;
@@ -63,6 +64,16 @@ public interface TestController {
             }
             throw new NullPointerException("just test");
         }
+
+        @Override
+        public VoidReturn sleep(final int seconds) {
+            try {
+                Thread.sleep(TimeUnit.SECONDS.toMillis(seconds));
+            } catch (InterruptedException e) {
+                e.printStackTrace();
+            }
+            return new VoidReturn();
+        }
     };
 
     Return<BaseResponse> load();
@@ -76,4 +87,6 @@ public interface TestController {
     VoidReturn runThrowWrappedException();
 
     VoidReturn runThrowRuntimeException();
+
+    VoidReturn sleep(int seconds);
 }
