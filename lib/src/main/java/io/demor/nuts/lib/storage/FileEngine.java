@@ -1,5 +1,7 @@
 package io.demor.nuts.lib.storage;
 
+import android.content.Context;
+
 import java.io.File;
 import java.io.IOException;
 import java.nio.charset.Charset;
@@ -15,15 +17,22 @@ public class FileEngine implements IStorageEngine {
     private File mFolder;
 
     public FileEngine() {
-        this("json");
+        this("json", NutsApplication.getGlobalContext());
+    }
+
+    public FileEngine(Context context) {
+        this("json", context);
     }
 
     public FileEngine(String dirName) {
+        this(dirName, NutsApplication.getGlobalContext());
+    }
+
+    public FileEngine(String dirName, Context context) {
         if (Strings.isNullOrEmpty(dirName)) {
             throw new RuntimeException("invalid dir name");
         }
-        File cacheDir = NutsApplication.getGlobalContext()
-                .getCacheDir();
+        File cacheDir = context.getCacheDir();
         mFolder = new File(cacheDir, dirName);
         if (!mFolder.exists()) {
             mFolder.mkdir();
