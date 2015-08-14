@@ -68,7 +68,7 @@ public class Return<T> implements Globals {
         mFuture = SafeTask.THREAD_POOL_EXECUTOR.submit(new Callable<T>() {
             @Override
             public T call() throws Exception {
-                if (mNeedCheckActivity && isActivityFinishing()) {
+                if (isActivityFinishing()) {
                     return null;
                 }
 
@@ -86,7 +86,7 @@ public class Return<T> implements Globals {
                     }
                 } catch (final Throwable e) {
                     if (e instanceof InvocationTargetException) {
-                        Throwable cause = e.getCause();
+                        final Throwable cause = e.getCause();
                         if (cause instanceof ExceptionWrapper) {
                             mWrappedException = (Exception) cause.getCause();
                             performLiftCircleException(cause.getCause());
@@ -100,7 +100,7 @@ public class Return<T> implements Globals {
                     mEndTime = new Date();
                 }
 
-                performResult(mCallback);
+                performResult();
                 performLiftCircleEnd(mData);
                 return mData;
             }
@@ -113,13 +113,14 @@ public class Return<T> implements Globals {
         }
         try {
             mData = mFuture.get();
-            if (mData != null) {
-                return mData;
+            if (exceptionHappened()) {
+                throw new ExceptionWrapper(getHappenedException());
             }
+            return mData;
         } catch (InterruptedException | ExecutionException e) {
             e.printStackTrace();
+            throw new ExceptionWrapper(e.getCause());
         }
-        throw new ExceptionWrapper(mWrappedException == null ? mHappenedThrowable : mWrappedException);
     }
 
     public final void asyncUI(final ControllerCallback<T> callback) {
@@ -130,23 +131,21 @@ public class Return<T> implements Globals {
         if (dialog != null) {
             addListener(new DialogListenerImpl<T>(dialog));
         }
+        if (mNeedCheckActivity) {
+            try {
+                mActivity = getContext(mCallback);
+            } catch (Exception e) {
+                mActivity = null;
+            }
+        }
+        mCallback = callback;
         if (mFuture.isDone()) {
             UI_HANDLER.post(new Runnable() {
                 @Override
                 public void run() {
-                    performResult(callback);
+                    performResult();
                 }
             });
-        } else {
-            mCallback = callback;
-
-            if (mNeedCheckActivity) {
-                try {
-                    mActivity = getContext(mCallback);
-                } catch (Exception e) {
-                    mActivity = null;
-                }
-            }
         }
     }
 
@@ -191,7 +190,6 @@ public class Return<T> implements Globals {
                 mStarted = true;
             }
         });
-
     }
 
     private void performLiftCircleEnd(final T data) {
@@ -218,28 +216,23 @@ public class Return<T> implements Globals {
         });
     }
 
-    private void performResult(final ControllerCallback<T> callback) {
-        if (callback == null || (mNeedCheckActivity && isActivityFinishing())) {
+    private void performResult() {
+        if (isTimeout() && !mTimeoutListener.onTimeout(mBeginTime, mEndTime)) {
             return;
         }
 
-        if (isTimeout() && !mTimeoutListener.onTimeout(mBeginTime, mEndTime)) {
+        if (mCallback == null || isActivityFinishing()) {
             return;
         }
 
         UI_HANDLER.post(new Runnable() {
             @Override
             public void run() {
-                if (mData == null) {
-                    if (mHappenedThrowable != null) {
-                        callback.onException(mHappenedThrowable);
-                        return;
-                    } else if (mWrappedException != null) {
-                        callback.onException(mWrappedException);
-                        return;
-                    }
+                if (exceptionHappened()) {
+                    mCallback.onException(mHappenedThrowable);
+                } else {
+                    mCallback.onResult(mData);
                 }
-                callback.onResult(mData);
             }
         });
     }
@@ -250,8 +243,16 @@ public class Return<T> implements Globals {
 
     }
 
+    private boolean exceptionHappened() {
+        return mWrappedException != null || mHappenedThrowable != null;
+    }
+
+    private Throwable getHappenedException() {
+        return mWrappedException == null ? mHappenedThrowable : mWrappedException;
+    }
+
     private boolean isActivityFinishing() {
-        return mActivity != null && mActivity.isFinishing();
+        return mNeedCheckActivity && mActivity != null && mActivity.isFinishing();
     }
 
     private Activity getContext(Object o) throws Exception {

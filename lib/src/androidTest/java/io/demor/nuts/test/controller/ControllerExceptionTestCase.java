@@ -185,11 +185,11 @@ public class ControllerExceptionTestCase extends AndroidTestCase {
         try {
             mController.runThrowRuntimeException()
                     .sync();
+            assertTrue(false);
         } catch (ExceptionWrapper wrapper) {
             assertTrue(wrapper.getCause() instanceof NullPointerException);
             return;
         }
-        assertTrue(false);
     }
 
     public void testAsyncRuntimeException3() throws Exception {

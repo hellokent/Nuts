@@ -23,6 +23,8 @@ public class ControllerTestCase extends AndroidTestCase {
                     @Override
                     public void onResult(final BaseResponse baseResponse) {
                         assertTrue(TestUtil.inUIThread());
+                        assertNotNull(baseResponse);
+                        assertEquals("hello", baseResponse.msg);
                         latch.countDown();
                     }
                 });
@@ -45,7 +47,7 @@ public class ControllerTestCase extends AndroidTestCase {
 
     public void testMultiTask() throws Exception {
         final int count = 500;
-        CountDownLatch latch = new CountDownLatch(count);
+        final CountDownLatch latch = new CountDownLatch(count);
         for (int i = 0; i < count; ++i) {
             final int tmp = i;
             mController.run(latch, tmp)
