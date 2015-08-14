@@ -58,6 +58,27 @@ public class ControllerTimeoutTestCase extends AndroidTestCase {
 
         latch.await(10, TimeUnit.SECONDS);
         assertEquals(0, latch.getCount());
+    }
 
+    public void testNoTimeout() throws Exception {
+        final CountDownLatch latch = new CountDownLatch(1);
+
+        mController.sleep(1)
+                .setTimeout(5, TimeUnit.SECONDS, new TimeoutListener() {
+                    @Override
+                    public boolean onTimeout(final Date startTime, final Date stopTime) {
+                        latch.countDown();
+                        return true;
+                    }
+                })
+                .asyncUI(new ControllerCallback<Void>() {
+                    @Override
+                    public void onResult(final Void aVoid) {
+                        latch.countDown();
+                    }
+                });
+
+        latch.await(3, TimeUnit.SECONDS);
+        assertEquals(0, latch.getCount());
     }
 }
