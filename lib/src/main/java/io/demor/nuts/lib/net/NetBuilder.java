@@ -1,6 +1,13 @@
 package io.demor.nuts.lib.net;
 
+import com.google.common.base.Joiner;
+import com.google.gson.Gson;
+import com.squareup.okhttp.*;
+import io.demor.nuts.lib.annotation.net.Param;
+import io.demor.nuts.lib.log.L;
+
 import java.io.File;
+import java.io.IOException;
 import java.io.UnsupportedEncodingException;
 import java.lang.reflect.Method;
 import java.net.URLEncoder;
@@ -8,18 +15,6 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.TreeMap;
 import java.util.concurrent.TimeUnit;
-
-import com.google.common.base.Joiner;
-import com.google.gson.Gson;
-import com.squareup.okhttp.Headers;
-import com.squareup.okhttp.MediaType;
-import com.squareup.okhttp.MultipartBuilder;
-import com.squareup.okhttp.OkHttpClient;
-import com.squareup.okhttp.Request;
-import com.squareup.okhttp.RequestBody;
-import com.squareup.okhttp.Response;
-import io.demor.nuts.lib.annotation.net.Param;
-import io.demor.nuts.lib.log.L;
 
 class NetBuilder {
 
@@ -117,6 +112,7 @@ class NetBuilder {
 
 
     NetResult load(Request request) {
+        ResponseBody body = null;
         try {
             L.i(">>> %s(%s):%s", mHttpMethod.name(), mLogTag, getLog4Param());
             if (!mFiles.isEmpty()) {
@@ -128,14 +124,21 @@ class NetBuilder {
             final Response response = mHttpClient.newCall(request)
                     .execute();
             mStatusCode = response.code();
-            final String result = response.body()
-                    .string();
+            body = response.body();
+            final String result = body.string();
             L.i("<<< %s(%s) CODE:%s, TEXT:%s", mHttpMethod.name(), mLogTag, mStatusCode, response);
             return ofSuccess(response, result);
         } catch (Exception e) {
             L.e("!!! ERROR %s(%s), %s", mHttpMethod.name(), mLogTag, e.getMessage());
             L.exception(e);
             return ofFailed(e);
+        } finally {
+            if (body != null) {
+                try {
+                    body.close();
+                } catch (IOException ignored) {
+                }
+            }
         }
     }
 

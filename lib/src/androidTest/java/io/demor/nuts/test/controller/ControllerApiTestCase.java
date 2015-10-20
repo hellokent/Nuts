@@ -1,12 +1,6 @@
 package io.demor.nuts.test.controller;
 
 import android.test.AndroidTestCase;
-
-import java.lang.reflect.Method;
-import java.util.TreeMap;
-import java.util.concurrent.CountDownLatch;
-import java.util.concurrent.TimeUnit;
-
 import com.google.common.reflect.Reflection;
 import com.google.gson.Gson;
 import com.squareup.okhttp.mockwebserver.MockResponse;
@@ -17,6 +11,11 @@ import io.demor.nuts.lib.controller.ProxyInvokeHandler;
 import io.demor.nuts.lib.net.ApiInvokeHandler;
 import io.demor.nuts.lib.net.INet;
 import io.demor.nuts.test.api.BaseResponse;
+
+import java.lang.reflect.Method;
+import java.util.TreeMap;
+import java.util.concurrent.CountDownLatch;
+import java.util.concurrent.TimeUnit;
 
 public class ControllerApiTestCase extends AndroidTestCase {
 
@@ -61,7 +60,7 @@ public class ControllerApiTestCase extends AndroidTestCase {
     }
 
     public void testMultiTask() throws Exception {
-        final int count = 100;
+        final int count = 1000;
 
         final CountDownLatch latch = new CountDownLatch(count);
 
@@ -119,6 +118,31 @@ public class ControllerApiTestCase extends AndroidTestCase {
         }
 
         //latch.await(200, TimeUnit.SECONDS);
+        latch.await();
+        assertEquals(0, latch.getCount());
+    }
+
+    public void testMultiAsync() throws Exception {
+        final int count = 1000;
+
+        final CountDownLatch latch = new CountDownLatch(count);
+
+        for (int i = 0; i < count; ++i) {
+            BaseResponse firstResponse = new BaseResponse();
+            firstResponse.code = i + 1;
+            mServer.enqueue(new MockResponse().setBody(new Gson().toJson(firstResponse)));
+        }
+
+        for (int i = 0; i < count; ++i) {
+            mController.single(mApi, 100)
+                    .asyncUI(new ControllerCallback<BaseResponse>() {
+                        @Override
+                        public void onResult(final BaseResponse baseResponse) {
+                            latch.countDown();
+                        }
+                    });
+        }
+
         latch.await();
         assertEquals(0, latch.getCount());
     }
