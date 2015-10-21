@@ -42,6 +42,7 @@ dependencies {
     compile 'com.squareup.okio:okio:1.4.0'
     compile 'uk.com.robust-it:cloning:1.9.1'
     compile 'org.objenesis:objenesis:2.1'
+    compile 'org.jooq:joor:0.9.5'
 
     androidTestCompile 'com.squareup.okhttp:mockwebserver:2.4.0'
 }
