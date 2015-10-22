@@ -1,8 +1,8 @@
 package io.demor.nuts.sample.ui;
 
-import com.nuts.sample.R;
 import io.demor.nuts.lib.annotation.viewmapping.OnClick;
 import io.demor.nuts.lib.annotation.viewmapping.ViewMapping;
+import io.demor.nuts.sample.R;
 
 
 @ViewMapping(R.layout.activity_main)
