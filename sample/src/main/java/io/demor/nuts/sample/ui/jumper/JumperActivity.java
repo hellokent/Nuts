@@ -5,11 +5,10 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
 import android.os.Bundle;
-
-import com.nuts.sample.R;
 import io.demor.nuts.lib.ToastUtil;
 import io.demor.nuts.lib.annotation.viewmapping.OnClick;
 import io.demor.nuts.lib.annotation.viewmapping.ViewMapping;
+import io.demor.nuts.sample.R;
 import io.demor.nuts.sample.config.IntentNames;
 import io.demor.nuts.sample.ui.BaseActivity;
 

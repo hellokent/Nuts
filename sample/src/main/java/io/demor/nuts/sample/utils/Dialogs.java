@@ -4,8 +4,8 @@ import android.app.Dialog;
 import android.app.ProgressDialog;
 import android.content.Context;
 import android.content.DialogInterface;
+import io.demor.nuts.sample.R;
 
-import com.nuts.sample.R;
 
 public final class Dialogs {
 

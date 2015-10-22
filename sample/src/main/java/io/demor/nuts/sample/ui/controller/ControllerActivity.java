@@ -1,10 +1,10 @@
 package io.demor.nuts.sample.ui.controller;
 
-import com.nuts.sample.R;
 import io.demor.nuts.lib.ToastUtil;
 import io.demor.nuts.lib.annotation.viewmapping.OnClick;
 import io.demor.nuts.lib.annotation.viewmapping.ViewMapping;
 import io.demor.nuts.lib.controller.ControllerCallback;
+import io.demor.nuts.sample.R;
 import io.demor.nuts.sample.controller.DemoException;
 import io.demor.nuts.sample.ui.BaseActivity;
 import io.demor.nuts.sample.utils.Dialogs;
