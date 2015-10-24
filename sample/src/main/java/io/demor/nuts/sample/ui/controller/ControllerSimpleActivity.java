@@ -1,6 +1,7 @@
 package io.demor.nuts.sample.ui.controller;
 
 import android.os.Bundle;
+
 import io.demor.nuts.lib.ToastUtil;
 import io.demor.nuts.lib.annotation.viewmapping.OnClick;
 import io.demor.nuts.lib.annotation.viewmapping.ViewMapping;

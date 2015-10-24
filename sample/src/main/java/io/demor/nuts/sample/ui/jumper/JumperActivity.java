@@ -5,6 +5,7 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
 import android.os.Bundle;
+
 import io.demor.nuts.lib.ToastUtil;
 import io.demor.nuts.lib.annotation.viewmapping.OnClick;
 import io.demor.nuts.lib.annotation.viewmapping.ViewMapping;

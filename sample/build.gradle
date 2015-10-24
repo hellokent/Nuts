@@ -17,7 +17,7 @@ android {
     buildToolsVersion "21.1.2"
 
     defaultConfig {
-        applicationId "com.nuts.sample"
+        applicationId "io.demor.nuts.sample"
         minSdkVersion 9
         targetSdkVersion 22
         versionCode 1
