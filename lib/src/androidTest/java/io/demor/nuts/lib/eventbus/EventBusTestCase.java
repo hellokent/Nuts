@@ -1,17 +1,14 @@
-package io.demor.nuts.test.eventbus;
+package io.demor.nuts.lib.eventbus;
 
 import android.test.AndroidTestCase;
+import io.demor.nuts.lib.Globals;
+import io.demor.nuts.lib.TestUtil;
+import io.demor.nuts.lib.annotation.eventbus.Event;
+import io.demor.nuts.lib.task.RunnableTask;
 
 import java.lang.reflect.Method;
 import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.TimeUnit;
-
-import io.demor.nuts.lib.Globals;
-import io.demor.nuts.lib.annotation.eventbus.Event;
-import io.demor.nuts.lib.eventbus.EventBus;
-import io.demor.nuts.lib.eventbus.ThreadType;
-import io.demor.nuts.lib.task.RunnableTask;
-import io.demor.nuts.test.TestUtil;
 
 public class EventBusTestCase extends AndroidTestCase {
 

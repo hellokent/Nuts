@@ -1,16 +1,11 @@
-package io.demor.nuts.test.controller;
+package io.demor.nuts.lib.controller;
 
 import android.test.AndroidTestCase;
+import io.demor.nuts.lib.TestUtil;
+import io.demor.nuts.lib.api.BaseResponse;
 
 import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.TimeUnit;
-
-import io.demor.nuts.lib.controller.ControllerCallback;
-import io.demor.nuts.lib.controller.ControllerListener;
-import io.demor.nuts.lib.controller.ProxyInvokeHandler;
-import io.demor.nuts.lib.controller.Return;
-import io.demor.nuts.test.TestUtil;
-import io.demor.nuts.test.api.BaseResponse;
 
 public class ControllerTestCase extends AndroidTestCase {
 

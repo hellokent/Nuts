@@ -1,14 +1,10 @@
-package io.demor.nuts.test.controller;
+package io.demor.nuts.lib.controller;
 
 import android.test.AndroidTestCase;
 
 import java.util.Date;
 import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.TimeUnit;
-
-import io.demor.nuts.lib.controller.ControllerCallback;
-import io.demor.nuts.lib.controller.ProxyInvokeHandler;
-import io.demor.nuts.lib.controller.TimeoutListener;
 
 public class ControllerTimeoutTestCase extends AndroidTestCase {
 

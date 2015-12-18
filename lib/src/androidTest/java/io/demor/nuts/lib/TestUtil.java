@@ -1,4 +1,4 @@
-package io.demor.nuts.test;
+package io.demor.nuts.lib;
 
 import android.os.Looper;
 

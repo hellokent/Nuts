@@ -1,14 +1,9 @@
-package io.demor.nuts.test.api;
+package io.demor.nuts.lib.api;
+
+import io.demor.nuts.lib.annotation.net.*;
+import io.demor.nuts.lib.net.ProgressListener;
 
 import java.io.File;
-
-import io.demor.nuts.lib.annotation.net.Get;
-import io.demor.nuts.lib.annotation.net.Header;
-import io.demor.nuts.lib.annotation.net.Headers;
-import io.demor.nuts.lib.annotation.net.Multipart;
-import io.demor.nuts.lib.annotation.net.Param;
-import io.demor.nuts.lib.annotation.net.Path;
-import io.demor.nuts.lib.net.ProgressListener;
 
 public interface TestApi {
 

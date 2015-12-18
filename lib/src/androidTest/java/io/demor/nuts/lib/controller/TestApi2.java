@@ -1,7 +1,7 @@
-package io.demor.nuts.test.controller;
+package io.demor.nuts.lib.controller;
 
 import io.demor.nuts.lib.annotation.net.Get;
-import io.demor.nuts.test.api.BaseResponse;
+import io.demor.nuts.lib.api.BaseResponse;
 
 public interface TestApi2 {
 

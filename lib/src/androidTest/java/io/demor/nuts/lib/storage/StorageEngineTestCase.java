@@ -1,11 +1,6 @@
-package io.demor.nuts.test.storage;
+package io.demor.nuts.lib.storage;
 
 import android.test.AndroidTestCase;
-
-import io.demor.nuts.lib.storage.FileEngine;
-import io.demor.nuts.lib.storage.IStorageEngine;
-import io.demor.nuts.lib.storage.MemoryEngine;
-import io.demor.nuts.lib.storage.SharedPreferenceStorageEngine;
 
 public class StorageEngineTestCase extends AndroidTestCase {
 

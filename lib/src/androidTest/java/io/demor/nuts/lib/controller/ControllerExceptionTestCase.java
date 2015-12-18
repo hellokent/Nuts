@@ -1,16 +1,10 @@
-package io.demor.nuts.test.controller;
+package io.demor.nuts.lib.controller;
 
 import android.test.AndroidTestCase;
+import io.demor.nuts.lib.TestUtil;
 
 import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.TimeUnit;
-
-import io.demor.nuts.lib.controller.ControllerCallback;
-import io.demor.nuts.lib.controller.ControllerListener;
-import io.demor.nuts.lib.controller.ExceptionWrapper;
-import io.demor.nuts.lib.controller.ProxyInvokeHandler;
-import io.demor.nuts.lib.controller.VoidReturn;
-import io.demor.nuts.test.TestUtil;
 
 public class ControllerExceptionTestCase extends AndroidTestCase {
 
@@ -188,7 +182,6 @@ public class ControllerExceptionTestCase extends AndroidTestCase {
             assertTrue(false);
         } catch (ExceptionWrapper wrapper) {
             assertTrue(wrapper.getCause() instanceof NullPointerException);
-            return;
         }
     }
 

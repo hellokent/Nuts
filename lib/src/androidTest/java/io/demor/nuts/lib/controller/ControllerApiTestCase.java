@@ -1,16 +1,13 @@
-package io.demor.nuts.test.controller;
+package io.demor.nuts.lib.controller;
 
 import android.test.AndroidTestCase;
 import com.google.common.reflect.Reflection;
 import com.google.gson.Gson;
 import com.squareup.okhttp.mockwebserver.MockResponse;
 import com.squareup.okhttp.mockwebserver.MockWebServer;
-import io.demor.nuts.lib.controller.ControllerCallback;
-import io.demor.nuts.lib.controller.ControllerListener;
-import io.demor.nuts.lib.controller.ProxyInvokeHandler;
+import io.demor.nuts.lib.api.BaseResponse;
 import io.demor.nuts.lib.net.ApiInvokeHandler;
 import io.demor.nuts.lib.net.INet;
-import io.demor.nuts.test.api.BaseResponse;
 
 import java.lang.reflect.Method;
 import java.util.TreeMap;

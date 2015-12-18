@@ -1,8 +1,6 @@
-package io.demor.nuts.test.controller;
+package io.demor.nuts.lib.controller;
 
 import java.util.concurrent.CountDownLatch;
-
-import io.demor.nuts.lib.controller.VoidReturn;
 
 public interface VoidTestController {
 

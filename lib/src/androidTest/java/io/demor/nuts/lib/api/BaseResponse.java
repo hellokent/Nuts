@@ -1,11 +1,11 @@
-package io.demor.nuts.test.api;
-
-import java.util.HashMap;
-import java.util.Map;
+package io.demor.nuts.lib.api;
 
 import com.google.common.collect.Maps;
 import com.google.gson.annotations.Expose;
 import io.demor.nuts.lib.net.IResponse;
+
+import java.util.HashMap;
+import java.util.Map;
 
 public class BaseResponse implements IResponse {
 

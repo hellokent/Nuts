@@ -3,17 +3,16 @@ package io.demor.nuts.lib.log;
 import android.content.Context;
 import android.text.TextUtils;
 import android.util.Log;
-
-import java.io.IOException;
-import java.io.InputStream;
-import java.util.List;
-
 import com.google.common.base.Throwables;
 import com.google.common.collect.Lists;
 import io.demor.nuts.lib.NutsApplication;
 import org.xmlpull.v1.XmlPullParser;
 import org.xmlpull.v1.XmlPullParserException;
 import org.xmlpull.v1.XmlPullParserFactory;
+
+import java.io.IOException;
+import java.io.InputStream;
+import java.util.List;
 
 public final class L {
     static final String DEFAULT_TAG = "log";
@@ -121,6 +120,11 @@ public final class L {
     }
 
     private static void log(int level, Throwable throwable, String msg, Object... arg) {
+        final String className = Thread.currentThread().getStackTrace()[STACK_DEPTH].getClassName();
+        log(className, level, throwable, msg, arg);
+    }
+
+    protected static void log(final String className, int level, Throwable throwable, String msg, Object... arg) {
         final String logText = throwable == null ? String.format(msg, arg) :
                 Throwables.getStackTraceAsString(throwable) + "\n" + String.format(msg, arg);
         if (!sInited) {
@@ -132,8 +136,6 @@ public final class L {
             }
 
         }
-
-        final String className = Thread.currentThread().getStackTrace()[STACK_DEPTH].getClassName();
 
         // 检查className
         LogConfigItem logConfig = null;
@@ -167,6 +169,7 @@ public final class L {
             LogWriter.INSTANCE.postWriteRequest(logConfig.getFile(), logText);
         }
     }
+
 
     static void l(int level, String tag, String text) {
         Log.println(level, tag, text);

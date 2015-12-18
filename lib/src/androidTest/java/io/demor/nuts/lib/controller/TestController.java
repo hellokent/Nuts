@@ -1,12 +1,9 @@
-package io.demor.nuts.test.controller;
+package io.demor.nuts.lib.controller;
+
+import io.demor.nuts.lib.api.BaseResponse;
 
 import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.TimeUnit;
-
-import io.demor.nuts.lib.controller.ExceptionWrapper;
-import io.demor.nuts.lib.controller.Return;
-import io.demor.nuts.lib.controller.VoidReturn;
-import io.demor.nuts.test.api.BaseResponse;
 
 public interface TestController {
 

@@ -1,6 +1,4 @@
-package io.demor.nuts.test.eventbus;
-
-import io.demor.nuts.lib.eventbus.BaseEvent;
+package io.demor.nuts.lib.eventbus;
 
 public class TestEvent extends BaseEvent<Integer> {
 

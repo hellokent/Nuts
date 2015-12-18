@@ -1,13 +1,10 @@
-package io.demor.nuts.test.controller;
+package io.demor.nuts.lib.controller;
 
 import android.test.AndroidTestCase;
+import io.demor.nuts.lib.TestUtil;
 
 import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.TimeUnit;
-
-import io.demor.nuts.lib.controller.ControllerCallback;
-import io.demor.nuts.lib.controller.ProxyInvokeHandler;
-import io.demor.nuts.test.TestUtil;
 
 public class ControllerVoidTestCase extends AndroidTestCase {
     VoidTestController mController = new ProxyInvokeHandler<>(VoidTestController.IMPL).createProxy();

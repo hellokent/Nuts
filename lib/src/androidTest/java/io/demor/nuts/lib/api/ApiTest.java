@@ -1,11 +1,6 @@
-package io.demor.nuts.test.api;
+package io.demor.nuts.lib.api;
 
 import android.test.AndroidTestCase;
-
-import java.lang.reflect.Method;
-import java.util.Map;
-import java.util.TreeMap;
-
 import com.google.common.base.Joiner;
 import com.google.common.base.Splitter;
 import com.google.common.reflect.Reflection;
@@ -14,14 +9,11 @@ import com.google.gson.GsonBuilder;
 import com.squareup.okhttp.mockwebserver.MockResponse;
 import com.squareup.okhttp.mockwebserver.MockWebServer;
 import com.squareup.okhttp.mockwebserver.RecordedRequest;
-import io.demor.nuts.lib.net.ApiCallback;
-import io.demor.nuts.lib.net.ApiInvokeHandler;
-import io.demor.nuts.lib.net.ApiProcess;
-import io.demor.nuts.lib.net.GsonDeserializeExclusionStrategy;
-import io.demor.nuts.lib.net.GsonSerializeExclusionStrategy;
-import io.demor.nuts.lib.net.INet;
-import io.demor.nuts.lib.net.IResponse;
-import io.demor.nuts.lib.net.NetResult;
+import io.demor.nuts.lib.net.*;
+
+import java.lang.reflect.Method;
+import java.util.Map;
+import java.util.TreeMap;
 
 public class ApiTest extends AndroidTestCase {
 
