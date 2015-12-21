@@ -14,7 +14,6 @@ public class NutsApplication extends Application {
     @Override
     public void onCreate() {
         super.onCreate();
-        System.out.println("do~~~~~~~");
         sApplication = this;
     }
 

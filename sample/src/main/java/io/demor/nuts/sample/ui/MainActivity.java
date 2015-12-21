@@ -18,17 +18,19 @@ public class MainActivity extends BaseActivity {
 
     @MethodLog
     private void method() {
-
+        System.out.println("~~~~~~~");
     }
 
     @OnClick(R.id.controller)
     public void gotoController() {
+        method();
         JUMPER.viewController()
                 .startActivity(this);
     }
 
     @OnClick(R.id.jumper)
     public void gotoJumper() {
+        method();
         JUMPER.viewJumper().startActivity(this);
     }
 }

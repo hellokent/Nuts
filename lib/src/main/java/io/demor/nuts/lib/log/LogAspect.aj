@@ -11,20 +11,11 @@ import org.aspectj.lang.annotation.Around;
 import org.aspectj.lang.annotation.Aspect;
 import org.aspectj.lang.annotation.Pointcut;
 import org.aspectj.lang.reflect.CodeSignature;
-import org.aspectj.lang.reflect.MethodSignature;
 
 import java.util.concurrent.TimeUnit;
 
 @Aspect
 public class LogAspect {
-
-//    @Pointcut("within(@io.demor.nuts.lib.annotation.log.MethodLog *)")
-//    public void withinAnnotatedClass() {
-//    }
-//
-//    @Pointcut("execution(* *(..)) && withinAnnotatedClass()")
-//    public void methodInsideAnnotatedType() {
-//    }
 
     private static void enterMethod(JoinPoint joinPoint) {
         CodeSignature codeSignature = (CodeSignature) joinPoint.getSignature();
@@ -57,25 +48,10 @@ public class LogAspect {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN_MR2) {
             Trace.endSection();
         }
-
         Signature signature = joinPoint.getSignature();
-
         Class<?> cls = signature.getDeclaringType();
         String methodName = signature.getName();
-        boolean hasReturnType = signature instanceof MethodSignature
-                && ((MethodSignature) signature).getReturnType() != void.class;
-
-        StringBuilder builder = new StringBuilder("\u21E0 ")
-                .append(methodName)
-                .append(" [")
-                .append(lengthMillis)
-                .append("ms]");
-
-        if (hasReturnType) {
-            builder.append(" = ");
-            builder.append(result);
-        }
-        Log.v(asTag(cls), builder.toString());
+        L.log(cls.getName(), Log.INFO, null, "\u21E0 %s [%sms] = %s", methodName, lengthMillis, result);
     }
 
     private static String asTag(Class<?> cls) {
@@ -85,22 +61,30 @@ public class LogAspect {
         return cls.getSimpleName();
     }
 
-    //    @Pointcut("execution(*.new(..)) && withinAnnotatedClass()")
-//    public void constructorInsideAnnotatedType() {
-//    }
-//
-    @Pointcut("execution(@io.demor.nuts.lib.annotation.log.MethodLog * *(..))")
+
+    @Pointcut("within(@io.demor.nuts.lib.annotation.log.MethodLog *)")
+    public void withinAnnotatedClass() {
+    }
+
+    @Pointcut("execution(* *(..)) && withinAnnotatedClass()")
+    public void methodInsideAnnotatedType() {
+    }
+
+    @Pointcut("execution(*.new(..)) && withinAnnotatedClass()")
+    public void constructorInsideAnnotatedType() {
+    }
+
+    @Pointcut("execution(@io.demor.nuts.lib.annotation.log.MethodLog * *(..)) || methodInsideAnnotatedType()")
     public void method() {
     }
 
-    @Pointcut("execution(@io.demor.nuts.lib.annotation.log.MethodLog *.new(..))")
+    @Pointcut("execution(@io.demor.nuts.lib.annotation.log.MethodLog *.new(..)) || constructorInsideAnnotatedType()")
     public void constructor() {
     }
 
-    @Around("method() || constructor()")
+    @Around("method()||constructor()")
     public Object logAndExecute(ProceedingJoinPoint joinPoint) throws Throwable {
         enterMethod(joinPoint);
-
         long startNanos = System.nanoTime();
         Object result = joinPoint.proceed();
         long stopNanos = System.nanoTime();

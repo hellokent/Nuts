@@ -15,12 +15,8 @@ repositories {
     jcenter()
 }
 
-project.ext {
-    aspectjVersion = '1.8.7'
-}
-
 android {
-    compileSdkVersion 22
+    compileSdkVersion 23
     buildToolsVersion "21.1.2"
 
     defaultConfig {
@@ -28,7 +24,6 @@ android {
         versionCode 1
         versionName "1.0"
 
-        //testPackageName "io.demor.nuts.test"
         testInstrumentationRunner "android.test.InstrumentationTestRunner"
         testHandleProfiling true
         testFunctionalTest true
