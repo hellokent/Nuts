@@ -1,12 +1,12 @@
 package io.demor.nuts.lib.controller;
 
+import io.demor.nuts.lib.Globals;
+import io.demor.nuts.lib.ReflectUtils;
+
 import java.lang.reflect.InvocationHandler;
 import java.lang.reflect.Method;
 import java.lang.reflect.Proxy;
 import java.util.concurrent.Callable;
-
-import io.demor.nuts.lib.Globals;
-import io.demor.nuts.lib.ReflectUtils;
 
 public class ProxyInvokeHandler<I> implements InvocationHandler {
 
@@ -16,6 +16,17 @@ public class ProxyInvokeHandler<I> implements InvocationHandler {
     public ProxyInvokeHandler(I impl) {
         mImpl = impl;
         mClz = mImpl.getClass();
+    }
+
+    protected static Object invoke(final Object impl, final Object proxy, final Method method, final Object[] args) throws Throwable {
+        final Class<?> returnClz = method.getReturnType();
+        if (ReflectUtils.isSubclassOf(returnClz, Return.class)) {
+            return returnClz.getConstructor(Callable.class, Method.class)
+                    .newInstance(new ControllerCallable(method, impl, args), method);
+        } else {
+            return new ControllerCallable(method, impl, args).call();
+        }
+
     }
 
     public I createProxy() {
@@ -35,12 +46,7 @@ public class ProxyInvokeHandler<I> implements InvocationHandler {
 
     @Override
     public Object invoke(final Object proxy, final Method method, final Object[] args) throws Throwable {
-        final Class<?> returnClz = method.getReturnType();
-        if (ReflectUtils.isSubclassOf(returnClz, Return.class)) {
-            return returnClz.getConstructor(Callable.class, Method.class)
-                    .newInstance(new ControllerCallable(method, mImpl, args), method);
-        } else {
-            return new ControllerCallable(method, mImpl, args).call();
-        }
+        return invoke(mImpl, proxy, method, args);
     }
+
 }

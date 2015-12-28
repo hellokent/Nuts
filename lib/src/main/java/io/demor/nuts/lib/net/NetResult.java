@@ -1,8 +1,8 @@
 package io.demor.nuts.lib.net;
 
-import java.util.HashMap;
-
 import com.google.common.collect.Maps;
+
+import java.util.HashMap;
 
 public class NetResult {
 
@@ -12,7 +12,7 @@ public class NetResult {
 
     public int mStatusCode;
 
-    public String mStrResult;
+    public byte[] mResult;
 
     public HashMap<String, String> mHeader = Maps.newHashMap();
 

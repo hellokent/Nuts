@@ -31,7 +31,7 @@ public class ApiTest extends AndroidTestCase {
 
         mServer.start();
 
-        mApi = Reflection.newProxy(TestApi.class, new ApiInvokeHandler(new INet() {
+        mApi = Reflection.newProxy(TestApi.class, new ApiInvokeHandler(new JsonNet(mGson) {
             @Override
             protected String onCreateUrl(final String url, final Method method, final Object[] args) {
                 switch (url) {
@@ -50,7 +50,7 @@ public class ApiTest extends AndroidTestCase {
                     headers, final Method method, final Object[] args) {
 
             }
-        }, mGson).setApiCallback(new ApiCallback() {
+        }).setApiCallback(new ApiCallback() {
             @Override
             public NetResult handle(final ApiProcess process, final String url, final Map<String, ?> param, final
             Map<String, String> header, final String method) {
@@ -61,7 +61,7 @@ public class ApiTest extends AndroidTestCase {
                                 .join(header));
                 final NetResult result = process.execute();
                 if (result.mIsSuccess) {
-                    System.out.printf("OK: code:%s, msg:%s\n", result.mStatusCode, result.mStrResult);
+                    System.out.printf("OK: code:%s, msg:%s\n", result.mStatusCode, new String(result.mResult));
                 } else {
                     System.out.printf("FAILED: e:%s\n", result.mException.getMessage());
                 }

@@ -23,4 +23,14 @@ public abstract class INet {
     protected String getLogTag(String url, Method method, Object[] args) {
         return url;
     }
+
+    protected abstract IResponse createResponse(Class clz, byte[] data);
+
+    protected IResponse createInvalidateResponse(Class clz) {
+        try {
+            return (IResponse) clz.newInstance();
+        } catch (Exception e) {
+            throw new Error(e);
+        }
+    }
 }

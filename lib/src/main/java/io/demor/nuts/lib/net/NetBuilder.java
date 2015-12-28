@@ -1,10 +1,9 @@
 package io.demor.nuts.lib.net;
 
 import com.google.common.base.Joiner;
-import com.google.gson.Gson;
+import com.google.common.collect.Maps;
 import com.squareup.okhttp.*;
 import io.demor.nuts.lib.annotation.net.Param;
-import io.demor.nuts.lib.log.L;
 
 import java.io.File;
 import java.io.IOException;
@@ -36,8 +35,6 @@ class NetBuilder {
 
     final Object[] mArgs;
 
-    final Gson mGson;
-
     final String mLogTag;
 
     protected String mUrl;
@@ -46,7 +43,7 @@ class NetBuilder {
 
     HttpMethod mHttpMethod;
 
-    NetBuilder(final Gson gson, INet net, String url, Class<?> respClz, HttpMethod httpMethod, Method method,
+    NetBuilder(INet net, String url, Class<?> respClz, HttpMethod httpMethod, Method method,
                Object[] args) {
         mUrl = url;
         mNet = net;
@@ -57,7 +54,6 @@ class NetBuilder {
         mHttpClient.setReadTimeout(net.getReadTimeout(), TimeUnit.SECONDS);
         mMethod = method;
         mArgs = args;
-        mGson = gson;
         mHttpMethod = httpMethod;
         mLogTag = mNet.getLogTag(mUrl, mMethod, mArgs);
     }
@@ -114,23 +110,12 @@ class NetBuilder {
     NetResult load(Request request) {
         ResponseBody body = null;
         try {
-            L.i(">>> %s(%s):%s", mHttpMethod.name(), mLogTag, getLog4Param());
-            if (!mFiles.isEmpty()) {
-                L.i(">>> %s(%s):%s;FILE:%s", mHttpMethod.name(), mLogTag, getLog4Param(), Joiner.on(",")
-                        .withKeyValueSeparator("=")
-                        .useForNull("")
-                        .join(mFiles));
-            }
             final Response response = mHttpClient.newCall(request)
                     .execute();
             mStatusCode = response.code();
             body = response.body();
-            final String result = body.string();
-            L.i("<<< %s(%s) CODE:%s, TEXT:%s", mHttpMethod.name(), mLogTag, mStatusCode, response);
-            return ofSuccess(response, result);
+            return ofSuccess(response, body.bytes());
         } catch (Exception e) {
-            L.e("!!! ERROR %s(%s), %s", mHttpMethod.name(), mLogTag, e.getMessage());
-            L.exception(e);
             return ofFailed(e);
         } finally {
             if (body != null) {
@@ -142,36 +127,32 @@ class NetBuilder {
         }
     }
 
-    NetResult ofSuccess(Response response, String str) {
+    NetResult ofSuccess(Response response, byte[] data) {
         final NetResult result = new NetResult();
         result.mIsSuccess = true;
-        result.mStrResult = str;
+        result.mResult = data;
+        HashMap<String, String> headerMap = Maps.newHashMap();
+        for (String name : response.headers().names()) {
+            headerMap.put(name, response.header(name));
+        }
+        result.mHeader.putAll(headerMap);
         result.mStatusCode = response.code();
 
-        for (String name : response.headers()
-                .names()) {
-            result.mHeader.put(name, response.header(name));
-        }
-
-        result.mIResponse = (IResponse) mGson.fromJson(str, mRespClz);
-        if (result.mIResponse == null) {
-            result.mIResponse = createInvalidResponse();
-        }
-        result.mIResponse.setStatusCode(result.mStatusCode);
-        result.mIResponse.setHeader(result.mHeader);
+        result.mIResponse = mNet.createResponse(mRespClz, data);
+        result.mIResponse.setStatusCode(response.code());
+        result.mIResponse.setHeader(headerMap);
         return result;
     }
 
     NetResult ofFailed(Exception e) {
         final NetResult result = new NetResult();
         result.mIsSuccess = false;
-        result.mStatusCode = mStatusCode;
         result.mException = e;
+        result.mStatusCode = mStatusCode;
 
-        result.mIResponse = createInvalidResponse();
+        result.mIResponse = mNet.createInvalidateResponse(mRespClz);
         result.mIResponse.setErrorCode(IResponse.BAD_NETWORK);
-        result.mIResponse.setStatusCode(result.mStatusCode);
-        result.mIResponse.setHeader(result.mHeader);
+        result.mIResponse.setStatusCode(mStatusCode);
         return result;
     }
 
@@ -193,14 +174,6 @@ class NetBuilder {
             builder.add(entry.getKey(), entry.getValue());
         }
         return builder.build();
-    }
-
-    IResponse createInvalidResponse() {
-        try {
-            return (IResponse) mRespClz.newInstance();
-        } catch (Exception e) {
-            throw new Error(e);
-        }
     }
 
     public void initParam() {

@@ -7,7 +7,7 @@ import com.squareup.okhttp.mockwebserver.MockResponse;
 import com.squareup.okhttp.mockwebserver.MockWebServer;
 import io.demor.nuts.lib.api.BaseResponse;
 import io.demor.nuts.lib.net.ApiInvokeHandler;
-import io.demor.nuts.lib.net.INet;
+import io.demor.nuts.lib.net.JsonNet;
 
 import java.lang.reflect.Method;
 import java.util.TreeMap;
@@ -26,7 +26,7 @@ public class ControllerApiTestCase extends AndroidTestCase {
     public void setUp() throws Exception {
         mServer = new MockWebServer();
         mServer.start();
-        mApi = Reflection.newProxy(TestApi2.class, new ApiInvokeHandler(new INet() {
+        mApi = Reflection.newProxy(TestApi2.class, new ApiInvokeHandler(new JsonNet(new Gson()) {
             @Override
             protected String onCreateUrl(final String url, final Method method, final Object[] args) {
                 return mServer.getUrl(url)
@@ -37,7 +37,7 @@ public class ControllerApiTestCase extends AndroidTestCase {
             protected void onCreateParams(final TreeMap<String, String> params, final TreeMap<String, String>
                     headers, final Method method, final Object[] args) {
             }
-        }, new Gson()));
+        }));
     }
 
     @Override

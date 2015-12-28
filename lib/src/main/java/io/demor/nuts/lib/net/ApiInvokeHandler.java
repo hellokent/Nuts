@@ -1,5 +1,12 @@
 package io.demor.nuts.lib.net;
 
+import com.google.common.base.Splitter;
+import com.google.common.collect.Lists;
+import io.demor.nuts.lib.ReflectUtils;
+import io.demor.nuts.lib.annotation.net.*;
+import io.demor.nuts.lib.controller.Return;
+import io.demor.nuts.lib.net.NetBuilder.HttpMethod;
+
 import java.lang.annotation.Annotation;
 import java.lang.reflect.InvocationHandler;
 import java.lang.reflect.Method;
@@ -8,34 +15,14 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.Callable;
 
-import com.google.common.base.Splitter;
-import com.google.common.collect.Lists;
-import com.google.gson.Gson;
-import io.demor.nuts.lib.ReflectUtils;
-import io.demor.nuts.lib.annotation.net.Delete;
-import io.demor.nuts.lib.annotation.net.Get;
-import io.demor.nuts.lib.annotation.net.Header;
-import io.demor.nuts.lib.annotation.net.Headers;
-import io.demor.nuts.lib.annotation.net.Multipart;
-import io.demor.nuts.lib.annotation.net.Param;
-import io.demor.nuts.lib.annotation.net.Patch;
-import io.demor.nuts.lib.annotation.net.Path;
-import io.demor.nuts.lib.annotation.net.Post;
-import io.demor.nuts.lib.annotation.net.Put;
-import io.demor.nuts.lib.annotation.net.Retry;
-import io.demor.nuts.lib.controller.Return;
-import io.demor.nuts.lib.net.NetBuilder.HttpMethod;
-
 public class ApiInvokeHandler implements InvocationHandler {
 
-    public final INet mNet;
-    public final Gson mGson;
+    private final INet mNet;
 
-    public ApiCallback mCallback = new ApiCallback();
+    private ApiCallback mCallback = new ApiCallback();
 
-    public ApiInvokeHandler(final INet net, final Gson gson) {
+    public ApiInvokeHandler(final INet net) {
         mNet = net;
-        mGson = gson;
     }
 
     public ApiInvokeHandler setApiCallback(ApiCallback callback) {
@@ -87,7 +74,7 @@ public class ApiInvokeHandler implements InvocationHandler {
                 .getGenericReturnType(), IResponse.class)) {
             throw new InvalidParameterException("API:" + method.getName() + "，返回值必须继承IResponse");
         }
-        final NetBuilder builder = new NetBuilder(mGson, mNet, url, ReflectUtils.isSubclassOf(returnClz, Return
+        final NetBuilder builder = new NetBuilder(mNet, url, ReflectUtils.isSubclassOf(returnClz, Return
                 .class) ? (Class<?>) ReflectUtils.getGenericType(method.getGenericReturnType()) : returnClz, m,
                 method, args);
 
@@ -135,8 +122,8 @@ public class ApiInvokeHandler implements InvocationHandler {
                 NetResult result;
                 final ApiProcess process = new ApiProcess(builder);
                 do {
-                    result = mCallback.handle(process, builder.mUrl, builder.mParams, builder.mHeaders, builder
-                            .mMethod.getName());
+                    result = mCallback.handle(process,
+                            builder.mUrl, builder.mParams, builder.mHeaders, builder.mMethod.getName());
                     --count;
                 } while (count > 0 && !result.mIsSuccess);
                 return result.mIResponse;
