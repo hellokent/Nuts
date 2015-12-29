@@ -8,7 +8,7 @@ import java.util.Map;
 import java.util.concurrent.TimeUnit;
 
 
-enum HttpMethod {
+public enum HttpMethod {
 
     GET {
         @Override

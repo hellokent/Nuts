@@ -15,14 +15,14 @@ import java.io.InputStream;
 import java.util.List;
 
 public final class L {
-    static final String DEFAULT_TAG = "log";
+    private static final String DEFAULT_TAG = "log";
 
-    static final Context CONTEXT = NutsApplication.getGlobalContext();
-    static final int STACK_DEPTH = 4;
+    private static final Context CONTEXT = NutsApplication.getGlobalContext();
+    private static final int STACK_DEPTH = 4;
 
-    static final List<LogConfigItem> CONFIG_ITEMS = Lists.newArrayList();
+    private static final List<LogConfigItem> CONFIG_ITEMS = Lists.newArrayList();
 
-    static boolean sInited = false;
+    private static boolean sInited = false;
 
     static {
         init();
@@ -31,7 +31,7 @@ public final class L {
     private L() {
     }
 
-    static void init() {
+    private static void init() {
         InputStream is = null;
         try {
             if (CONTEXT == null || CONTEXT.getAssets() == null) {
