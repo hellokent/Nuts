@@ -1,8 +1,8 @@
 package io.demor.nuts.lib.api;
 
 import android.test.AndroidTestCase;
-import com.google.common.base.Joiner;
 import com.google.common.base.Splitter;
+import com.google.common.collect.Maps;
 import com.google.common.reflect.Reflection;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
@@ -13,17 +13,16 @@ import io.demor.nuts.lib.net.*;
 
 import java.lang.reflect.Method;
 import java.util.Map;
-import java.util.TreeMap;
 
 public class ApiTest extends AndroidTestCase {
 
-    final Gson mGson = new GsonBuilder().addSerializationExclusionStrategy(new GsonSerializeExclusionStrategy())
+    private final Gson mGson = new GsonBuilder().addSerializationExclusionStrategy(new GsonSerializeExclusionStrategy())
             .addDeserializationExclusionStrategy(new GsonDeserializeExclusionStrategy())
             .create();
 
-    final MockWebServer mServer = new MockWebServer();
+    private final MockWebServer mServer = new MockWebServer();
 
-    TestApi mApi;
+    private TestApi mApi;
 
     @Override
     public void setUp() throws Exception {
@@ -32,38 +31,57 @@ public class ApiTest extends AndroidTestCase {
         mServer.start();
 
         mApi = Reflection.newProxy(TestApi.class, new ApiInvokeHandler(new JsonNet(mGson) {
+
             @Override
-            protected String onCreateUrl(final String url, final Method method, final Object[] args) {
-                switch (url) {
+            protected void handleRequest(ApiRequest request, Method method, Object[] args) {
+                switch (request.getUrl()) {
                     case "url":
-                        return "http://localhost:1234/invalidUrl";
+                        request.setUrl("http://localhost:1234/invalidUrl");
                     case "empty":
-                        return "";
+                        request.setUrl("");
                     default:
-                        return mServer.getUrl("/" + url)
-                                .toString();
+                        request.setUrl(mServer.getUrl("/" + request.getUrl()).toString());
                 }
             }
 
             @Override
-            protected void onCreateParams(final TreeMap<String, String> params, final TreeMap<String, String>
-                    headers, final Method method, final Object[] args) {
-
+            protected Object createResponse(Class clz, ApiResponse response) {
+                BaseResponse r;
+                if (response.isSuccess()) {
+                    try {
+                        r = (BaseResponse) mGson.fromJson(new String(response.getResult()), clz);
+                        r.setErrorCode(BaseResponse.SUCCESS);
+                    } catch (Throwable e) {
+                        try {
+                            r = (BaseResponse) clz.newInstance();
+                            r.setErrorCode(BaseResponse.ILLEGAL_JSON);
+                        } catch (Exception e1) {
+                            throw new Error(e1);
+                        }
+                    }
+                } else {
+                    try {
+                        r = (BaseResponse) clz.newInstance();
+                        r.setErrorCode(BaseResponse.BAD_NETWORK);
+                    } catch (Exception e) {
+                        throw new Error(e);
+                    }
+                }
+                r.setStatusCode(response.getStatusCode());
+                r.setHeader(Maps.newHashMap(response.getHeader()));
+                return r;
             }
         }).setApiCallback(new ApiCallback() {
             @Override
-            public NetResult handle(final ApiProcess process, final String url, final Map<String, ?> param, final
-            Map<String, String> header, final String method) {
-                System.out.printf("url:%s, param:%s, header:%s\n", url, Joiner.on(",")
-                                .withKeyValueSeparator("=")
-                                .join(param), Joiner.on(",")
-                                .withKeyValueSeparator("=")
-                                .join(header));
-                final NetResult result = process.execute();
-                if (result.mIsSuccess) {
-                    System.out.printf("OK: code:%s, msg:%s\n", result.mStatusCode, new String(result.mResult));
+            public ApiResponse handle(ApiRequest request) {
+                System.out.printf("url:%s, param:%s, header:%s\n", request.getUrl(),
+                        ApiRequest.joinMap(",", "=", request.getParams()),
+                        ApiRequest.joinMap(",", "=", request.getHeaders()));
+                final ApiResponse result = request.execute();
+                if (result.isSuccess()) {
+                    System.out.printf("OK: code:%s, msg:%s\n", result.getStatusCode(), new String(result.getResult()));
                 } else {
-                    System.out.printf("FAILED: e:%s\n", result.mException.getMessage());
+                    System.out.printf("FAILED: e:%s\n", result.getException().getMessage());
                 }
                 return result;
             }
@@ -106,19 +124,7 @@ public class ApiTest extends AndroidTestCase {
     public void testInvalidJson() throws Exception {
         mServer.enqueue(new MockResponse().setBody(mGson.toJson("<>")));
         BaseResponse response = mApi.test("", "");
-        assertEquals(IResponse.BAD_NETWORK, response.getErrorCode());
-    }
-
-    public void testUrl() throws Exception {
-        {
-            BaseResponse response = mApi.testUrl();
-            assertEquals(IResponse.BAD_NETWORK, response.getErrorCode());
-        }
-
-        {
-            BaseResponse response = mApi.emptyUrl();
-            assertEquals(IResponse.BAD_NETWORK, response.getErrorCode());
-        }
+        assertEquals(BaseResponse.ILLEGAL_JSON, response.getErrorCode());
     }
 
     public void testHeader() throws Exception {

@@ -11,7 +11,17 @@ public abstract class JsonNet extends INet {
     }
 
     @Override
-    protected IResponse createResponse(Class clz, byte[] data) {
-        return (IResponse) mGson.fromJson(new String(data), clz);
+    protected Object createResponse(Class clz, ApiResponse response) {
+        if (response.isSuccess()) {
+            try {
+                return mGson.fromJson(new String(response.getResult()), clz);
+            } catch (Throwable ignored) {
+            }
+        }
+        try {
+            return clz.newInstance();
+        } catch (Exception e) {
+            throw new Error(e);
+        }
     }
 }

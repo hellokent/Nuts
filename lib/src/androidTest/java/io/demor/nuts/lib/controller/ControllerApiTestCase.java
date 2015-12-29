@@ -7,10 +7,10 @@ import com.squareup.okhttp.mockwebserver.MockResponse;
 import com.squareup.okhttp.mockwebserver.MockWebServer;
 import io.demor.nuts.lib.api.BaseResponse;
 import io.demor.nuts.lib.net.ApiInvokeHandler;
+import io.demor.nuts.lib.net.ApiRequest;
 import io.demor.nuts.lib.net.JsonNet;
 
 import java.lang.reflect.Method;
-import java.util.TreeMap;
 import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.TimeUnit;
 
@@ -28,14 +28,8 @@ public class ControllerApiTestCase extends AndroidTestCase {
         mServer.start();
         mApi = Reflection.newProxy(TestApi2.class, new ApiInvokeHandler(new JsonNet(new Gson()) {
             @Override
-            protected String onCreateUrl(final String url, final Method method, final Object[] args) {
-                return mServer.getUrl(url)
-                        .toString();
-            }
-
-            @Override
-            protected void onCreateParams(final TreeMap<String, String> params, final TreeMap<String, String>
-                    headers, final Method method, final Object[] args) {
+            protected void handleRequest(ApiRequest request, Method method, Object[] args) {
+                request.setUrl(mServer.getUrl(request.getUrl()).toString());
             }
         }));
     }
@@ -75,7 +69,7 @@ public class ControllerApiTestCase extends AndroidTestCase {
                                 public void onResult(final BaseResponse baseResponse) {
                                     assertNotNull(baseResponse);
                                     assertNotSame(0, baseResponse.code);
-                                    assertTrue(baseResponse.getErrorCode() == 0);
+                                    assertEquals(BaseResponse.SUCCESS, baseResponse.getErrorCode());
                                     latch.countDown();
                                 }
                             });
@@ -92,7 +86,7 @@ public class ControllerApiTestCase extends AndroidTestCase {
                                 public void onEnd(final BaseResponse response) {
                                     assertNotNull(response);
                                     assertNotSame(0, response.code);
-                                    assertTrue(response.getErrorCode() == 0);
+                                    assertEquals(BaseResponse.SUCCESS, response.getErrorCode());
                                     latch.countDown();
                                 }
 
@@ -107,14 +101,13 @@ public class ControllerApiTestCase extends AndroidTestCase {
                             .sync();
                     assertNotNull(response);
                     assertNotSame(0, response.code);
-                    assertTrue(response.getErrorCode() == 0);
+                    assertEquals(BaseResponse.SUCCESS, response.getErrorCode());
                     latch.countDown();
                     break;
             }
 
         }
 
-        //latch.await(200, TimeUnit.SECONDS);
         latch.await();
         assertEquals(0, latch.getCount());
     }

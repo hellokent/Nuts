@@ -159,8 +159,8 @@ public final class L {
         }
 
         // 过滤level & enable
-        if (!logConfig.getLevel().isValidLevel(level) && !logConfig.isEnable()) {
-            l(level, DEFAULT_TAG, logText);
+        if (!logConfig.getLevel().isValidLevel(level) || !logConfig.isEnable()) {
+            //l(level, DEFAULT_TAG, logText);
             return;
         }
 

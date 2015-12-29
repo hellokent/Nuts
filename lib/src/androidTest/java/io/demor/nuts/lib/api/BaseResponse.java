@@ -1,17 +1,18 @@
 package io.demor.nuts.lib.api;
 
-import com.google.common.collect.Maps;
 import com.google.gson.annotations.Expose;
-import io.demor.nuts.lib.net.IResponse;
 
 import java.util.HashMap;
-import java.util.Map;
 
-public class BaseResponse implements IResponse {
+public class BaseResponse {
 
-    public int code = 0;
-
+    public static final int BAD_NETWORK = -1;
+    public static final int SUCCESS = 0;
+    public static final int ILLEGAL_JSON = -2;
+    public int code = BAD_NETWORK;
     public String msg = "hello";
+
+    private HashMap<String, String> mHeader;
 
     @Expose(serialize = false, deserialize = false)
     private int mStatusCode;
@@ -19,30 +20,28 @@ public class BaseResponse implements IResponse {
     @Expose(serialize = false, deserialize = false)
     private int mErrorCode;
 
-    @Expose(serialize = false, deserialize = false)
-    private HashMap<String, String> mHeader = Maps.newHashMap();
+    public int getErrorCode() {
+        return mErrorCode;
+    }
+
+    public void setErrorCode(int errorCode) {
+        mErrorCode = errorCode;
+    }
 
     public int getStatusCode() {
         return mStatusCode;
     }
 
-    @Override
-    public void setStatusCode(final int statusCode) {
+    public void setStatusCode(int statusCode) {
         mStatusCode = statusCode;
     }
 
-    @Override
-    public void setHeader(final Map<String, String> header) {
-        mHeader.putAll(header);
+    public HashMap<String, String> getHeader() {
+        return mHeader;
     }
 
-    public int getErrorCode() {
-        return mErrorCode;
-    }
-
-    @Override
-    public void setErrorCode(final int errorCode) {
-        mErrorCode = errorCode;
+    public void setHeader(HashMap<String, String> header) {
+        mHeader = header;
     }
 
     public String getHeader(String key) {

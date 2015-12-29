@@ -1,12 +1,9 @@
 package io.demor.nuts.lib.net;
 
 import java.lang.reflect.Method;
-import java.util.TreeMap;
 
 public abstract class INet {
-    protected abstract String onCreateUrl(String url, Method method, Object[] args);
-
-    protected abstract void onCreateParams(TreeMap<String, String> params, TreeMap<String, String> headers, Method method, Object[] args);
+    protected abstract void handleRequest(ApiRequest request, Method method, Object[] args);
 
     protected int getConnectionTimeout() {
         return 60;
@@ -20,17 +17,5 @@ public abstract class INet {
         return 120;
     }
 
-    protected String getLogTag(String url, Method method, Object[] args) {
-        return url;
-    }
-
-    protected abstract IResponse createResponse(Class clz, byte[] data);
-
-    protected IResponse createInvalidateResponse(Class clz) {
-        try {
-            return (IResponse) clz.newInstance();
-        } catch (Exception e) {
-            throw new Error(e);
-        }
-    }
+    protected abstract Object createResponse(Class clz, ApiResponse response);
 }
