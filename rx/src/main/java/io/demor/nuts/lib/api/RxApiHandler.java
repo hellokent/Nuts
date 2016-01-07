@@ -1,5 +1,6 @@
 package io.demor.nuts.lib.api;
 
+import io.demor.nuts.lib.ReflectUtils;
 import io.demor.nuts.lib.net.ApiInvokeHandler;
 import io.demor.nuts.lib.net.ApiRequest;
 import io.demor.nuts.lib.net.ApiResponse;
@@ -26,7 +27,7 @@ public class RxApiHandler extends ApiInvokeHandler {
                     subscriber.onStart();
                     final ApiResponse response = execute(request, retryCount, method, args);
                     if (response.isSuccess()) {
-                        subscriber.onNext(mNet.createResponse(returnClz, response));
+                        subscriber.onNext(mNet.createResponse((Class) ReflectUtils.getGenericType(method.getGenericReturnType()), response));
                     } else {
                         subscriber.onError(response.getException());
                     }

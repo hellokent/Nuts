@@ -11,7 +11,7 @@ public abstract class JsonNet extends INet {
     }
 
     @Override
-    protected Object createResponse(Class clz, ApiResponse response) {
+    public Object createResponse(Class clz, ApiResponse response) {
         if (response.isSuccess()) {
             try {
                 return mGson.fromJson(new String(response.getResult()), clz);

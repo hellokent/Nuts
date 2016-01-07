@@ -1,7 +1,7 @@
 package io.demor.nuts.lib.api;
 
+import android.os.Looper;
 import android.test.AndroidTestCase;
-import com.google.common.base.Splitter;
 import com.google.common.collect.Maps;
 import com.google.common.reflect.Reflection;
 import com.google.gson.Gson;
@@ -10,12 +10,14 @@ import com.squareup.okhttp.mockwebserver.MockResponse;
 import com.squareup.okhttp.mockwebserver.MockWebServer;
 import com.squareup.okhttp.mockwebserver.RecordedRequest;
 import io.demor.nuts.lib.net.*;
+import rx.Observer;
+import rx.android.schedulers.AndroidSchedulers;
+import rx.schedulers.Schedulers;
 
 import java.lang.reflect.Method;
-import java.util.Map;
+import java.util.concurrent.CountDownLatch;
 
-public class ApiTest extends AndroidTestCase {
-
+public class RxApiTest extends AndroidTestCase {
     private final Gson mGson = new GsonBuilder().addSerializationExclusionStrategy(new GsonSerializeExclusionStrategy())
             .addDeserializationExclusionStrategy(new GsonDeserializeExclusionStrategy())
             .create();
@@ -26,22 +28,13 @@ public class ApiTest extends AndroidTestCase {
 
     @Override
     public void setUp() throws Exception {
-        super.setUp();
-
         mServer.start();
 
-        mApi = Reflection.newProxy(TestApi.class, new ApiInvokeHandler(new JsonNet(mGson) {
+        mApi = Reflection.newProxy(TestApi.class, new RxApiHandler(new JsonNet(mGson) {
 
             @Override
             protected void handleRequest(ApiRequest request, Method method, Object[] args) {
-                switch (request.getUrl()) {
-                    case "url":
-                        request.setUrl("http://localhost:1234/invalidUrl");
-                    case "empty":
-                        request.setUrl("");
-                    default:
-                        request.setUrl(mServer.getUrl("/" + request.getUrl()).toString());
-                }
+                request.setUrl(mServer.getUrl("/" + request.getUrl()).toString());
             }
 
             @Override
@@ -97,68 +90,36 @@ public class ApiTest extends AndroidTestCase {
         BaseResponse response = new BaseResponse();
         response.msg = "asdf";
         mServer.enqueue(new MockResponse().setBody(mGson.toJson(response)));
-        assertEquals("asdf", mApi.test("a1", "b2").msg);
-        final RecordedRequest request = mServer.takeRequest();
-        assertTrue(request.getPath()
-                .startsWith("/test"));
-        final Map<String, String> queryMap = Splitter.on('&')
-                .withKeyValueSeparator("=")
-                .split(request.getPath()
-                        .substring("/test".length() + 1));
+        final CountDownLatch latch = new CountDownLatch(2);
+        mApi.test("a", "b")
+                .subscribeOn(Schedulers.io())
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribe(new Observer<BaseResponse>() {
+                    @Override
+                    public void onCompleted() {
+                        latch.countDown();
+                        assertEquals(0, latch.getCount());
+                        assertEquals(Thread.currentThread(), Looper.getMainLooper().getThread());
+                    }
 
-        assertTrue(queryMap.containsKey("a"));
-        assertTrue(queryMap.containsKey("b"));
-        assertEquals("a1", queryMap.get("a"));
-        assertEquals("b2", queryMap.get("b"));
-        assertEquals(request.getMethod()
-                .toLowerCase(), "get");
-    }
+                    @Override
+                    public void onError(Throwable e) {
+                        assertEquals(Thread.currentThread(), Looper.getMainLooper().getThread());
+                    }
 
-    public void test502() throws Exception {
-        mServer.enqueue(new MockResponse().setResponseCode(502)
-                .setBody(mGson.toJson(new BaseResponse())));
-        BaseResponse response = mApi.test("a", "b");
-        assertEquals(502, response.getStatusCode());
-    }
-
-    public void testInvalidJson() throws Exception {
-        mServer.enqueue(new MockResponse().setBody(mGson.toJson("<>")));
-        BaseResponse response = mApi.test("", "");
-        assertEquals(BaseResponse.ILLEGAL_JSON, response.getErrorCode());
-    }
-
-    public void testHeader() throws Exception {
-        BaseResponse response = new BaseResponse();
-        response.msg = "msg";
-        mServer.enqueue(new MockResponse().addHeader("h1", "v1")
-                .addHeader("h2", "v2")
-                .setBody(mGson.toJson(response)));
-
-        response = mApi.header();
-
-        RecordedRequest request = mServer.takeRequest();
-        assertEquals("h1", request.getHeader("r1"));
-        assertEquals("h2", request.getHeader("r2"));
-        assertNotSame("h3", request.getHeader("r3"));
-
-        assertEquals("v1", response.getHeader("h1"));
-        assertEquals("v2", response.getHeader("h2"));
-    }
-
-    public void testGson() {
-        BaseResponse response = new BaseResponse();
-        String json = mGson.toJson(response)
-                .toLowerCase();
-        assertFalse(json.contains("header"));
-    }
-
-    public void testParamUrl() throws Exception {
-        BaseResponse response = new BaseResponse();
-        mServer.enqueue(new MockResponse().setBody(mGson.toJson(response)));
-
-        mApi.testParamUrl("123");
-
-        RecordedRequest request = mServer.takeRequest();
-        assertEquals("/123/user", request.getPath());
+                    @Override
+                    public void onNext(BaseResponse baseResponse) {
+                        latch.countDown();
+                        assertEquals("asdf", baseResponse.msg);
+                        assertEquals(Thread.currentThread(), Looper.getMainLooper().getThread());
+                        try {
+                            final RecordedRequest request = mServer.takeRequest();
+                            assertTrue(request.getPath().startsWith("/test"));
+                        } catch (InterruptedException e) {
+                            e.printStackTrace();
+                        }
+                    }
+                });
+        latch.await();
     }
 }
