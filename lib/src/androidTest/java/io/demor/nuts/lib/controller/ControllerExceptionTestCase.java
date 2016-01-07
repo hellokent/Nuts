@@ -1,6 +1,7 @@
 package io.demor.nuts.lib.controller;
 
 import android.test.AndroidTestCase;
+import com.google.common.reflect.Reflection;
 import io.demor.nuts.lib.TestUtil;
 
 import java.util.concurrent.CountDownLatch;
@@ -8,7 +9,7 @@ import java.util.concurrent.TimeUnit;
 
 public class ControllerExceptionTestCase extends AndroidTestCase {
 
-    TestController mController = new ControllerInvokeHandler<>(TestController.IMPL).createProxy();
+    TestController mController = Reflection.newProxy(TestController.class, new ControllerInvokeHandler(TestController.IMPL));
 
     public void testAsyncWrappedException() throws Exception {
         final CountDownLatch latch = new CountDownLatch(3);

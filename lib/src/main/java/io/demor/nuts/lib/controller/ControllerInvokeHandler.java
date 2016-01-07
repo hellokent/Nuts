@@ -5,20 +5,16 @@ import io.demor.nuts.lib.ReflectUtils;
 
 import java.lang.reflect.InvocationHandler;
 import java.lang.reflect.Method;
-import java.lang.reflect.Proxy;
 import java.util.concurrent.Callable;
 
-public class ControllerInvokeHandler<I> implements InvocationHandler {
+public class ControllerInvokeHandler implements InvocationHandler {
 
-    protected final I mImpl;
+    protected final Object mImpl;
     private final Class<?> mClz;
 
-    public ControllerInvokeHandler(I impl) {
+    public ControllerInvokeHandler(Object impl) {
         mImpl = impl;
         mClz = mImpl.getClass();
-    }
-
-    public I createProxy() {
         final Class[] interfaces = mClz.getInterfaces();
         for (Class i : interfaces) {
             for (Method method : i.getDeclaredMethods()) {
@@ -30,7 +26,6 @@ public class ControllerInvokeHandler<I> implements InvocationHandler {
             }
         }
         Globals.BUS.register(mImpl);
-        return (I) Proxy.newProxyInstance(ControllerInvokeHandler.class.getClassLoader(), mClz.getInterfaces(), this);
     }
 
     @Override

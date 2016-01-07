@@ -1,13 +1,14 @@
 package io.demor.nuts.lib.controller;
 
 import android.test.AndroidTestCase;
+import com.google.common.reflect.Reflection;
 import io.demor.nuts.lib.TestUtil;
 
 import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.TimeUnit;
 
 public class ControllerVoidTestCase extends AndroidTestCase {
-    VoidTestController mController = new ControllerInvokeHandler<>(VoidTestController.IMPL).createProxy();
+    VoidTestController mController = Reflection.newProxy(VoidTestController.class, new ControllerInvokeHandler(VoidTestController.IMPL));
 
     public void testAsyncRun() throws Exception {
         final CountDownLatch latch = new CountDownLatch(1);

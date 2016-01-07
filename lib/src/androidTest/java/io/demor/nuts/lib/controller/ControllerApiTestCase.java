@@ -19,8 +19,8 @@ public class ControllerApiTestCase extends AndroidTestCase {
     MockWebServer mServer;
 
     TestApi2 mApi;
-
-    TestController mController = new ControllerInvokeHandler<>(TestController.IMPL).createProxy();
+    
+    TestController mController = Reflection.newProxy(TestController.class, new ControllerInvokeHandler(TestController.IMPL));
 
     @Override
     public void setUp() throws Exception {
