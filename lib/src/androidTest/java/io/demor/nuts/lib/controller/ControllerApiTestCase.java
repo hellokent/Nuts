@@ -20,7 +20,7 @@ public class ControllerApiTestCase extends AndroidTestCase {
 
     TestApi2 mApi;
 
-    TestController mController = new ProxyInvokeHandler<>(TestController.IMPL).createProxy();
+    TestController mController = new ControllerInvokeHandler<>(TestController.IMPL).createProxy();
 
     @Override
     public void setUp() throws Exception {

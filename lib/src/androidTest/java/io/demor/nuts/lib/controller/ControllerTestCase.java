@@ -9,7 +9,7 @@ import java.util.concurrent.TimeUnit;
 
 public class ControllerTestCase extends AndroidTestCase {
 
-    TestController mController = new ProxyInvokeHandler<>(TestController.IMPL).createProxy();
+    TestController mController = new ControllerInvokeHandler<>(TestController.IMPL).createProxy();
 
     public void testAsyncRun() throws Exception {
         final CountDownLatch latch = new CountDownLatch(1);

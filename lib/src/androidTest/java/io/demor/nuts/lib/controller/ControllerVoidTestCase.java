@@ -7,7 +7,7 @@ import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.TimeUnit;
 
 public class ControllerVoidTestCase extends AndroidTestCase {
-    VoidTestController mController = new ProxyInvokeHandler<>(VoidTestController.IMPL).createProxy();
+    VoidTestController mController = new ControllerInvokeHandler<>(VoidTestController.IMPL).createProxy();
 
     public void testAsyncRun() throws Exception {
         final CountDownLatch latch = new CountDownLatch(1);

@@ -15,7 +15,7 @@ import java.util.concurrent.Callable;
 
 public class ApiInvokeHandler implements InvocationHandler {
 
-    private final INet mNet;
+    protected final INet mNet;
 
     private ApiCallback mCallback = new ApiCallback();
 
@@ -37,7 +37,7 @@ public class ApiInvokeHandler implements InvocationHandler {
         final Put put = method.getAnnotation(Put.class);
         final Delete delete = method.getAnnotation(Delete.class);
 
-        final Class<?> returnClz = method.getReturnType();
+
         final Headers headers = method.getAnnotation(Headers.class);
         final int tryCount = method.getAnnotation(Retry.class) == null ? 1 : method.getAnnotation(Retry.class).value();
 
@@ -104,20 +104,17 @@ public class ApiInvokeHandler implements InvocationHandler {
                 }
             }
         }
-
         request.mUrl = String.format(url, pathArgs.toArray());
 
+        return methodReturn(request, tryCount, method, args);
+    }
+
+    protected Object methodReturn(final ApiRequest request, final int retryCount, final Method method, final Object[] args) throws Exception {
+        final Class<?> returnClz = method.getReturnType();
         final Callable<Object> callable = new Callable<Object>() {
             @Override
             public Object call() {
-                int count = Math.max(0, tryCount);
-                mNet.handleRequest(request, method, args);
-                ApiResponse result;
-                do {
-                    result = mCallback.handle(request);
-                    --count;
-                } while (count > 0 && !result.isSuccess());
-                return mNet.createResponse(returnClz, result);
+                return mNet.createResponse(returnClz, execute(request, retryCount, method, args));
             }
         };
 
@@ -127,5 +124,16 @@ public class ApiInvokeHandler implements InvocationHandler {
         } else {
             return callable.call();
         }
+    }
+
+    protected ApiResponse execute(final ApiRequest request, final int retryCount, final Method method, final Object[] args) {
+        int count = Math.max(0, retryCount);
+        ApiResponse result;
+        do {
+            mNet.handleRequest(request, method, args);
+            result = mCallback.handle(request);
+            --count;
+        } while (count > 0 && !result.isSuccess());
+        return result;
     }
 }

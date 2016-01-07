@@ -17,5 +17,5 @@ public abstract class INet {
         return 120;
     }
 
-    protected abstract Object createResponse(Class clz, ApiResponse response);
+    public abstract Object createResponse(Class clz, ApiResponse response);
 }

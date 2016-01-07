@@ -8,25 +8,14 @@ import java.lang.reflect.Method;
 import java.lang.reflect.Proxy;
 import java.util.concurrent.Callable;
 
-public class ProxyInvokeHandler<I> implements InvocationHandler {
+public class ControllerInvokeHandler<I> implements InvocationHandler {
 
-    final I mImpl;
-    final Class<?> mClz;
+    protected final I mImpl;
+    private final Class<?> mClz;
 
-    public ProxyInvokeHandler(I impl) {
+    public ControllerInvokeHandler(I impl) {
         mImpl = impl;
         mClz = mImpl.getClass();
-    }
-
-    protected static Object invoke(final Object impl, final Object proxy, final Method method, final Object[] args) throws Throwable {
-        final Class<?> returnClz = method.getReturnType();
-        if (ReflectUtils.isSubclassOf(returnClz, Return.class)) {
-            return returnClz.getConstructor(Callable.class, Method.class)
-                    .newInstance(new ControllerCallable(method, impl, args), method);
-        } else {
-            return new ControllerCallable(method, impl, args).call();
-        }
-
     }
 
     public I createProxy() {
@@ -41,12 +30,18 @@ public class ProxyInvokeHandler<I> implements InvocationHandler {
             }
         }
         Globals.BUS.register(mImpl);
-        return (I) Proxy.newProxyInstance(ProxyInvokeHandler.class.getClassLoader(), mClz.getInterfaces(), this);
+        return (I) Proxy.newProxyInstance(ControllerInvokeHandler.class.getClassLoader(), mClz.getInterfaces(), this);
     }
 
     @Override
     public Object invoke(final Object proxy, final Method method, final Object[] args) throws Throwable {
-        return invoke(mImpl, proxy, method, args);
+        final Class<?> returnClz = method.getReturnType();
+        if (ReflectUtils.isSubclassOf(returnClz, Return.class)) {
+            return returnClz.getConstructor(Callable.class, Method.class)
+                    .newInstance(new ControllerCallable(method, mImpl, args), method);
+        } else {
+            return new ControllerCallable(method, mImpl, args).call();
+        }
     }
 
 }

@@ -8,7 +8,7 @@ import java.util.concurrent.TimeUnit;
 
 public class ControllerTimeoutTestCase extends AndroidTestCase {
 
-    TestController mController = new ProxyInvokeHandler<>(TestController.IMPL).createProxy();
+    TestController mController = new ControllerInvokeHandler<>(TestController.IMPL).createProxy();
 
     public void testStopCallback() throws Exception {
 
