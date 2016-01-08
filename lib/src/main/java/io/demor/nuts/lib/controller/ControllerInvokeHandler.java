@@ -7,14 +7,14 @@ import java.lang.reflect.InvocationHandler;
 import java.lang.reflect.Method;
 import java.util.concurrent.Callable;
 
-public class ControllerInvokeHandler implements InvocationHandler {
+public class ControllerInvokeHandler<I> implements InvocationHandler {
 
-    protected final Object mImpl;
+    protected final I mImpl;
     private final Class<?> mClz;
 
-    public ControllerInvokeHandler(Object impl) {
+    public ControllerInvokeHandler(I impl) {
         mImpl = impl;
-        mClz = mImpl.getClass();
+        mClz = impl.getClass();
         final Class[] interfaces = mClz.getInterfaces();
         for (Class i : interfaces) {
             for (Method method : i.getDeclaredMethods()) {

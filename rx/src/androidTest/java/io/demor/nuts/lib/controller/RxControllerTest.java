@@ -1,6 +1,7 @@
 package io.demor.nuts.lib.controller;
 
 import android.test.AndroidTestCase;
+import com.google.common.reflect.Reflection;
 import rx.Observer;
 import rx.android.schedulers.AndroidSchedulers;
 import rx.schedulers.Schedulers;
@@ -9,7 +10,7 @@ import java.util.concurrent.CountDownLatch;
 
 public class RxControllerTest extends AndroidTestCase {
 
-    TestController mController = new ControllerInvokeHandler<>(TestController.IMPL).createProxy();
+    TestController mController = Reflection.newProxy(TestController.class, new RxControllerHandler<>(TestController.IMPL));
 
     public void testRun() throws Exception {
         final CountDownLatch latch = new CountDownLatch(2);
