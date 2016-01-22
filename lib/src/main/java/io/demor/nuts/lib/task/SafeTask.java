@@ -24,7 +24,7 @@ public abstract class SafeTask<Param, Result> extends AsyncTask<Param, Void, Res
         private final AtomicInteger mCount = new AtomicInteger(1);
 
         public Thread newThread(Runnable r) {
-            Thread t = new Thread(r, "后台线程 #" + mCount.getAndIncrement());
+            Thread t = new Thread(r, "Nuts Task Thread #" + mCount.getAndIncrement());
             THREADS.add(t);
             return t;
         }
