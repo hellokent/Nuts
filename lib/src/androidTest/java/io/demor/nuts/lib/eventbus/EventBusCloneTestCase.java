@@ -6,11 +6,11 @@ import io.demor.nuts.lib.annotation.eventbus.Event;
 
 public class EventBusCloneTestCase extends AndroidTestCase {
 
-    EventBus mEventBus;
+    private EventBus mEventBus;
 
-    int mHashCode;
+    private int mHashCode;
 
-    Exception mException;
+    private Exception mException;
 
     @Override
     public void setUp() throws Exception {
@@ -39,40 +39,42 @@ public class EventBusCloneTestCase extends AndroidTestCase {
 
     @Event(runOn = ThreadType.SOURCE)
     void onDeepCloneEvent(DeepCloneEvent event) {
-        mHashCode = event.mHashCode;
-        mException = event.mException;
+        copyEventToTestCase(event);
     }
 
     @Event(runOn = ThreadType.SOURCE)
     void onDirectEvent(DirectEvent event) {
+        copyEventToTestCase(event);
+    }
+
+    private void copyEventToTestCase(ExceptionEvent event) {
         mHashCode = event.mHashCode;
         mException = event.mException;
     }
 
-    @DeepClone
-    static class DeepCloneEvent extends BaseEvent<Void> {
+
+    private static class ExceptionEvent extends BaseEvent<Void> {
 
         int mHashCode;
-
         Exception mException;
 
-        DeepCloneEvent() {
+        private ExceptionEvent() {
             super(null);
             mException = new Exception();
             mHashCode = mException.hashCode();
         }
     }
 
-    static class DirectEvent extends BaseEvent<Void> {
+    @DeepClone
+    private static class DeepCloneEvent extends ExceptionEvent {
+        DeepCloneEvent() {
+            super();
+        }
+    }
 
-        int mHashCode;
-
-        Exception mException;
-
+    private static class DirectEvent extends ExceptionEvent {
         DirectEvent() {
-            super(null);
-            mException = new Exception();
-            mHashCode = mException.hashCode();
+            super();
         }
     }
 }

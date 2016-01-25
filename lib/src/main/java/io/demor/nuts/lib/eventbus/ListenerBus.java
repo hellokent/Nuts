@@ -28,21 +28,18 @@ public final class ListenerBus {
     }
 
     public static synchronized void clean() {
-        for (Class<?> c : mMethodConsumer.keys()) {
-            mMethodConsumer.removeAll(c);
-        }
+        mMethodConsumer.clear();
     }
 
     public static synchronized <T> T provide(final Class<T> clz) {
-        addClz(clz);
         if (mMethodProvider.containsKey(clz)) {
             return (T) mMethodProvider.get(clz).mProxy;
         } else {
-            return null;
+            return addClz(clz).mProxy;
         }
     }
 
-    private static void addClz(Class<?> clz) {
+    private static <T> ListenerClassContext<T> addClz(Class<T> clz) {
         if (!clz.isInterface()) {
             throw new IllegalArgumentException("clz must be interface");
         }
@@ -51,9 +48,9 @@ public final class ListenerBus {
             throw new IllegalArgumentException("clz cannot have super interface");
         }
 
-        if (!mMethodProvider.containsKey(clz)) {
-            mMethodProvider.put(clz, new ListenerClassContext(clz));
-        }
+        ListenerClassContext<T> result = new ListenerClassContext<T>(clz);
+        mMethodProvider.put(clz, result);
+        return result;
     }
 
     private static class ListenerClassContext<T> extends ClassContext implements InvocationHandler {

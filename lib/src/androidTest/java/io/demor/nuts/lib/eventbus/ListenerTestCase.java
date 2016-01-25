@@ -10,7 +10,7 @@ import java.util.concurrent.TimeUnit;
 
 public class ListenerTestCase extends AndroidTestCase {
 
-    TestListener mListener;
+    private TestListener mListener;
 
     @Override
     public void setUp() throws Exception {
@@ -192,14 +192,60 @@ public class ListenerTestCase extends AndroidTestCase {
         ListenerBus.clean();
     }
 
-    interface IllegalInterface extends TestListener {
+    public void testTwoInterface() throws Exception {
+        final CountDownLatch foo = new CountDownLatch(1);
+        final CountDownLatch bar = new CountDownLatch(1);
+
+        FooBar fooBar = new FooBar() {
+            @Override
+            public void bar() {
+                bar.countDown();
+            }
+
+            @Override
+            public void foo() {
+                foo.countDown();
+            }
+        };
+
+        ListenerBus.register(IFoo.class, fooBar);
+        ListenerBus.register(IBar.class, fooBar);
+        final IFoo fooProvider = ListenerBus.provide(IFoo.class);
+        final IBar barProvider = ListenerBus.provide(IBar.class);
+
+        new Thread() {
+            @Override
+            public void run() {
+                fooProvider.foo();
+                barProvider.bar();
+            }
+        }.start();
+
+        foo.await(1, TimeUnit.SECONDS);
+        bar.await(1, TimeUnit.SECONDS);
+        assertEquals(0, foo.getCount());
+        assertEquals(0, bar.getCount());
+    }
+
+    private interface IllegalInterface extends TestListener {
     }
 
     @DeepClone
-    interface IDeepClone {
+    private interface IDeepClone {
         @DeepClone
         void onDeepClone(int hashCode, Exception e);
 
         void onDirect(int hashCode, Exception e);
+    }
+
+    private interface IFoo {
+        void foo();
+    }
+
+    private interface IBar {
+        void bar();
+    }
+
+    private abstract class FooBar implements IFoo, IBar {
     }
 }
