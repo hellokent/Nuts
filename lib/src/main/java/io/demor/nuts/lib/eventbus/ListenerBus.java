@@ -12,28 +12,28 @@ import java.util.HashMap;
 
 public final class ListenerBus {
 
-    private static final Multimap<Class<?>, Object> mMethodConsumer = ArrayListMultimap.create();
-    private static final HashMap<Class<?>, ListenerClassContext<?>> mMethodProvider = Maps.newHashMap();
+    private static final Multimap<Class<?>, Object> METHOD_CONSUMMER = ArrayListMultimap.create();
+    private static final HashMap<Class<?>, ListenerClassContext<?>> METHOD_PROVIDER = Maps.newHashMap();
 
     public static synchronized <T> void register(Class<T> clz, T obj) {
         if (clz == null || obj == null) {
             return;
         }
         addClz(clz);
-        mMethodConsumer.put(clz, obj);
+        METHOD_CONSUMMER.put(clz, obj);
     }
 
     public static synchronized void unregister(Class<?> clz) {
-        mMethodConsumer.removeAll(clz);
+        METHOD_CONSUMMER.removeAll(clz);
     }
 
     public static synchronized void clean() {
-        mMethodConsumer.clear();
+        METHOD_CONSUMMER.clear();
     }
 
     public static synchronized <T> T provide(final Class<T> clz) {
-        if (mMethodProvider.containsKey(clz)) {
-            return (T) mMethodProvider.get(clz).mProxy;
+        if (METHOD_PROVIDER.containsKey(clz)) {
+            return (T) METHOD_PROVIDER.get(clz).mProxy;
         } else {
             return addClz(clz).mProxy;
         }
@@ -49,7 +49,7 @@ public final class ListenerBus {
         }
 
         ListenerClassContext<T> result = new ListenerClassContext<T>(clz);
-        mMethodProvider.put(clz, result);
+        METHOD_PROVIDER.put(clz, result);
         return result;
     }
 
@@ -71,7 +71,7 @@ public final class ListenerBus {
             //TODO map?
             for (MethodContext context : mMethodList) {
                 if (context.mMethod.equals(method)) {
-                    for (Object o : mMethodConsumer.get(mClass)) {
+                    for (Object o : METHOD_CONSUMMER.get(mClass)) {
                         context.call(o, args);
                     }
                 }

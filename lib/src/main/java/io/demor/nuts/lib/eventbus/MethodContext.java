@@ -11,7 +11,7 @@ abstract class MethodContext {
 
     final Method mMethod;
 
-    final ThreadType mThreadType;
+    private final ThreadType mThreadType;
 
     MethodContext(final Method method, ThreadType threadType) {
         mMethod = method;
@@ -43,7 +43,7 @@ abstract class MethodContext {
         }
     }
 
-    void $call(final Object obj, final Object... args) {
+    private void $call(final Object obj, final Object... args) {
         if (obj == null) {
             return;
         }

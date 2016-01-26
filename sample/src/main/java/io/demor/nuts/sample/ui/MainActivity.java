@@ -1,7 +1,6 @@
 package io.demor.nuts.sample.ui;
 
 import android.os.Bundle;
-import io.demor.nuts.lib.annotation.log.MethodLog;
 import io.demor.nuts.lib.annotation.viewmapping.OnClick;
 import io.demor.nuts.lib.annotation.viewmapping.ViewMapping;
 import io.demor.nuts.lib.controller.ControllerCallback;
@@ -24,7 +23,6 @@ public class MainActivity extends BaseActivity {
         });
     }
 
-    @MethodLog
     private void method() {
         System.out.println("~~~~~~~");
     }
