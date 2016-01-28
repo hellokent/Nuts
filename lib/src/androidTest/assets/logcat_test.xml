@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="utf-8"?>
+<root>
+    <!--LogcatOutputTestcase.testTag-->
+    <output id="logcat" type="logcat">
+        <format>%tag:%msg</format>
+        <debug>true</debug>
+    </output>
+
+    <!--LoggerTest.testLevel-->
+    <output id="logcat" type="logcat">
+        <format>%tag:%msg</format>
+        <debug>true</debug>
+    </output>
+
+    <!--LoggerTest.testThreadId-->
+    <output id="logcat" type="logcat">
+        <format>%threadId:%threadName:%msg</format>
+        <debug>true</debug>
+    </output>
+</root>

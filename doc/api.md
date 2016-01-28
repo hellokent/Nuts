@@ -122,7 +122,7 @@ BaseResponse uploadFile(@Param("file")File file,
 
 2. 通用Header和Parameter的处理
 
-这两个部分分别对应的是`Inet`接口里面的`onCreateUrl`和`onCreateParams`这两个方法。
+这两个部分分别对应的是`INet`接口里面的`onCreateUrl`和`onCreateParams`这两个方法。
 
 这两个方法里都传入了接口方法的反射Method对象及其参数，这样可以方便其他开发者自定义注解来做二次框架开发。
 
