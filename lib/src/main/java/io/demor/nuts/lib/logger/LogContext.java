@@ -33,5 +33,6 @@ public class LogContext {
         mCurrentThread = Thread.currentThread();
         mThreadId = mCurrentThread.getId();
         mThreadName = mCurrentThread.getName();
+        mTime = new LogTime();
     }
 }

@@ -1,6 +1,5 @@
 package io.demor.nuts.lib.logger.output;
 
-import android.content.res.AssetManager;
 import android.test.AndroidTestCase;
 import android.util.Log;
 import io.demor.nuts.lib.logger.LogContext;
@@ -28,7 +27,6 @@ public class LogcatOutputTestcase extends AndroidTestCase {
     }
 
     public void testTag() throws Exception {
-        final AssetManager assetManager = getContext().getAssets();
         NodeList outputs = mRoot.getElementsByTagName("output");
 
         TestLogcatLogger logcatLogger = new TestLogcatLogger((Element) outputs.item(0));

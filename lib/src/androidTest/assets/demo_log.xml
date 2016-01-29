@@ -8,14 +8,12 @@
 
     <output id="context_file" type="file">
         <format>[%tag]%threadName(%threadID) - %time - %class - %method :%msg</format>
-        <debug>false</debug>
         <path>%context/log/%day.log</path>
     </output>
 
     <output id="sd_file" type="file">
         <format>[%tag]%threadName(%threadID) - %time - %class - %method :%msg</format>
-        <debug>false</debug>
-        <path>/sdcard/nuts/log_%tag_%day.log</path>
+        <path>%sdcard/nuts/log_%tag_%day.log</path>
     </output>
 
     <!--

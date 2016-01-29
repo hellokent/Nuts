@@ -10,7 +10,7 @@ import org.w3c.dom.NodeList;
 
 public class LogcatOutput extends LogOutput {
 
-    private final LogFormatter<LogContext> mFormatter;
+    protected final LogFormatter<LogContext> mFormatter;
     private boolean mNeedTime, mNeedThreadStack;
 
     public LogcatOutput(Element element) throws DOMException {
