@@ -19,6 +19,10 @@ public class ThreadSafeDateFormat extends DateFormat {
         mPattern = pattern;
     }
 
+    public String getPattern() {
+        return mPattern;
+    }
+
     @Override
     public StringBuffer format(final Date date, final StringBuffer buffer, final FieldPosition field) {
         return getFormat().format(date, buffer, field);

@@ -2,19 +2,29 @@ package io.demor.nuts.lib.logger;
 
 import android.util.Log;
 import com.google.common.collect.Lists;
-import io.demor.nuts.lib.ThreadSafeDateFormat;
 
 import java.util.ArrayList;
-import java.util.Date;
+import java.util.Calendar;
 
 public class Logger {
 
+    private static final String[] NUMBER_ARRAY;
+
+    static {
+        NUMBER_ARRAY = new String[1000];
+        for (int i = 0; i < 9; ++i) {
+            NUMBER_ARRAY[i] = "0" + String.valueOf(i);
+        }
+        for (int i = 10; i < 999; ++i) {
+            NUMBER_ARRAY[i] = String.valueOf(i);
+        }
+    }
+
     ArrayList<LogOutput> mLogOutputs = Lists.newArrayList();
     String mPath;
-
     private ThreadLocal<LogContext> mLocalLogContext = new ThreadLocal<>();
-    private ThreadSafeDateFormat mTimeFormat = new ThreadSafeDateFormat("HH:mm:ss.SSS");
-    private ThreadSafeDateFormat mDateFormat = new ThreadSafeDateFormat("yyyy-MM-dd");
+    //    private ThreadSafeDateFormat mTimeFormat = new ThreadSafeDateFormat("HH:mm:ss.SSS");
+//    private ThreadSafeDateFormat mDateFormat = new ThreadSafeDateFormat("yyyy-MM-dd");
     private String mTag;
 
     Logger(String path, String tag) {
@@ -48,14 +58,29 @@ public class Logger {
     }
 
     protected void log(int level, String content) {
-        final LogContext context = getLogContext();
+        boolean needTime = false;
+        for (LogOutput output : mLogOutputs) {
+            if (output.needCurrentTime()) {
+                needTime = true;
+                break;
+            }
+        }
+
+        boolean needThreadStack = false;
+        for (LogOutput output : mLogOutputs) {
+            if (output.needThreadStack()) {
+                needThreadStack = true;
+                break;
+            }
+        }
+        final LogContext context = getLogContext(needTime, needThreadStack);
         context.mLevel = level;
         for (LogOutput output : mLogOutputs) {
             output.append(context);
         }
     }
 
-    private LogContext getLogContext() {
+    private LogContext getLogContext(boolean needTime, boolean needThreadStack) {
         final LogContext context;
         if (mLocalLogContext.get() == null) {
             context = new LogContext();
@@ -64,15 +89,20 @@ public class Logger {
             context = mLocalLogContext.get();
         }
 
-        final Thread thread = Thread.currentThread();
-        final StackTraceElement element = thread.getStackTrace()[5];
-
-        context.mMethod = element.getMethodName();
-        context.mClass = element.getClassName();
-        context.mTime = mTimeFormat.format(new Date());
-        context.mThreadId = thread.getId();
-        context.mThreadName = thread.getName();
         context.mTag = mTag;
+
+        if (needThreadStack) {
+            final StackTraceElement element = context.mCurrentThread.getStackTrace()[5];
+            context.mMethod = element.getMethodName();
+            context.mClass = element.getClassName();
+        }
+        if (needTime) {
+            context.mCalendar.setTimeInMillis(System.currentTimeMillis());
+            context.mTime = NUMBER_ARRAY[context.mCalendar.get(Calendar.HOUR_OF_DAY)] + ":"
+                    + NUMBER_ARRAY[context.mCalendar.get(Calendar.MINUTE)] + ":"
+                    + NUMBER_ARRAY[context.mCalendar.get(Calendar.SECOND)] + "."
+                    + NUMBER_ARRAY[context.mCalendar.get(Calendar.MILLISECOND)];
+        }
         return context;
     }
 

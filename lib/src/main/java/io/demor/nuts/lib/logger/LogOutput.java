@@ -9,4 +9,12 @@ public abstract class LogOutput {
     }
 
     protected abstract void append(LogContext context);
+
+    protected boolean needThreadStack() {
+        return false;
+    }
+
+    protected boolean needCurrentTime() {
+        return false;
+    }
 }

@@ -82,6 +82,18 @@ public class LoggerTest extends AndroidTestCase {
         latch.await();
     }
 
+    public void testMethodProfile() throws Exception {
+        mLogger.mLogOutputs.add(new LogcatOutput((Element) mRoot.getElementsByTagName("output").item(2)));
+        final int times = 100000;
+        final long startTime = System.currentTimeMillis();
+        for (int i = 0; i < times; ++i) {
+            mLogger.v("asdf");
+        }
+        final long usedTimeMillis = System.currentTimeMillis() - startTime;
+        Log.v("log", String.format("used:%dms. %f/s", usedTimeMillis, (times / (usedTimeMillis / 1000f))));
+
+    }
+
     @Override
     public void tearDown() throws Exception {
         mLogger.mLogOutputs.clear();

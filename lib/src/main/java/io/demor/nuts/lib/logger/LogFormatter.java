@@ -6,16 +6,15 @@ import com.google.common.collect.Sets;
 import io.demor.nuts.lib.annotation.log.LogFormatKeyword;
 
 import java.lang.reflect.Field;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.Map;
-import java.util.TreeSet;
+import java.util.*;
 
 public final class LogFormatter<T> {
 
-    protected static final HashMap<Class<?>, HashMap<String, Field>> CLASS_CACHE = Maps.newHashMap();
-    protected String mFormat;
-    protected ArrayList<Field> mFields = Lists.newArrayList();
+    private static final HashMap<Class<?>, HashMap<String, Field>> CLASS_CACHE = Maps.newHashMap();
+    String mFormat;
+    private ArrayList<Field> mFields = Lists.newArrayList();
+    private Object[] mArgArray;
+    private HashSet<String> mKeySet = Sets.newHashSet();
 
     public LogFormatter(final String format, final Class<T> clz) {
 
@@ -47,6 +46,7 @@ public final class LogFormatter<T> {
             while ((index = newFormat.indexOf(key)) >= 0) {
                 locationSet.add(new KeywordLocation(index, entry));
                 newFormat = newFormat.substring(0, index) + "%s" + newFormat.substring(index + key.length());
+                mKeySet.add(key);
             }
         }
 
@@ -55,20 +55,24 @@ public final class LogFormatter<T> {
         }
 
         mFormat = newFormat;
+        mArgArray = new String[mFields.size()];
     }
 
     public String format(T t) {
-        final String[] args = new String[mFields.size()];
         for (int i = 0; i < mFields.size(); ++i) {
             try {
                 final Object o = mFields.get(i).get(t);
-                args[i] = o == null ? "" : o.toString();
+                mArgArray[i] = o == null ? "" : o.toString();
             } catch (IllegalAccessException e) {
                 e.printStackTrace();
             }
         }
 
-        return String.format(mFormat, args);
+        return String.format(mFormat, mArgArray);
+    }
+
+    public boolean containsKey(final String key) {
+        return mKeySet.contains("%" + key);
     }
 
     private static class KeywordLocation implements Comparable<KeywordLocation> {
