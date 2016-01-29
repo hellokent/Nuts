@@ -85,6 +85,7 @@ public class LoggerTest extends AndroidTestCase {
     public void testMethodProfile() throws Exception {
         mLogger.mLogOutputs.add(new LogcatOutput((Element) mRoot.getElementsByTagName("output").item(2)));
         final int times = 100000;
+
         final long startTime = System.currentTimeMillis();
         for (int i = 0; i < times; ++i) {
             mLogger.v("asdf");

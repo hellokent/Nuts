@@ -1,15 +1,14 @@
 package io.demor.nuts.lib.logger;
 
 import io.demor.nuts.lib.annotation.log.LogFormatKeyword;
-
-import java.util.Calendar;
+import io.demor.nuts.lib.logger.time.LogTime;
 
 public class LogContext {
     @LogFormatKeyword("msg")
     public String mMsg;
 
     @LogFormatKeyword("time")
-    public String mTime;
+    public LogTime mTime;
 
     @LogFormatKeyword("tag")
     public String mTag;
@@ -29,12 +28,10 @@ public class LogContext {
     public int mLevel;
 
     Thread mCurrentThread;
-    Calendar mCalendar;
 
     public LogContext() {
         mCurrentThread = Thread.currentThread();
         mThreadId = mCurrentThread.getId();
         mThreadName = mCurrentThread.getName();
-        mCalendar = Calendar.getInstance();
     }
 }

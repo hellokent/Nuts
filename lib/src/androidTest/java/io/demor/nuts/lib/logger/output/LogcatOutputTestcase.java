@@ -16,14 +16,20 @@ public class LogcatOutputTestcase extends AndroidTestCase {
     private String mText;
     private String mTag;
 
-    public void testTag() throws Exception {
-        final AssetManager assetManager = getContext().getAssets();
-        Element root = DocumentBuilderFactory
+    private Element mRoot;
+
+    @Override
+    public void setUp() throws Exception {
+        mRoot = DocumentBuilderFactory
                 .newInstance()
                 .newDocumentBuilder()
-                .parse(assetManager.open("logcat_test.xml"))
+                .parse(getContext().getAssets().open("logcat_test.xml"))
                 .getDocumentElement();
-        NodeList outputs = root.getElementsByTagName("output");
+    }
+
+    public void testTag() throws Exception {
+        final AssetManager assetManager = getContext().getAssets();
+        NodeList outputs = mRoot.getElementsByTagName("output");
 
         TestLogcatLogger logcatLogger = new TestLogcatLogger((Element) outputs.item(0));
 

@@ -4,27 +4,13 @@ import android.util.Log;
 import com.google.common.collect.Lists;
 
 import java.util.ArrayList;
-import java.util.Calendar;
 
 public class Logger {
 
-    private static final String[] NUMBER_ARRAY;
-
-    static {
-        NUMBER_ARRAY = new String[1000];
-        for (int i = 0; i < 9; ++i) {
-            NUMBER_ARRAY[i] = "0" + String.valueOf(i);
-        }
-        for (int i = 10; i < 999; ++i) {
-            NUMBER_ARRAY[i] = String.valueOf(i);
-        }
-    }
 
     ArrayList<LogOutput> mLogOutputs = Lists.newArrayList();
     String mPath;
     private ThreadLocal<LogContext> mLocalLogContext = new ThreadLocal<>();
-    //    private ThreadSafeDateFormat mTimeFormat = new ThreadSafeDateFormat("HH:mm:ss.SSS");
-//    private ThreadSafeDateFormat mDateFormat = new ThreadSafeDateFormat("yyyy-MM-dd");
     private String mTag;
 
     Logger(String path, String tag) {
@@ -97,11 +83,7 @@ public class Logger {
             context.mClass = element.getClassName();
         }
         if (needTime) {
-            context.mCalendar.setTimeInMillis(System.currentTimeMillis());
-            context.mTime = NUMBER_ARRAY[context.mCalendar.get(Calendar.HOUR_OF_DAY)] + ":"
-                    + NUMBER_ARRAY[context.mCalendar.get(Calendar.MINUTE)] + ":"
-                    + NUMBER_ARRAY[context.mCalendar.get(Calendar.SECOND)] + "."
-                    + NUMBER_ARRAY[context.mCalendar.get(Calendar.MILLISECOND)];
+            context.mTime.updateTime(System.currentTimeMillis());
         }
         return context;
     }
