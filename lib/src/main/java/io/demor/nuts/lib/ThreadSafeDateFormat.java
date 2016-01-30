@@ -12,11 +12,15 @@ import java.util.Locale;
  */
 public class ThreadSafeDateFormat extends DateFormat {
 
-    final ThreadLocal<SimpleDateFormat> mFormatThreadLocal = new ThreadLocal<>();
-    final String mPattern;
+    private final ThreadLocal<SimpleDateFormat> mFormatThreadLocal = new ThreadLocal<>();
+    private final String mPattern;
 
     public ThreadSafeDateFormat(final String pattern) {
         mPattern = pattern;
+    }
+
+    public String getPattern() {
+        return mPattern;
     }
 
     @Override

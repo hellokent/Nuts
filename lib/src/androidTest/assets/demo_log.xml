@@ -1,0 +1,31 @@
+<?xml version="1.0" encoding="utf-8"?>
+<root>
+
+    <output id="logcat" type="logcat">
+        <format>[%tag]%threadName(%threadID) - %time - %class - %method :%msg</format>
+        <debug>true</debug>
+    </output>
+
+    <output id="context_file" type="file">
+        <format>[%tag]%threadName(%threadID) - %time - %class - %method :%msg</format>
+        <path>%context/log/%day.log</path>
+    </output>
+
+    <output id="sd_file" type="file">
+        <format>[%tag]%threadName(%threadID) - %time - %class - %method :%msg</format>
+        <path>%sdcard/nuts/log_%tag_%day.log</path>
+    </output>
+
+    <!--
+    <output id="custom_log" type="io.demor.nuts.lib.BuildConfig">
+    </output>
+    -->
+
+    <log path="io.demor.nuts.sample" tag="nuts">
+        <output id="context_file"/>
+        <output id="sd_file"/>
+        <output id="logcat"/>
+        <output id="custom_log"/>
+    </log>
+
+</root>

@@ -1,41 +1,26 @@
 package io.demor.nuts.lib.net;
 
+import com.google.common.base.Splitter;
+import com.google.common.collect.Lists;
+import io.demor.nuts.lib.ReflectUtils;
+import io.demor.nuts.lib.annotation.net.*;
+import io.demor.nuts.lib.controller.Return;
+
 import java.lang.annotation.Annotation;
 import java.lang.reflect.InvocationHandler;
 import java.lang.reflect.Method;
-import java.security.InvalidParameterException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.Callable;
 
-import com.google.common.base.Splitter;
-import com.google.common.collect.Lists;
-import com.google.gson.Gson;
-import io.demor.nuts.lib.ReflectUtils;
-import io.demor.nuts.lib.annotation.net.Delete;
-import io.demor.nuts.lib.annotation.net.Get;
-import io.demor.nuts.lib.annotation.net.Header;
-import io.demor.nuts.lib.annotation.net.Headers;
-import io.demor.nuts.lib.annotation.net.Multipart;
-import io.demor.nuts.lib.annotation.net.Param;
-import io.demor.nuts.lib.annotation.net.Patch;
-import io.demor.nuts.lib.annotation.net.Path;
-import io.demor.nuts.lib.annotation.net.Post;
-import io.demor.nuts.lib.annotation.net.Put;
-import io.demor.nuts.lib.annotation.net.Retry;
-import io.demor.nuts.lib.controller.Return;
-import io.demor.nuts.lib.net.NetBuilder.HttpMethod;
-
 public class ApiInvokeHandler implements InvocationHandler {
 
-    public final INet mNet;
-    public final Gson mGson;
+    protected final INet mNet;
 
-    public ApiCallback mCallback = new ApiCallback();
+    private ApiCallback mCallback = new ApiCallback();
 
-    public ApiInvokeHandler(final INet net, final Gson gson) {
+    public ApiInvokeHandler(final INet net) {
         mNet = net;
-        mGson = gson;
     }
 
     public ApiInvokeHandler setApiCallback(ApiCallback callback) {
@@ -52,7 +37,7 @@ public class ApiInvokeHandler implements InvocationHandler {
         final Put put = method.getAnnotation(Put.class);
         final Delete delete = method.getAnnotation(Delete.class);
 
-        final Class<?> returnClz = method.getReturnType();
+
         final Headers headers = method.getAnnotation(Headers.class);
         final int tryCount = method.getAnnotation(Retry.class) == null ? 1 : method.getAnnotation(Retry.class).value();
 
@@ -83,13 +68,8 @@ public class ApiInvokeHandler implements InvocationHandler {
         }
 
         final ArrayList<String> pathArgs = Lists.newArrayList();
-        if (!ReflectUtils.isSubclassOf(returnClz, IResponse.class) && ReflectUtils.checkGenericType(method
-                .getGenericReturnType(), IResponse.class)) {
-            throw new InvalidParameterException("API:" + method.getName() + "，返回值必须继承IResponse");
-        }
-        final NetBuilder builder = new NetBuilder(mGson, mNet, url, ReflectUtils.isSubclassOf(returnClz, Return
-                .class) ? (Class<?>) ReflectUtils.getGenericType(method.getGenericReturnType()) : returnClz, m,
-                method, args);
+        final ApiRequest request = new ApiRequest(mNet);
+        request.mHttpMethod = m;
 
         if (headers != null) {
             for (final String header1 : headers.value()) {
@@ -99,7 +79,7 @@ public class ApiInvokeHandler implements InvocationHandler {
                 if (pair.size() < 2) {
                     continue;
                 }
-                builder.mHeaders.put(pair.get(0), pair.get(1));
+                request.mHeaders.put(pair.get(0), pair.get(1));
             }
         }
 
@@ -113,33 +93,28 @@ public class ApiInvokeHandler implements InvocationHandler {
                 if (annotation instanceof Param) {
                     final Param param = (Param) annotation;
                     if (args[i] == null) {
-                        builder.addParam(param, "");
+                        request.addParam(param, "");
                     } else {
-                        builder.addParam(param, args[i]);
+                        request.addParam(param, args[i]);
                     }
                 } else if (annotation instanceof Path) {
                     pathArgs.add(args[i] == null ? "" : args[i].toString());
                 } else if (annotation instanceof Header) {
-                    builder.mHeaders.put(((Header) annotation).value(), args[i].toString());
+                    request.mHeaders.put(((Header) annotation).value(), args[i].toString());
                 }
             }
         }
+        request.mUrl = String.format(url, pathArgs.toArray());
 
-        builder.setUrl(String.format(url, pathArgs.toArray()));
+        return methodReturn(request, tryCount, method, args);
+    }
 
-        final Callable<IResponse> callable = new Callable<IResponse>() {
+    protected Object methodReturn(final ApiRequest request, final int retryCount, final Method method, final Object[] args) throws Exception {
+        final Class<?> returnClz = method.getReturnType();
+        final Callable<Object> callable = new Callable<Object>() {
             @Override
-            public IResponse call() {
-                int count = Math.max(0, tryCount);
-                builder.initParam();
-                NetResult result;
-                final ApiProcess process = new ApiProcess(builder);
-                do {
-                    result = mCallback.handle(process, builder.mUrl, builder.mParams, builder.mHeaders, builder
-                            .mMethod.getName());
-                    --count;
-                } while (count > 0 && !result.mIsSuccess);
-                return result.mIResponse;
+            public Object call() {
+                return mNet.createResponse(returnClz, execute(request, retryCount, method, args));
             }
         };
 
@@ -149,5 +124,16 @@ public class ApiInvokeHandler implements InvocationHandler {
         } else {
             return callable.call();
         }
+    }
+
+    protected ApiResponse execute(final ApiRequest request, final int retryCount, final Method method, final Object[] args) {
+        int count = Math.max(0, retryCount);
+        ApiResponse result;
+        do {
+            mNet.handleRequest(request, method, args);
+            result = mCallback.handle(request);
+            --count;
+        } while (count > 0 && !result.isSuccess());
+        return result;
     }
 }

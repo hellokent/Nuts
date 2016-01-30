@@ -11,10 +11,6 @@ public class NutsApplication extends Application {
         return sApplication;
     }
 
-    public static <T> T getService(String name) {
-        return (T) getGlobalContext().getSystemService(name);
-    }
-
     @Override
     public void onCreate() {
         super.onCreate();

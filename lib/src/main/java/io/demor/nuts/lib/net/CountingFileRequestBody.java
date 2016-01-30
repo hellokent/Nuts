@@ -1,8 +1,5 @@
 package io.demor.nuts.lib.net;
 
-import java.io.File;
-import java.io.IOException;
-
 import com.squareup.okhttp.MediaType;
 import com.squareup.okhttp.RequestBody;
 import com.squareup.okhttp.internal.Util;
@@ -10,6 +7,9 @@ import io.demor.nuts.lib.Globals;
 import okio.BufferedSink;
 import okio.Okio;
 import okio.Source;
+
+import java.io.File;
+import java.io.IOException;
 
 class CountingFileRequestBody extends RequestBody {
 
@@ -23,7 +23,7 @@ class CountingFileRequestBody extends RequestBody {
 
     private final long mTotalLength;
 
-    public CountingFileRequestBody(MediaType contentType, File file, ProgressListener listener) {
+    CountingFileRequestBody(MediaType contentType, File file, ProgressListener listener) {
         mFile = file;
         mContentType = contentType;
         mListener = listener;
