@@ -64,7 +64,7 @@ public final class LoggerFactory {
                         output = new LogcatOutput(node);
                         break;
                     case "file":
-                        output = new FileOutput(node);
+                        output = new FileOutput(app, node);
                         break;
                     default:
                         //TODO LOG EXTENSION
