@@ -18,6 +18,9 @@ public class LoggerFactoryTestcase extends AndroidTestCase {
         assertEquals("logger", SelfClass.STATIC_LOGGER.mTag);
         assertTrue(LoggerFactory.getLogger() == LoggerFactory.getLogger());
         assertEquals("static", StaticLog.STATIC_LOGGER.mTag);
+
+        SelfClass.STATIC_LOGGER.v("test:%s", "hello, world!");
+
     }
 
     private static class SelfClass {

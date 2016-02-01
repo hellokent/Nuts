@@ -1,12 +1,12 @@
 <root>
     <output id="total-logcat" type="logcat">
-        <format>%threadId[%threadName]-%time-%class(%method):%msg</format>
+        <format>%time %threadId[%threadName]-%class.%method():%msg</format>
     </output>
     <output id="simple-logcat" type="logcat">
         <format>%threadId[%threadName]:msg</format>
     </output>
     <output id="total-file" type="file">
-        <format>%threadId[%threadName]-%time-%class(%method):%msg</format>
+        <format>%time %threadId[%threadName]-%class(%method):%msg</format>
         <path>%sdcard/%app/logs/%tag_%day.log</path>
     </output>
 

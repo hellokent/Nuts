@@ -22,6 +22,9 @@ public class LogContext {
     @LogFormatKeyword("class")
     public String mClass;
 
+    @LogFormatKeyword("totalClass")
+    public String mTotalClass;
+
     @LogFormatKeyword("method")
     public String mMethod;
 

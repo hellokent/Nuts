@@ -80,7 +80,8 @@ public class Logger {
         if (needThreadStack) {
             final StackTraceElement element = context.mCurrentThread.getStackTrace()[5];
             context.mMethod = element.getMethodName();
-            context.mClass = element.getClassName();
+            context.mTotalClass = element.getClassName();
+            context.mClass = context.mTotalClass.substring(context.mTotalClass.lastIndexOf(".") + 1);
         }
         if (needTime) {
             context.mTime.updateTime(System.currentTimeMillis());

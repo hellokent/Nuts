@@ -71,7 +71,7 @@ public class FileOutput extends LogcatOutput {
                         if (!logFile.exists() && !logFile.createNewFile()) {
                             return;
                         }
-                        mWriter = new FileWriter(logFile);
+                        mWriter = new FileWriter(logFile, true);
                     } catch (IOException e) {
                         e.printStackTrace();
                         return;
@@ -81,6 +81,7 @@ public class FileOutput extends LogcatOutput {
                 try {
                     mWriter.write(mFormatter.format(context));
                     mWriter.write("\r\n");
+                    mWriter.flush();
                 } catch (IOException e) {
                     e.printStackTrace();
                 }
