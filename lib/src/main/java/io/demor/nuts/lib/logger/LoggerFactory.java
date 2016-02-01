@@ -40,13 +40,19 @@ public final class LoggerFactory {
         }
     };
 
-    public static void readConfig(final Application app, final InputStream reader) {
+    public static void readConfig(final Application app, final InputStream stream) {
+        if (app == null) {
+            throw new IllegalArgumentException("app cannot be null");
+        }
+        if (stream == null) {
+            throw new IllegalArgumentException("stream cannot be null");
+        }
         final Multimap<Logger, String> loggerOutputMap = LinkedHashMultimap.create();
         try {
             final Element root = DocumentBuilderFactory
                     .newInstance()
                     .newDocumentBuilder()
-                    .parse(reader)
+                    .parse(stream)
                     .getDocumentElement();
             NodeList nodeList = root.getElementsByTagName("output");
             for (int i = 0; i < nodeList.getLength(); i++) {

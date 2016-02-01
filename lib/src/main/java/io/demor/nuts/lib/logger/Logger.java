@@ -7,7 +7,6 @@ import java.util.ArrayList;
 
 public class Logger {
 
-
     ArrayList<LogOutput> mLogOutputs = Lists.newArrayList();
     String mPath;
     private ThreadLocal<LogContext> mLocalLogContext = new ThreadLocal<>();

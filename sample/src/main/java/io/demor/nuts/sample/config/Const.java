@@ -12,7 +12,7 @@ import io.demor.nuts.sample.controller.impl.TestControllerImpl;
 public interface Const extends Globals{
     Gson GSON = new Gson();
 
-    TestController TEST_CONTROLLER = new ControllerInvokeHandler<>(new TestControllerImpl()).createProxy();
+    TestController TEST_CONTROLLER = Reflection.newProxy(TestController.class, new ControllerInvokeHandler<>(new TestControllerImpl()));
 
     Jumper JUMPER = Reflection.newProxy(Jumper.class, new JumperInvokeHandler(GlobalApplication.getGlobalContext()));
 }
