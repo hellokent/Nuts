@@ -13,6 +13,7 @@ import org.w3c.dom.Element;
 import org.w3c.dom.NodeList;
 
 import javax.xml.parsers.DocumentBuilderFactory;
+import java.io.IOException;
 import java.io.InputStream;
 import java.util.Comparator;
 import java.util.HashMap;
@@ -32,13 +33,34 @@ public final class LoggerFactory {
         }
     });
 
-    private static final Logger DEFAULT_LOG = new Logger("", "") {
+    static final Logger DEFAULT_LOG = new Logger("", "") {
 
         @Override
-        protected void log(int level, String content) {
-            Log.println(level, "log", content);
+        protected void log(int level, String msg, Object... args) {
+            Log.println(level, "log", args == null || args.length == 0 ? msg : String.format(msg, args));
         }
     };
+
+    private LoggerFactory() {
+    }
+
+    public static void readConfigFromAsset(final Application app, final String fileName) {
+        InputStream stream = null;
+        try {
+            stream = app.getAssets().open("logger_testcase.xml");
+            LoggerFactory.readConfig(app, stream);
+        } catch (IOException e) {
+            e.printStackTrace();
+        } finally {
+            if (stream != null) {
+                try {
+                    stream.close();
+                } catch (IOException ignored) {
+                }
+            }
+        }
+
+    }
 
     public static void readConfig(final Application app, final InputStream stream) {
         if (app == null) {
@@ -92,8 +114,8 @@ public final class LoggerFactory {
                 }
                 final NodeList childNodeList = node.getElementsByTagName("output");
                 final Logger logger = new Logger(path, tag);
-                for (int j = 0; j < nodeList.getLength(); ++j) {
-                    final Element childNode = (Element) childNodeList.item(i);
+                for (int j = 0; j < childNodeList.getLength(); ++j) {
+                    final Element childNode = (Element) childNodeList.item(j);
                     final String outputId = childNode.getAttribute("id");
                     if (TextUtils.isEmpty(outputId)) {
                         continue;
@@ -147,7 +169,7 @@ public final class LoggerFactory {
         final Thread thread = Thread.currentThread();
         final StackTraceElement element = thread.getStackTrace()[3];
         for (Logger logger : LOGGER_SET) {
-            if (logger.mPath.startsWith(element.getClassName())) {
+            if (element.getClassName().startsWith(logger.mPath)) {
                 return logger;
             }
         }

@@ -56,6 +56,7 @@ public class LoggerTest extends AndroidTestCase {
     }
 
     public void testThreadId() throws Exception {
+        final String logText = "asdf";
         mLogger.mLogOutputs.add(new LogcatOutput((Element) mRoot.getElementsByTagName("output").item(2)) {
             @Override
             protected void log(int level, String tag, String text) {
@@ -63,6 +64,7 @@ public class LoggerTest extends AndroidTestCase {
                 List<String> list = Splitter.on(":").splitToList(text);
                 assertEquals(String.valueOf(curThread.getId()), list.get(0));
                 assertEquals(curThread.getName(), list.get(1));
+                assertEquals(logText, list.get(2));
             }
         });
 
@@ -74,7 +76,7 @@ public class LoggerTest extends AndroidTestCase {
             executor.execute(new Runnable() {
                 @Override
                 public void run() {
-                    mLogger.v("asdf");
+                    mLogger.v(logText);
                     latch.countDown();
                 }
             });
@@ -85,11 +87,12 @@ public class LoggerTest extends AndroidTestCase {
     public void testMethodProfile() throws Exception {
         mLogger.mLogOutputs.add(new LogcatOutput((Element) mRoot.getElementsByTagName("output").item(2)));
         final int times = 100000;
-
+//        Debug.startMethodTracing("4");
         final long startTime = System.currentTimeMillis();
         for (int i = 0; i < times; ++i) {
             mLogger.v("asdf");
         }
+//        Debug.stopMethodTracing();
         final long usedTimeMillis = System.currentTimeMillis() - startTime;
         Log.v("log", String.format("used:%dms. %f/s", usedTimeMillis, (times / (usedTimeMillis / 1000f))));
 

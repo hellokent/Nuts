@@ -18,7 +18,6 @@ public final class LogFormatter<T> {
     private HashSet<String> mKeySet = Sets.newHashSet();
 
     public LogFormatter(final String format, final Class<T> clz) {
-
         final HashMap<String, Field> fieldMap;
         if (CLASS_CACHE.containsKey(clz)) {
             fieldMap = CLASS_CACHE.get(clz);
@@ -28,9 +27,6 @@ public final class LogFormatter<T> {
                 final LogFormatKeyword keyword = f.getAnnotation(LogFormatKeyword.class);
                 if (keyword == null) {
                     continue;
-                }
-                if ("s".equals(keyword.value())) {
-                    throw new IllegalStateException("Illegal keyword : s");
                 }
                 fieldMap.put(keyword.value(), f);
                 f.setAccessible(true);
@@ -50,7 +46,7 @@ public final class LogFormatter<T> {
                 final String name = fieldEntry.getKey();
                 if (format.startsWith(name, i + 1)) {
                     mKeySet.add(name);
-                    if (i != 0 && j != i) {
+                    if (i != j) {
                         mFormatObjectList.add(format.substring(j, i));
                     }
                     mFormatObjectList.add(fieldEntry.getValue());
@@ -70,7 +66,8 @@ public final class LogFormatter<T> {
             } else {
                 Field field = (Field) o;
                 try {
-                    builder.append(field.get(t).toString());
+                    Object data = field.get(t);
+                    builder.append(data == null ? "null" : data.toString());
                 } catch (IllegalAccessException e) {
                     e.printStackTrace();
                 }

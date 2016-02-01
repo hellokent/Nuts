@@ -1,0 +1,21 @@
+<root>
+    <output id="total-logcat" type="logcat">
+        <format>%threadId[%threadName]-%time-%class(%method):%msg</format>
+    </output>
+    <output id="simple-logcat" type="logcat">
+        <format>%threadId[%threadName]:msg</format>
+    </output>
+    <output id="total-file" type="file">
+        <format>%threadId[%threadName]-%time-%class(%method):%msg</format>
+        <path>%sdcard/%app/logs/%tag_%day.log</path>
+    </output>
+
+    <log path="io.demor.nuts.lib.logger" tag="logger">
+        <output id="total-logcat"/>
+        <output id="total-file"/>
+    </log>
+
+    <log path="io.demor.nuts.lib.logger.StaticLog" tag="static">
+        <output id="simple-logcat"/>
+    </log>
+</root>

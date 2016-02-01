@@ -3,18 +3,20 @@
     <!--LogcatOutputTestcase.testTag-->
     <output id="logcat" type="logcat">
         <format>%tag:%msg</format>
-        <debug>true</debug>
     </output>
 
     <!--LoggerTest.testLevel-->
     <output id="logcat" type="logcat">
         <format>%tag:%msg</format>
-        <debug>true</debug>
     </output>
 
     <!--LoggerTest.testThreadId-->
     <output id="logcat" type="logcat">
-        <format>%threadId:%threadName:%msg</format>
-        <debug>true</debug>
+        <format>%threadId-%threadName-%msg</format>
+    </output>
+
+    <output id="file" type="file">
+        <format>%threadId-%threadName-%msg</format>
+        <format>%sdcard/%app/log/file_%day.log</format>
     </output>
 </root>

@@ -9,6 +9,7 @@ import org.w3c.dom.DOMException;
 import org.w3c.dom.Element;
 import org.w3c.dom.NodeList;
 
+import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
 
@@ -41,6 +42,7 @@ public class FileOutput extends LogcatOutput {
     @Override
     public void append(final LogContext context) {
         mLogFileContext.mDay.updateTime(System.currentTimeMillis());
+        mLogFileContext.mTag = context.mTag;
         final String currentPath = mPathFormatter.format(mLogFileContext);
 
         FILE_WRITE_HANDLER.post(new Runnable() {
@@ -56,15 +58,26 @@ public class FileOutput extends LogcatOutput {
                     } catch (IOException ignored) {
                     }
                 }
+
                 mPath = currentPath;
                 if (mWriter == null) {
+                    final File logFile = new File(currentPath);
+                    final File folderFile = logFile.getParentFile();
+
+                    if (!folderFile.exists() && !folderFile.mkdirs()) {
+                        return;
+                    }
                     try {
-                        mWriter = new FileWriter(currentPath);
+                        if (!logFile.exists() && !logFile.createNewFile()) {
+                            return;
+                        }
+                        mWriter = new FileWriter(logFile);
                     } catch (IOException e) {
                         e.printStackTrace();
                         return;
                     }
                 }
+
                 try {
                     mWriter.write(mFormatter.format(context));
                     mWriter.write("\r\n");

@@ -65,8 +65,7 @@ public final class EventBus implements Globals {
             return false;
         }
         final Class<?> clz = event.getClass();
-        L.v("event:%s from:%s", clz.getSimpleName(), Thread.currentThread()
-                .getStackTrace()[3].toString());
+        L.v("event:%s from:%s", clz.getSimpleName(), Thread.currentThread().getStackTrace()[3].toString());
         boolean post = false;
         for (Map.Entry<Object, MethodContext> entry : mSlotMap.entries()) {
             final BusMethodContext method = (BusMethodContext) entry.getValue();

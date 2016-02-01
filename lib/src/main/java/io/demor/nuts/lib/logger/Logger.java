@@ -9,8 +9,8 @@ public class Logger {
 
     ArrayList<LogOutput> mLogOutputs = Lists.newArrayList();
     String mPath;
+    String mTag;
     private ThreadLocal<LogContext> mLocalLogContext = new ThreadLocal<>();
-    private String mTag;
 
     Logger(String path, String tag) {
         mPath = path;
@@ -19,30 +19,30 @@ public class Logger {
 
     public void v(String msg, Object... arg) {
         final int level = Log.VERBOSE;
-        log(level, String.format(msg, arg));
+        log(level, msg, arg);
     }
 
     public void d(String msg, Object... arg) {
         final int level = Log.DEBUG;
-        log(level, String.format(msg, arg));
+        log(level, msg, arg);
     }
 
     public void i(String msg, Object... arg) {
         final int level = Log.INFO;
-        log(level, String.format(msg, arg));
+        log(level, msg, arg);
     }
 
     public void w(String msg, Object... arg) {
         final int level = Log.WARN;
-        log(level, String.format(msg, arg));
+        log(level, msg, arg);
     }
 
     public void e(String msg, Object... arg) {
         final int level = Log.ERROR;
-        log(level, String.format(msg, arg));
+        log(level, msg, arg);
     }
 
-    protected void log(int level, String content) {
+    protected void log(int level, String msg, Object... arg) {
         boolean needTime = false;
         for (LogOutput output : mLogOutputs) {
             if (output.needCurrentTime()) {
@@ -60,6 +60,7 @@ public class Logger {
         }
         final LogContext context = getLogContext(needTime, needThreadStack);
         context.mLevel = level;
+        context.mMsg = arg == null || arg.length == 0 ? msg : String.format(msg, arg);
         for (LogOutput output : mLogOutputs) {
             output.append(context);
         }

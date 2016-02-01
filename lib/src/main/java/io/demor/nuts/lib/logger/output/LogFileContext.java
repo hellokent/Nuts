@@ -16,8 +16,15 @@ public class LogFileContext {
     @LogFormatKeyword("sdcard")
     public String mSdPath;
 
+    @LogFormatKeyword("app")
+    public String mPackageName;
+
+    @LogFormatKeyword("tag")
+    public String mTag;
+
     public LogFileContext(final Context context) {
         mContext = context.getFilesDir().getPath();
         mSdPath = Environment.getExternalStorageDirectory().getPath();
+        mPackageName = context.getPackageName();
     }
 }
