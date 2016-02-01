@@ -26,14 +26,22 @@ public class LogFormatTestcase extends TestCase {
         assertEquals("TTT, mmm --- asdf ---aaa", formatter.format(context));
     }
 
+    public void testIllegalField() throws Exception {
+        LogFormatter<LogContext> formatter = new LogFormatter<>("bb-%threadId-%aa-%tagaaa", LogContext.class);
+
+        LogContext context = new LogContext();
+        context.mTag = "TTT";
+        context.mThreadId = 123;
+
+        assertEquals("bb-123-%aa-TTTaaa", formatter.format(context));
+    }
+
     public void testDuplicateField() throws Exception {
         LogFormatter<LogContext> formatter = new LogFormatter<>("%tag%tagaaa",
                 LogContext.class);
 
         LogContext context = new LogContext();
         context.mTag = "TTT";
-        assertEquals("%s%saaa", formatter.mFormat);
         assertEquals("TTTTTTaaa", formatter.format(context));
-
     }
 }

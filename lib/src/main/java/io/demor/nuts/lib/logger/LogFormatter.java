@@ -6,14 +6,15 @@ import com.google.common.collect.Sets;
 import io.demor.nuts.lib.annotation.log.LogFormatKeyword;
 
 import java.lang.reflect.Field;
-import java.util.*;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Map;
 
 public final class LogFormatter<T> {
 
     private static final HashMap<Class<?>, HashMap<String, Field>> CLASS_CACHE = Maps.newHashMap();
-    String mFormat;
-    private ArrayList<Field> mFields = Lists.newArrayList();
-    private Object[] mArgArray;
+    private List<Object> mFormatObjectList = Lists.newLinkedList();
     private HashSet<String> mKeySet = Sets.newHashSet();
 
     public LogFormatter(final String format, final Class<T> clz) {
@@ -31,79 +32,55 @@ public final class LogFormatter<T> {
                 if ("s".equals(keyword.value())) {
                     throw new IllegalStateException("Illegal keyword : s");
                 }
-                fieldMap.put("%" + keyword.value(), f);
+                fieldMap.put(keyword.value(), f);
                 f.setAccessible(true);
             }
         }
 
-        String newFormat = format;
-        final TreeSet<KeywordLocation> locationSet = Sets.newTreeSet();
+        for (int i = 0, j = 0, n = format.length() + 1; i < n; ++i) {
+            if (i == n - 1) {
+                mFormatObjectList.add(format.substring(j, i));
+                break;
+            }
+            if (format.charAt(i) != '%') {
+                continue;
+            }
 
-        for (Map.Entry<String, Field> entry : fieldMap.entrySet()) {
-            final String key = entry.getKey();
-
-            int index;
-            while ((index = newFormat.indexOf(key)) >= 0) {
-                locationSet.add(new KeywordLocation(index, entry));
-                newFormat = newFormat.substring(0, index) + "%s" + newFormat.substring(index + key.length());
-                mKeySet.add(key);
+            for (Map.Entry<String, Field> fieldEntry : fieldMap.entrySet()) {
+                final String name = fieldEntry.getKey();
+                if (format.startsWith(name, i + 1)) {
+                    mKeySet.add(name);
+                    if (i != 0 && j != i) {
+                        mFormatObjectList.add(format.substring(j, i));
+                    }
+                    mFormatObjectList.add(fieldEntry.getValue());
+                    i += name.length();
+                    j = i + 1;
+                    break;
+                }
             }
         }
-
-        for (KeywordLocation location : locationSet) {
-            mFields.add(location.mEntry.getValue());
-        }
-
-        mFormat = newFormat;
-        mArgArray = new String[mFields.size()];
     }
 
     public String format(T t) {
-        for (int i = 0; i < mFields.size(); ++i) {
-            try {
-                final Object o = mFields.get(i).get(t);
-                mArgArray[i] = o == null ? "" : o.toString();
-            } catch (IllegalAccessException e) {
-                e.printStackTrace();
+        final StringBuilder builder = new StringBuilder();
+        for (Object o : mFormatObjectList) {
+            if (o instanceof String) {
+                builder.append((String) o);
+            } else {
+                Field field = (Field) o;
+                try {
+                    builder.append(field.get(t).toString());
+                } catch (IllegalAccessException e) {
+                    e.printStackTrace();
+                }
             }
         }
-
-        return String.format(mFormat, mArgArray);
+        return builder.toString();
     }
 
     public boolean containsKey(final String key) {
-        return mKeySet.contains("%" + key);
-    }
-
-    private static class KeywordLocation implements Comparable<KeywordLocation> {
-        int mIndex;
-        Map.Entry<String, Field> mEntry;
-
-        KeywordLocation(int index, Map.Entry<String, Field> entry) {
-            mIndex = index;
-            mEntry = entry;
-        }
-
-        @Override
-        public int compareTo(KeywordLocation another) {
-            final int lhs = mIndex;
-            final int rhs = another.mIndex;
-            return lhs < rhs ? -1 : (lhs == rhs ? 0 : 1);
-        }
-
-        @Override
-        public boolean equals(Object o) {
-            if (this == o) return true;
-            if (o == null || getClass() != o.getClass()) return false;
-            KeywordLocation location = (KeywordLocation) o;
-            return mIndex == location.mIndex;
-
-        }
-
-        @Override
-        public int hashCode() {
-            return mIndex;
-        }
+        return mKeySet.contains(key);
     }
 
 }
