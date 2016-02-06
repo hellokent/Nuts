@@ -28,6 +28,9 @@ public class LogContext {
     @LogFormatKeyword("method")
     public String mMethod;
 
+    @LogFormatKeyword("line")
+    public int mLineNumber;
+
     public int mLevel;
 
     Thread mCurrentThread;

@@ -62,6 +62,7 @@ public final class LoggerFactory {
 
     }
 
+    //TODO reload config
     public static void readConfig(final Application app, final InputStream stream) {
         if (app == null) {
             throw new IllegalArgumentException("app cannot be null");
@@ -174,5 +175,11 @@ public final class LoggerFactory {
             }
         }
         return DEFAULT_LOG;
+    }
+
+    static void clean() {
+        LOG_OUTPUT_MAP.clear();
+        LOGGER_OUTPUT_MAP.clear();
+        LOGGER_SET.clear();
     }
 }

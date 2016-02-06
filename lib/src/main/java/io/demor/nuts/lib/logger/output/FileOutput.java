@@ -28,6 +28,9 @@ public class FileOutput extends LogcatOutput {
     private FileWriter mWriter;
     private String mPath;
 
+    //TODO max log file count;
+    //TODO max log file size
+
     public FileOutput(Application application, Element element) throws DOMException {
         super(element);
         final NodeList pathNodeList = element.getElementsByTagName("path");

@@ -82,6 +82,7 @@ public class Logger {
             context.mMethod = element.getMethodName();
             context.mTotalClass = element.getClassName();
             context.mClass = context.mTotalClass.substring(context.mTotalClass.lastIndexOf(".") + 1);
+            context.mLineNumber = element.getLineNumber();
         }
         if (needTime) {
             context.mTime.updateTime(System.currentTimeMillis());
