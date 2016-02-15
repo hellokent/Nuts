@@ -10,6 +10,8 @@ public class Logger {
     ArrayList<LogOutput> mLogOutputs = Lists.newArrayList();
     String mPath;
     String mTag;
+    boolean mNeedTime = false;
+    boolean mNeedThreadStack = false;
     private ThreadLocal<LogContext> mLocalLogContext = new ThreadLocal<>();
 
     Logger(String path, String tag) {
@@ -42,23 +44,30 @@ public class Logger {
         log(level, msg, arg);
     }
 
-    protected void log(int level, String msg, Object... arg) {
-        boolean needTime = false;
+    protected void configLoaded() {
         for (LogOutput output : mLogOutputs) {
             if (output.needCurrentTime()) {
-                needTime = true;
+                mNeedTime = true;
                 break;
             }
         }
 
-        boolean needThreadStack = false;
         for (LogOutput output : mLogOutputs) {
             if (output.needThreadStack()) {
-                needThreadStack = true;
+                mNeedThreadStack = true;
                 break;
             }
         }
-        final LogContext context = getLogContext(needTime, needThreadStack);
+    }
+
+    protected void clear() {
+        mLogOutputs.clear();
+        mNeedTime = false;
+        mNeedThreadStack = false;
+    }
+
+    protected void log(int level, String msg, Object... arg) {
+        final LogContext context = getLogContext();
         context.mLevel = level;
         context.mMsg = arg == null || arg.length == 0 ? msg : String.format(msg, arg);
         for (LogOutput output : mLogOutputs) {
@@ -66,7 +75,7 @@ public class Logger {
         }
     }
 
-    private LogContext getLogContext(boolean needTime, boolean needThreadStack) {
+    private LogContext getLogContext() {
         final LogContext context;
         if (mLocalLogContext.get() == null) {
             context = new LogContext();
@@ -77,14 +86,14 @@ public class Logger {
 
         context.mTag = mTag;
 
-        if (needThreadStack) {
+        if (mNeedThreadStack) {
             final StackTraceElement element = context.mCurrentThread.getStackTrace()[5];
             context.mMethod = element.getMethodName();
             context.mTotalClass = element.getClassName();
             context.mClass = context.mTotalClass.substring(context.mTotalClass.lastIndexOf(".") + 1);
             context.mLineNumber = element.getLineNumber();
         }
-        if (needTime) {
+        if (mNeedTime) {
             context.mTime.updateTime(System.currentTimeMillis());
         }
         return context;

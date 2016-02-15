@@ -189,7 +189,7 @@ public class ListenerTestCase extends AndroidTestCase {
 
     @Override
     public void tearDown() throws Exception {
-        ListenerBus.clean();
+        ListenerBus.clear();
     }
 
     public void testTwoInterface() throws Exception {

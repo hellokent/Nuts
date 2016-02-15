@@ -14,7 +14,7 @@ public class LoggerFactoryTestcase extends AndroidTestCase {
     @Override
     public void tearDown() throws Exception {
         super.tearDown();
-        LoggerFactory.clean();
+        LoggerFactory.clear();
     }
 
     public void testLogger() throws Exception {

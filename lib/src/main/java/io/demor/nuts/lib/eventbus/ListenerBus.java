@@ -27,7 +27,7 @@ public final class ListenerBus {
         METHOD_CONSUMMER.removeAll(clz);
     }
 
-    public static synchronized void clean() {
+    public static synchronized void clear() {
         METHOD_CONSUMMER.clear();
     }
 

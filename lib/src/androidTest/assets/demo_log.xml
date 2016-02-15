@@ -20,7 +20,8 @@
     <output id="custom_log" type="io.demor.nuts.lib.BuildConfig">
     </output>
     -->
-
+    <!--TODO log block can add detailed output block-->
+    <!--DONE, NEED TEST CASE -->
     <log path="io.demor.nuts.sample" tag="nuts">
         <output id="context_file"/>
         <output id="sd_file"/>

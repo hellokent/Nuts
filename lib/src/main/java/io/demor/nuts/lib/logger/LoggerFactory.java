@@ -3,9 +3,7 @@ package io.demor.nuts.lib.logger;
 import android.app.Application;
 import android.text.TextUtils;
 import android.util.Log;
-import com.google.common.collect.LinkedHashMultimap;
 import com.google.common.collect.Maps;
-import com.google.common.collect.Multimap;
 import com.google.common.collect.Sets;
 import io.demor.nuts.lib.logger.output.FileOutput;
 import io.demor.nuts.lib.logger.output.LogcatOutput;
@@ -48,7 +46,7 @@ public final class LoggerFactory {
         InputStream stream = null;
         try {
             stream = app.getAssets().open("logger_testcase.xml");
-            LoggerFactory.readConfig(app, stream);
+            LoggerFactory.loadConfig(app, stream);
         } catch (IOException e) {
             e.printStackTrace();
         } finally {
@@ -63,14 +61,18 @@ public final class LoggerFactory {
     }
 
     //TODO reload config
-    public static void readConfig(final Application app, final InputStream stream) {
+    public static void reLoadConfig(final Application app, final InputStream stream) {
+        clear();
+        loadConfig(app, stream);
+    }
+
+    public static void loadConfig(final Application app, final InputStream stream) {
         if (app == null) {
             throw new IllegalArgumentException("app cannot be null");
         }
         if (stream == null) {
             throw new IllegalArgumentException("stream cannot be null");
         }
-        final Multimap<Logger, String> loggerOutputMap = LinkedHashMultimap.create();
         try {
             final Element root = DocumentBuilderFactory
                     .newInstance()
@@ -80,28 +82,12 @@ public final class LoggerFactory {
             NodeList nodeList = root.getElementsByTagName("output");
             for (int i = 0; i < nodeList.getLength(); i++) {
                 Element node = (Element) nodeList.item(i);
-                final String type = node.getAttribute("type");
                 final String id = node.getAttribute("id");
-
-                if (TextUtils.isEmpty(id) || TextUtils.isEmpty(type)) {
-                    continue;
+                final LogOutput output = parseOutput(node, app);
+                if (output != null) {
+                    LOG_OUTPUT_MAP.put(id, output);
                 }
-
-                final LogOutput output;
-                switch (type) {
-                    case "logcat":
-                        output = new LogcatOutput(node);
-                        break;
-                    case "file":
-                        output = new FileOutput(app, node);
-                        break;
-                    default:
-                        //TODO LOG EXTENSION
-                        continue;
-                }
-                LOG_OUTPUT_MAP.put(id, output);
             }
-
 
             nodeList = root.getElementsByTagName("log");
 
@@ -115,30 +101,30 @@ public final class LoggerFactory {
                 }
                 final NodeList childNodeList = node.getElementsByTagName("output");
                 final Logger logger = new Logger(path, tag);
+                LOGGER_SET.add(logger);
                 for (int j = 0; j < childNodeList.getLength(); ++j) {
                     final Element childNode = (Element) childNodeList.item(j);
                     final String outputId = childNode.getAttribute("id");
                     if (TextUtils.isEmpty(outputId)) {
-                        continue;
+                        final LogOutput output = parseOutput(childNode, app);
+                        if (output != null) {
+                            logger.mLogOutputs.add(output);
+                        }
+                    } else {
+                        final LogOutput output = LOG_OUTPUT_MAP.get(outputId);
+                        if (output == null) {
+                            continue;
+                        }
+                        if (logger.mLogOutputs.contains(output)) {
+                            continue;
+                        }
+                        logger.mLogOutputs.add(output);
                     }
-                    loggerOutputMap.put(logger, outputId);
                 }
+                logger.configLoaded();
             }
         } catch (Exception e) {
             throw new IllegalStateException(e);
-        }
-
-        for (Logger l : loggerOutputMap.keys()) {
-            for (String outputId : loggerOutputMap.get(l)) {
-                final LogOutput output = LOG_OUTPUT_MAP.get(outputId);
-                if (output == null) {
-                    continue;
-                }
-                if (l.mLogOutputs.contains(output)) {
-                    continue;
-                }
-                l.mLogOutputs.add(output);
-            }
         }
 
         for (Map.Entry<String, LogOutput> entry : LOG_OUTPUT_MAP.entrySet()) {
@@ -146,8 +132,29 @@ public final class LoggerFactory {
             logger.mLogOutputs.add(entry.getValue());
             LOGGER_OUTPUT_MAP.put(entry.getKey(), logger);
         }
+    }
 
-        LOGGER_SET.addAll(loggerOutputMap.keySet());
+    private static LogOutput parseOutput(final Element node, final Application app) {
+        final String type = node.getAttribute("type");
+        final String id = node.getAttribute("id");
+
+        if (TextUtils.isEmpty(id) || TextUtils.isEmpty(type)) {
+            return null;
+        }
+
+        final LogOutput output;
+        switch (type) {
+            case "logcat":
+                output = new LogcatOutput(node);
+                break;
+            case "file":
+                output = new FileOutput(app, node);
+                break;
+            default:
+                //TODO LOG EXTENSION
+                output = null;
+        }
+        return output;
     }
 
     public static Logger getLogger(final Class<?> clz) {
@@ -177,7 +184,10 @@ public final class LoggerFactory {
         return DEFAULT_LOG;
     }
 
-    static void clean() {
+    protected static void clear() {
+        for (Logger logger : LOGGER_SET) {
+            logger.clear();
+        }
         LOG_OUTPUT_MAP.clear();
         LOGGER_OUTPUT_MAP.clear();
         LOGGER_SET.clear();
