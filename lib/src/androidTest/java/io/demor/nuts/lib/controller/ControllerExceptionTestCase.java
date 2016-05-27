@@ -178,8 +178,7 @@ public class ControllerExceptionTestCase extends AndroidTestCase {
 
     public void testAsyncRuntimeException2() throws Exception {
         try {
-            mController.runThrowRuntimeException()
-                    .sync();
+            mController.runThrowRuntimeException().sync();
             assertTrue(false);
         } catch (ExceptionWrapper wrapper) {
             assertTrue(wrapper.getCause() instanceof NullPointerException);
@@ -189,7 +188,7 @@ public class ControllerExceptionTestCase extends AndroidTestCase {
     public void testAsyncRuntimeException3() throws Exception {
         final int count = 5;
         final CountDownLatch latch = new CountDownLatch(count);
-        VoidReturn voidReturn = mController.runThrowRuntimeException();
+        final VoidReturn voidReturn = mController.runThrowRuntimeException();
         for (int i = 0; i < count; ++i) {
             Thread.sleep(100);
             voidReturn.addListener(new ControllerListener<Void>() {

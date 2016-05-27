@@ -2,57 +2,47 @@ package io.demor.nuts.lib.controller;
 
 import android.app.Activity;
 import android.app.Dialog;
+import android.app.Fragment;
 import android.content.Context;
 import android.view.View;
+import com.google.common.collect.Lists;
+import io.demor.nuts.lib.Globals;
+import io.demor.nuts.lib.annotation.controller.CheckActivity;
+import io.demor.nuts.lib.task.SafeTask;
 
 import java.lang.reflect.Field;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.util.Date;
 import java.util.List;
-import java.util.concurrent.Callable;
-import java.util.concurrent.ExecutionException;
-import java.util.concurrent.Future;
-import java.util.concurrent.TimeUnit;
-
-import com.google.common.collect.Lists;
-import io.demor.nuts.lib.Globals;
-import io.demor.nuts.lib.ReflectUtils;
-import io.demor.nuts.lib.annotation.controller.CheckActivity;
-import io.demor.nuts.lib.task.SafeTask;
+import java.util.concurrent.*;
 
 public class Return<T> implements Globals {
 
     final boolean mCreatedByConstructor;
-
     final List<ControllerListener<T>> mListeners = Lists.newCopyOnWriteArrayList();
-
     volatile ControllerCallback<T> mCallback;
-
     volatile boolean mStarted;
-
     volatile boolean mEnded;
-
     T mData;
-
     boolean mNeedCheckActivity = false;
-
     Activity mActivity;
-
     Method mMethod;
-
     Future<T> mFuture;
-
-    Exception mWrappedException;
-
+    Throwable mWrappedException;
     Throwable mHappenedThrowable;
-
-    Date mBeginTime;
-
-    Date mEndTime;
-
+    final Runnable mResultRunnable = new Runnable() {
+        @Override
+        public void run() {
+            if (exceptionHappened()) {
+                mCallback.onException(mHappenedThrowable);
+            } else {
+                mCallback.onResult(mData);
+            }
+        }
+    };
+    Date mBeginTime, mEndTime;
     long mTimeoutMillis = -1;
-
     TimeoutListener mTimeoutListener;
 
     public Return(final T data) {
@@ -72,36 +62,34 @@ public class Return<T> implements Globals {
                     return null;
                 }
 
-                performLiftCircleBegin();
-                mBeginTime = new Date();
-
                 try {
-                    Object o = callable.call();
+                    performLiftCircleBegin();
+                    mBeginTime = new Date();
+
+                    final Object o = callable.call();
                     if (o == null) {
                         return null;
-                    } else if (ReflectUtils.isSubclassOf(o.getClass(), Return.class)) {
-                        mData = (T) ((Return) o).mData;
                     } else {
-                        mData = (T) o;
+                        mData = (T) ((Return) o).mData;
                     }
                 } catch (final Throwable e) {
+                    Throwable t = e;
                     if (e instanceof InvocationTargetException) {
-                        final Throwable cause = e.getCause();
-                        if (cause instanceof ExceptionWrapper) {
-                            mWrappedException = (Exception) cause.getCause();
-                            performLiftCircleException(cause.getCause());
-                        } else {
-                            performLiftCircleException(cause);
+                        t = e.getCause();
+                        if (t instanceof ExceptionWrapper) {
+                            t = t.getCause();
+                            mWrappedException = t;
                         }
-                    } else {
-                        performLiftCircleException(e);
                     }
+                    performLiftCircleException(t);
                 } finally {
                     mEndTime = new Date();
+                    if (validateReturn()) {
+                        postThenWait(mResultRunnable);
+                    }
+                    performLiftCircleEnd(mData);
                 }
 
-                performResult();
-                performLiftCircleEnd(mData);
                 return mData;
             }
         });
@@ -139,13 +127,8 @@ public class Return<T> implements Globals {
             }
         }
         mCallback = callback;
-        if (mFuture.isDone()) {
-            UI_HANDLER.post(new Runnable() {
-                @Override
-                public void run() {
-                    performResult();
-                }
-            });
+        if (mFuture.isDone() && validateReturn()) {
+            UI_HANDLER.post(mResultRunnable);
         }
     }
 
@@ -180,8 +163,23 @@ public class Return<T> implements Globals {
         return this;
     }
 
-    private void performLiftCircleBegin() {
+    private void postThenWait(final Runnable runnable) {
+        final CountDownLatch latch = new CountDownLatch(1);
         Globals.UI_HANDLER.post(new Runnable() {
+            @Override
+            public void run() {
+                runnable.run();
+                latch.countDown();
+            }
+        });
+        try {
+            latch.await();
+        } catch (InterruptedException ignored) {
+        }
+    }
+
+    private void performLiftCircleBegin() {
+        postThenWait(new Runnable() {
             @Override
             public void run() {
                 for (ControllerListener<T> l : mListeners) {
@@ -193,7 +191,7 @@ public class Return<T> implements Globals {
     }
 
     private void performLiftCircleEnd(final T data) {
-        Globals.UI_HANDLER.post(new Runnable() {
+        postThenWait(new Runnable() {
             @Override
             public void run() {
                 for (ControllerListener<T> l : mListeners) {
@@ -206,7 +204,7 @@ public class Return<T> implements Globals {
 
     private void performLiftCircleException(final Throwable throwable) {
         mHappenedThrowable = throwable;
-        Globals.UI_HANDLER.post(new Runnable() {
+        postThenWait(new Runnable() {
             @Override
             public void run() {
                 for (ControllerListener<T> l : mListeners) {
@@ -216,25 +214,15 @@ public class Return<T> implements Globals {
         });
     }
 
-    private void performResult() {
+    private boolean validateReturn() {
         if (isTimeout() && !mTimeoutListener.onTimeout(mBeginTime, mEndTime)) {
-            return;
+            return false;
         }
 
         if (mCallback == null || isActivityFinishing()) {
-            return;
+            return false;
         }
-
-        UI_HANDLER.post(new Runnable() {
-            @Override
-            public void run() {
-                if (exceptionHappened()) {
-                    mCallback.onException(mHappenedThrowable);
-                } else {
-                    mCallback.onResult(mData);
-                }
-            }
-        });
+        return true;
     }
 
     private boolean isTimeout() {
@@ -260,9 +248,10 @@ public class Return<T> implements Globals {
             return null;
         }
 
-        final Field f = mCallback.getClass()
-                .getDeclaredField("this$0");
-        f.setAccessible(true);
+        final Field f = ControllerCallback.CONTEXT_FIELD_MAP.get(mCallback.getClass());
+        if (f == null) {
+            return null;
+        }
         final Object outer = f.get(mCallback);
 
         if (outer == o) {
@@ -272,12 +261,8 @@ public class Return<T> implements Globals {
         Context c = null;
         if (outer instanceof View) {
             c = ((View) outer).getContext();
-        } else if (outer.getClass()
-                .getName()
-                .contains("Fragment")) {
-            c = (Context) outer.getClass()
-                    .getMethod("getActivity")
-                    .invoke(outer);
+        } else if (outer instanceof Fragment) {
+            c = ((Fragment) outer).getActivity();
         } else if (outer instanceof Activity) {
             return (Activity) outer;
         }
@@ -285,7 +270,7 @@ public class Return<T> implements Globals {
         if (c != null && c instanceof Activity) {
             return (Activity) c;
         } else {
-            return getContext(outer);
+            return null;
         }
     }
 }

@@ -12,7 +12,7 @@
 
     <!--LoggerTest.testThreadId-->
     <output id="logcat" type="logcat">
-        <format>%threadId-%threadName-%msg</format>
+        <format>%threadId:%threadName:%msg</format>
     </output>
 
     <output id="file" type="file">

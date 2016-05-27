@@ -12,7 +12,7 @@ import java.util.HashMap;
 
 public final class ListenerBus {
 
-    private static final Multimap<Class<?>, Object> METHOD_CONSUMMER = ArrayListMultimap.create();
+    private static final Multimap<Class<?>, Object> METHOD_CONSUMER = ArrayListMultimap.create();
     private static final HashMap<Class<?>, ListenerClassContext<?>> METHOD_PROVIDER = Maps.newHashMap();
 
     public static synchronized <T> void register(Class<T> clz, T obj) {
@@ -20,15 +20,15 @@ public final class ListenerBus {
             return;
         }
         addClz(clz);
-        METHOD_CONSUMMER.put(clz, obj);
+        METHOD_CONSUMER.put(clz, obj);
     }
 
     public static synchronized void unregister(Class<?> clz) {
-        METHOD_CONSUMMER.removeAll(clz);
+        METHOD_CONSUMER.removeAll(clz);
     }
 
     public static synchronized void clear() {
-        METHOD_CONSUMMER.clear();
+        METHOD_CONSUMER.clear();
     }
 
     public static synchronized <T> T provide(final Class<T> clz) {
@@ -71,7 +71,7 @@ public final class ListenerBus {
             //TODO map?
             for (MethodContext context : mMethodList) {
                 if (context.mMethod.equals(method)) {
-                    for (Object o : METHOD_CONSUMMER.get(mClass)) {
+                    for (Object o : METHOD_CONSUMER.get(mClass)) {
                         context.call(o, args);
                     }
                 }
