@@ -1,1 +1,3 @@
 include ':lib', ':sample', ':rx'
+include 'unit-test'
+

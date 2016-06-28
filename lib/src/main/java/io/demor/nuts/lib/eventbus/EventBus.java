@@ -23,6 +23,8 @@ public final class EventBus implements Globals {
 
     private final List<BaseEvent> mStickEvent = Lists.newCopyOnWriteArrayList();
 
+    private IPostEvent mPostListener = null;
+
     public synchronized void register(final Object o) {
         if (o == null) {
             return;
@@ -64,6 +66,9 @@ public final class EventBus implements Globals {
         if (event == null) {
             return false;
         }
+        if (mPostListener != null) {
+            mPostListener.onPostEvent(event);
+        }
         final Class<?> clz = event.getClass();
         L.v("event:%s from:%s", clz.getSimpleName(), Thread.currentThread().getStackTrace()[3].toString());
         boolean post = false;
@@ -85,6 +90,14 @@ public final class EventBus implements Globals {
 
     public int getStickyEventCount() {
         return mStickEvent.size();
+    }
+
+    public void setPostListener(IPostEvent postListener) {
+        this.mPostListener = postListener;
+    }
+
+    public interface IPostEvent {
+        void onPostEvent(BaseEvent o);
     }
 
     private static class BusClassContext extends ClassContext {
@@ -123,5 +136,4 @@ public final class EventBus implements Globals {
             return mNeedDeepClone;
         }
     }
-
 }
