@@ -4,15 +4,27 @@ import com.google.common.collect.Lists;
 import fi.iki.elonen.NanoWebSocketServer;
 
 import java.io.IOException;
+import java.util.Iterator;
 import java.util.List;
 
 public class WebSocketServer extends NanoWebSocketServer {
 
     public List<WebSocket> mSockets = Lists.newArrayList();
-    public void sendText
-
     public WebSocketServer() {
         super(0);
+    }
+
+    public void sendText(final String text) {
+
+        for (Iterator<WebSocket> i = mSockets.iterator(); i.hasNext(); ) {
+            final WebSocket s = i.next();
+            try {
+                s.send(text);
+            } catch (IOException e) {
+                e.printStackTrace();
+                i.remove();
+            }
+        }
     }
 
     @Override

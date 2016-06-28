@@ -55,7 +55,8 @@ public class NutsUnitTest {
                 if (!EVENT_SERVER.isAlive()) {
                     return;
                 }
-                EVENT_SERVER.
+                //TODO
+                EVENT_SERVER.sendText("");
             }
         });
     }
