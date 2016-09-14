@@ -1,39 +1,22 @@
 package io.demor.nuts.lib.storage;
 
-import android.content.Context;
+import com.google.common.base.Joiner;
+import com.google.common.io.Files;
+import io.demor.nuts.lib.log.L;
 
 import java.io.File;
 import java.io.IOException;
 import java.nio.charset.Charset;
 
-import com.google.common.base.Joiner;
-import com.google.common.base.Strings;
-import com.google.common.io.Files;
-import io.demor.nuts.lib.NutsApplication;
-import io.demor.nuts.lib.log.L;
-
 public class FileEngine implements IStorageEngine {
 
-    private File mFolder;
+    protected File mFolder;
 
-    public FileEngine() {
-        this("json", NutsApplication.getGlobalContext());
+    protected FileEngine() {
     }
 
-    public FileEngine(Context context) {
-        this("json", context);
-    }
-
-    public FileEngine(String dirName) {
-        this(dirName, NutsApplication.getGlobalContext());
-    }
-
-    public FileEngine(String dirName, Context context) {
-        if (Strings.isNullOrEmpty(dirName)) {
-            throw new RuntimeException("invalid dir name");
-        }
-        File cacheDir = context.getCacheDir();
-        mFolder = new File(cacheDir, dirName);
+    public FileEngine(File folder) {
+        mFolder = folder;
         if (!mFolder.exists()) {
             mFolder.mkdir();
         }

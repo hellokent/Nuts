@@ -13,7 +13,7 @@ public class StorageEngineTestCase extends AndroidTestCase {
     }
 
     public void testFile() throws Exception {
-        testEngine(new FileEngine(getContext()));
+        testEngine(new CacheFileEngine(getContext()));
     }
 
     public void testMemory() throws Exception {

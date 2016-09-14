@@ -47,7 +47,7 @@ import java.util.*;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
-import static io.demor.nuts.test.NutsUnitTest.GSON;
+import static io.demor.nuts.lib.client.TestClient.GSON;
 
 /**
  * A simple, tiny, nicely embeddable HTTP server in Java

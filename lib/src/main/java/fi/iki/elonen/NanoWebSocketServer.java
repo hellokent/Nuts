@@ -1,6 +1,4 @@
-package fi.iki.elonen;
-
-/*
+package fi.iki.elonen;/*
  * #%L
  * NanoHttpd-Websocket
  * %%

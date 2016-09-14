@@ -1,4 +1,4 @@
-package io.demor.nuts.test.utils;
+package io.demor.nuts.lib.utils;
 
 import android.app.Application;
 import dalvik.system.DexFile;

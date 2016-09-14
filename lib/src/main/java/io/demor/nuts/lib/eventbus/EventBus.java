@@ -25,6 +25,9 @@ public final class EventBus implements Globals {
 
     private IPostEvent mPostListener = null;
 
+    public EventBus() {
+    }
+
     public synchronized void register(final Object o) {
         if (o == null) {
             return;
