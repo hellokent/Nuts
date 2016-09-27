@@ -6,8 +6,8 @@ import com.squareup.okhttp.OkHttpClient;
 import com.squareup.okhttp.Request;
 import com.squareup.okhttp.RequestBody;
 import io.demor.nuts.lib.ReflectUtils;
-import io.demor.nuts.lib.api.model.GsonObject;
 import io.demor.nuts.lib.client.TestClient;
+import io.demor.nuts.lib.model.GsonObject;
 
 import java.io.IOException;
 import java.lang.reflect.InvocationHandler;

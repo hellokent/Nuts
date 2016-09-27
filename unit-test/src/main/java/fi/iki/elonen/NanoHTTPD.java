@@ -33,6 +33,7 @@ package fi.iki.elonen;
  * #L%
  */
 
+import android.os.Build;
 import fi.iki.elonen.NanoHTTPD.Response.IStatus;
 import fi.iki.elonen.NanoHTTPD.Response.Status;
 
@@ -47,7 +48,6 @@ import java.util.*;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
-import static io.demor.nuts.lib.client.TestClient.GSON;
 
 /**
  * A simple, tiny, nicely embeddable HTTP server in Java
@@ -468,7 +468,11 @@ public abstract class NanoHTTPD {
      */
     public void stop() {
         try {
-            safeClose(this.myServerSocket);
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT) {
+                safeClose(this.myServerSocket);
+            } else {
+                this.myServerSocket.close();
+            }
             this.asyncRunner.closeAll();
             if (this.myThread != null) {
                 this.myThread.join();
@@ -808,8 +812,10 @@ public abstract class NanoHTTPD {
             return this.data;
         }
 
-        public void setData(Object object) {
-            setData(GSON.toJson(object));
+        public void setData(String data) {
+            byte[] dataByteArray = data.getBytes();
+            this.data = new ByteArrayInputStream(dataByteArray);
+            this.contentLength = dataByteArray.length;
         }
 
         public String getHeader(String name) {
@@ -960,12 +966,6 @@ public abstract class NanoHTTPD {
             this.data = data;
         }
 
-        public void setData(String data) {
-            byte[] dataByteArray = data.getBytes();
-            this.data = new ByteArrayInputStream(dataByteArray);
-            this.contentLength = dataByteArray.length;
-        }
-
         /**
          * Some HTTP response status codes
          */
@@ -1052,7 +1052,9 @@ public abstract class NanoHTTPD {
 
         public void close() {
             safeClose(this.inputStream);
-            safeClose(this.acceptSocket);
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT) {
+                safeClose(this.acceptSocket);
+            }
         }
 
         @Override

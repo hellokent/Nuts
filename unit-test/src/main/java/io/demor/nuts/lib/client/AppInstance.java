@@ -1,11 +1,12 @@
-package io.demor.nuts.lib.api.model;
+package io.demor.nuts.lib.client;
 
 import com.google.common.collect.Lists;
 import com.squareup.okhttp.MediaType;
 import com.squareup.okhttp.OkHttpClient;
 import com.squareup.okhttp.Request;
 import com.squareup.okhttp.RequestBody;
-import io.demor.nuts.lib.client.TestClient;
+import io.demor.nuts.lib.model.ControllerInfo;
+import io.demor.nuts.lib.model.GsonObject;
 
 import java.io.IOException;
 import java.lang.reflect.Method;

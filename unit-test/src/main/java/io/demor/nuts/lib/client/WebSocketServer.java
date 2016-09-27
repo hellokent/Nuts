@@ -1,6 +1,7 @@
 package io.demor.nuts.lib.client;
 
 import com.google.common.collect.Lists;
+import fi.iki.elonen.NanoWebSocketServer;
 
 import java.io.IOException;
 import java.util.Iterator;

@@ -1,4 +1,4 @@
-package io.demor.nuts.lib.api.model;
+package io.demor.nuts.lib.model;
 
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;

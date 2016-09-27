@@ -1,6 +1,6 @@
-package io.demor.nuts.lib.api.model;
+package io.demor.nuts.lib.model;
 
-import io.demor.nuts.lib.api.TestClient;
+import static io.demor.nuts.lib.client.TestClient.GSON;
 
 public class GsonObject {
     public String mClass;
@@ -12,13 +12,13 @@ public class GsonObject {
             mGson = "null";
         } else {
             mClass = o.getClass().getName();
-            mGson = TestClient.GSON.toJson(o);
+            mGson = GSON.toJson(o);
         }
     }
 
     public Object toObj() {
         try {
-            return TestClient.GSON.fromJson(mGson, Class.forName(mClass));
+            return GSON.fromJson(mGson, Class.forName(mClass));
         } catch (ClassNotFoundException e) {
             e.printStackTrace();
             return null;

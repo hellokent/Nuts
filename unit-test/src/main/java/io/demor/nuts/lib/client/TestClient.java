@@ -7,7 +7,6 @@ import com.google.gson.GsonBuilder;
 import io.demor.nuts.lib.Storage;
 import io.demor.nuts.lib.eventbus.BaseEvent;
 import io.demor.nuts.lib.eventbus.EventBus;
-import io.demor.nuts.lib.model.AppInstance;
 import io.demor.nuts.lib.model.ControllerInfo;
 import io.demor.nuts.lib.model.GsonObject;
 import io.demor.nuts.lib.storage.FileEngine;
@@ -32,8 +31,6 @@ public class TestClient {
 
     public static final Handler EVENT_BUS_HANDLER;
 
-    public static boolean sApiDebug = false;
-
     static {
         final HandlerThread thread = new HandlerThread("event-bus-post-thread");
         thread.start();
@@ -49,7 +46,6 @@ public class TestClient {
         EVENT_SERVER.stop();
         API_SERVER.stop();
     }
-
 
     //TODO add in
     public static void addControllerImpl(Class<?> impl) {
