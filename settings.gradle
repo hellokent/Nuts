@@ -1,3 +1,8 @@
-include ':lib', ':sample', ':rx'
-include 'unit-test'
+include ':lib', ':tool-common'
+include ':sample'
+include ':rx'
+include ':unit-test'
+include ':web-debug:server'
+include ':web-debug:server-release'
+include ':web-debug:app'
 

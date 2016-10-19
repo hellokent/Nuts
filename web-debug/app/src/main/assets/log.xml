@@ -1,0 +1,4 @@
+<log_config package="io.demor">
+    <item range=".">log</item>
+    <item range="com.nuts">nuts</item>
+</log_config>

@@ -1,0 +1,53 @@
+<!DOCTYPE html>
+<html>
+<head lang="en">
+    <meta charset="UTF-8">
+    <title></title>
+</head>
+<body>
+
+<table border="1" id="net">
+
+    <tr>
+        <th width="5%">ID</th>
+        <th width="10%">URL</th>
+        <th width="5%">Method</th>
+        <th width="5%">开始时间</th>
+        <th width="10%">参数</th>
+        <th width="5%">返回码</th>
+        <th width="20%">返回值</th>
+        <th width="5%">结束时间</th>
+        <th width="5%">耗时</th>
+    </tr>
+
+    <tr>
+        <td>URL</td>
+    </tr>
+
+</table>
+
+<script>
+
+    function appendChild(parent, id, value) {
+        var element = document.createElement(id);
+        element.innerText = value;
+        parent.appendChild(element);
+    }
+
+    var net_table = document.getElementById("net");
+
+    var table_row = document.createElement("tr");
+    table_row.setAttribute("id", "123");
+    table_row.innerHTML = "<td>id</td><td>URL</td>";
+
+    net_table.appendChild(table_row);
+
+</script>
+
+<script>
+    var table_row = document.getElementById("123");
+    table_row.innerHTML = "<td>id2</td><td>URL2</td>";
+</script>
+
+</body>
+</html>

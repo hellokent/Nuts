@@ -1,17 +1,4 @@
-buildscript {
-    repositories {
-        jcenter()
-    }
-    dependencies {
-        classpath 'com.android.tools.build:gradle:2.0.0'
-    }
-}
 apply plugin: 'com.android.library'
-
-repositories {
-    jcenter()
-}
-
 
 android {
     compileSdkVersion 23
@@ -31,9 +18,9 @@ android {
     }
 }
 
-
 dependencies {
+    compile fileTree(dir: 'libs', include: ['*.jar'])
+    testCompile 'junit:junit:4.12'
     compile project(':lib')
-    compile project(':tool-common')
-    testCompile group: 'junit', name: 'junit', version: '4.11'
+    compile 'com.x5dev:chunk-templates:2.6.3'
 }

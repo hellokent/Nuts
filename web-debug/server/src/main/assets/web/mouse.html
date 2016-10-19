@@ -1,0 +1,52 @@
+<!DOCTYPE html>
+<html>
+<head lang="en">
+    <meta charset="UTF-8">
+    <title></title>
+    <script src="js/jquery.min.js"></script>
+</head>
+
+<body>
+
+
+<div class="layout"
+     style="width: 400px;height: 200px">
+    <!--
+    <div style="z-index: 1;width: 50px;height: 50px;background-color: white;float: right;margin: 10px"></div>
+    -->
+    <div
+            class="a"
+            style="background-color:#D94A38;width:400px;height:200px;margin-top:25px;text-align:center;">
+        Mouse Over Me
+    </div>
+
+</div>
+
+
+<!--
+<div style="border:1px solid #F60;width:100px;height:100px"></div>
+-->
+
+
+<script>
+
+
+    $(document).ready(function () {
+
+
+        var b1 = $("<div></div>");
+        b1.css("border", "1px solid blue");
+        b1.width(100);
+        b1.height(200);
+        b1.css("z-index", 1);
+        b1.css("margin-left", "10px");
+        b1.css("margin-top", "50px");
+
+        $("div.a").append(b1)
+    });
+
+
+</script>
+
+</body>
+</html>

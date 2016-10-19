@@ -1,0 +1,87 @@
+body {
+    font-family: Menlo, Monaco, Consolas, "Courier New", monospace, "Helvetica Neue", Helvetica, Arial, sans-serif, '微软雅黑', '黑体';
+    padding-top: 70px;
+}
+
+.navbar-edaijia {
+    background-color: #356CAD;
+    border: none;
+}
+
+.navbar-edaijia .navbar-brand {
+    padding: 0 15px;
+}
+
+.navbar-edaijia .navbar-brand img {
+    height: 50px;
+}
+
+.navbar-edaijia .navbar-nav > li > a {
+    color: #fff;
+    padding: 15px 25px;
+}
+
+.navbar-edaijia .navbar-nav > li > a:hover,
+.navbar-edaijia .navbar-nav > li > a:focus,
+.navbar-edaijia .navbar-nav > .active > a,
+.navbar-edaijia .navbar-nav > .active > a:hover,
+.navbar-edaijia .navbar-nav > .active > a:focus {
+    color: #337ab7;
+    background-color: #fff;
+    box-shadow: 0 3px 8px rgba(0, 0, 0, 0.125) inset;
+}
+
+.change-type .btn-default.active,
+.change-type .btn-default.focus,
+.change-type .btn-default:active,
+.change-type .btn-default:focus,
+.change-type .btn-default:hover {
+    color: #fff;
+    background-color: #31b0d5;
+    border-color: #269abc;
+}
+
+.panel-heading {
+    padding: 5px 15px;
+    line-height: 34px;
+}
+
+.panel-heading .region {
+    margin-left: 10px;
+}
+
+#myModal .modal-body {
+    padding: 30px 15px;
+}
+
+#myModal .modal-body span {
+    float: left;
+}
+
+#myModal .modal-body .glyphicon-exclamation-sign {
+    font-size: 24px;
+}
+
+#myModal .modal-body .message {
+    font-size: 13px;
+    line-height: 26px;
+    padding-left: 5px;
+}
+
+.table {
+    min-height: 20px;
+}
+
+.table th, .table td {
+    text-align: center;
+}
+
+.l_foot {
+    width: 980px;
+    line-height: 35px;
+    padding-top: 20px;
+    text-align: center;
+    font-size: 16px;
+    margin: 0px auto;
+    color: #2d62a6;
+}

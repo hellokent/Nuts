@@ -3,14 +3,13 @@ package io.demor.nuts.lib.client;
 import com.google.common.base.Splitter;
 import com.google.common.io.CharStreams;
 import fi.iki.elonen.NanoHTTPD;
-import io.demor.nuts.lib.model.AppInstance;
 import io.demor.nuts.lib.model.GsonObject;
 
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.util.List;
 
-import static fi.iki.elonen.NanoHTTPD.Response.*;
+import static fi.iki.elonen.NanoHTTPD.Response.Status;
 
 public class ApiServer extends NanoHTTPD {
 

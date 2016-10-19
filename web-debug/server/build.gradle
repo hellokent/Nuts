@@ -1,27 +1,28 @@
-buildscript {
-    repositories {
-        jcenter()
-    }
-    dependencies {
-        classpath 'com.android.tools.build:gradle:2.0.0'
-    }
-}
 apply plugin: 'com.android.library'
+apply plugin: 'maven'
 
 repositories {
     jcenter()
 }
 
+configurations {
+    deployAar
+}
 
 android {
     compileSdkVersion 23
-    buildToolsVersion "23.0.2"
+    buildToolsVersion "21.1.2"
 
     defaultConfig {
         minSdkVersion 19
         targetSdkVersion 23
         versionCode 1
         versionName "1.0"
+    }
+
+    compileOptions {
+        sourceCompatibility JavaVersion.VERSION_1_7
+        targetCompatibility JavaVersion.VERSION_1_7
     }
     buildTypes {
         release {
@@ -31,9 +32,10 @@ android {
     }
 }
 
-
 dependencies {
+    deployAar 'org.apache.maven.wagon:wagon-http:2.2'
     compile project(':lib')
     compile project(':tool-common')
-    testCompile group: 'junit', name: 'junit', version: '4.11'
+    compile 'org.jooq:joor:0.9.5'
 }
+

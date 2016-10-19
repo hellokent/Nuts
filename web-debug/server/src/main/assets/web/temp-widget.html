@@ -1,0 +1,72 @@
+<!DOCTYPE html>
+<html>
+<head lang="en">
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>UI控件走查</title>
+    <link rel="stylesheet" href="css/bootstrap.min.css">
+    <link rel="stylesheet" href="css/font-awesome.min.css">
+    <!--
+
+    <link rel="stylesheet" href="css/style.css">
+    -->
+    <link rel="stylesheet" href="css/doomTooltip.css"/>
+    <script type="text/javascript" src="js/jquery.min.js"></script>
+    <script type="text/javascript" src="js/jquery.json.js"></script>
+    <script type="text/javascript" src="js/bootstrap.min.js"></script>
+    <script type="text/javascript" src="js/jquery.doomTooltip.js"></script>
+    <script type="text/javascript" src="js/widget.js"></script>
+</head>
+
+<body>
+
+<nav class="navbar navbar-inverse">
+
+    <div class="navbar-header">
+        <a class="navbar-brand" href="#">WebDebug</a>
+    </div>
+    <ul class="nav navbar-nav">
+        <li><a href="sniffer">Api数据</a></li>
+        <li class="active"><a href="#">UI走查</a></li>
+    </ul>
+
+    <ul class="nav navbar-nav navbar-right">
+        <li><a onclick="update()">更新</a></li>
+        <li><a onclick="measureVertical()">纵向测量</a></li>
+        <li><a onclick="measureHorizontal()">横向测量</a></li>
+    </ul>
+</nav>
+
+<div class="container">
+    <div id="screen-container" class="col-md-4">
+        <!--
+        <img id="screen" src="http://172.16.128.124:8080/res/screen.jpg" alt="" width="100%"/>
+        -->
+        <img id="screen" src="{$screen}" alt="" width="100%"/>
+        <h5 id="phone" style="margin-top: 20px"></h5>
+    </div>
+    <div class="col-md-8">
+        <div class="panel panel-info">
+            <table id="widget-table" class="table table-striped table-bordered">
+                <thread>
+                    <th class="col-md-4">Key</th>
+                    <th>Value</th>
+                </thread>
+            </table>
+        </div>
+    </div>
+</div>
+
+<script type="text/javascript">
+    /**
+     var host = "http://192.168.1.3:8080";
+     var host = "http://172.16.128.124:8080";
+     */
+    var host = "{$host}";
+
+    $(document).ready(function () {
+        update(host);
+    });
+</script>
+</body>
+</html>

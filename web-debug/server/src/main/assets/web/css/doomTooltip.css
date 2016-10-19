@@ -1,0 +1,15 @@
+.doom-tooltip-cnt {
+    text-align: center;
+}
+
+.doom-tooltip-text {
+    background: #269abc;
+    border-radius: 1px;
+    -moz-border-radius: 1px;
+    -webkit-border-radius: 1px;
+    padding: 1px 2px;
+    color: #fff;
+    text-shadow: none;
+    opacity: 0.8;
+    font-size: 10px;
+}
