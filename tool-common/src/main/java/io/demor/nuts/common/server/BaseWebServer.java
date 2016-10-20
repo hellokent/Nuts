@@ -2,7 +2,9 @@ package io.demor.nuts.common.server;
 
 import android.app.Application;
 import android.content.res.AssetManager;
+import com.google.common.base.Joiner;
 import com.google.common.base.Splitter;
+import com.google.common.base.Strings;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
 import com.google.common.io.ByteStreams;
@@ -37,6 +39,13 @@ public class BaseWebServer extends NanoHTTPD {
         mGson = gson;
         mAssetManager = application.getAssets();
         mTemplateLoader = new AssetTemplateLoader(mAssetManager);
+    }
+
+    public static String toUrlPath(Url origin) {
+        if (origin == null) {
+            return "";
+        }
+        return Strings.nullToEmpty(origin.value()).replaceAll("[/\\\\]", "");
     }
 
     @Override
@@ -126,8 +135,7 @@ public class BaseWebServer extends NanoHTTPD {
     }
 
     public void registerApi(Object api) {
-        final Url globalUrl = api.getClass().getAnnotation(Url.class);
-        final String globalPath = globalUrl == null ? "" : globalUrl.value();
+        final String globalPath = toUrlPath(api.getClass().getAnnotation(Url.class));
 
         for (java.lang.reflect.Method method : api.getClass().getDeclaredMethods()) {
             final Annotation[][] parameterAnnotations = method.getParameterAnnotations();
@@ -144,9 +152,8 @@ public class BaseWebServer extends NanoHTTPD {
                     }
                 }
             }
-            final Url methodUrl = method.getAnnotation(Url.class);
-            final String urlPath = globalPath + (methodUrl == null ? "" : methodUrl.value());
-
+            final String urlPath = Joiner.on('/').skipNulls().join(globalPath, toUrlPath(method.getAnnotation(Url.class)));
+            L.v("register api:%s class:%s", urlPath, apiMethod.mMethod.getName());
             if (mApiRequestMap.containsKey(urlPath)) {
                 throw new MultiPathLoadedException(urlPath);
             } else {

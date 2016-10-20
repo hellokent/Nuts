@@ -7,6 +7,7 @@ import com.squareup.okhttp.OkHttpClient;
 import com.squareup.okhttp.Request;
 import io.demor.nuts.common.server.BaseWebServer;
 import io.demor.nuts.common.server.IApi;
+import io.demor.nuts.common.server.annotation.Url;
 
 import java.io.IOException;
 import java.util.Map;
@@ -42,18 +43,46 @@ public class BaseWebServerTest extends AndroidTestCase {
         mWebServer.registerApi(api);
         assertNotSame(0, mWebServer.getListeningPort());
         try {
-            String resp = new OkHttpClient().newCall(new Request.Builder()
-                    .url("http://localhost:" + mWebServer.getListeningPort() + "/api/test?arg1=value1")
-                    .build()).execute().body().string();
+            String resp = get("test?arg1=value1");
             assertEquals("arg1-resp", resp);
-            resp = new OkHttpClient().newCall(new Request.Builder()
-                    .url("http://localhost:" + mWebServer.getListeningPort() + "/api/test")
-                    .build()).execute().body().string();
+            resp = get("test");
             assertEquals("empty", resp);
         } catch (IOException e) {
             e.printStackTrace();
             assertNotNull(e);
         }
+    }
+
+    public void testApiClass() {
+        @Url("test")
+        class Api {
+            @Url("empty-api")
+            public String empty() {
+                return "empty";
+            }
+
+            @Url("/reg/")
+            public String reg() {
+                return "reg";
+            }
+        }
+        mWebServer.registerApi(new Api());
+        assertNotSame(0, mWebServer.getListeningPort());
+        try {
+            String resp = get("test/empty-api");
+            assertEquals("empty", resp);
+            resp = get("test/reg");
+            assertEquals("reg", resp);
+        } catch (IOException e) {
+            e.printStackTrace();
+            assertNotNull(e);
+        }
+    }
+
+    public String get(String url) throws IOException {
+        return new OkHttpClient().newCall(new Request.Builder()
+                .url("http://localhost:" + mWebServer.getListeningPort() + "/api/" + url)
+                .build()).execute().body().string();
     }
 
     @Override
