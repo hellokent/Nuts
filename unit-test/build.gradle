@@ -36,4 +36,5 @@ dependencies {
     compile project(':lib')
     compile project(':tool-common')
     testCompile group: 'junit', name: 'junit', version: '4.11'
+    androidTestCompile 'com.squareup.okhttp:mockwebserver:2.4.0'
 }

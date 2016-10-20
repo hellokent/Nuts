@@ -15,6 +15,11 @@ class GsonApiImpl implements IApiMethod {
 
     @Override
     public String invoke(final Map<String, String> parameterMap) {
-        return mGson.toJson(mIApi.call(parameterMap));
+        Object o = mIApi.call(parameterMap);
+        if (o instanceof String) {
+            return o.toString();
+        } else {
+            return mGson.toJson(mIApi.call(parameterMap));
+        }
     }
 }

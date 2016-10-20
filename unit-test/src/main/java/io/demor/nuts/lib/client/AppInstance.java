@@ -1,5 +1,6 @@
 package io.demor.nuts.lib.client;
 
+import android.app.Application;
 import com.google.common.collect.Lists;
 import com.squareup.okhttp.MediaType;
 import com.squareup.okhttp.OkHttpClient;
@@ -16,6 +17,7 @@ public class AppInstance {
     public String mName;
     public int mPort;
     public String mPackageName;
+    public Application mApplication;
 
     public List<ControllerInfo> mControllers = Lists.newArrayList();
     //TODO eventInfo storageInfo
