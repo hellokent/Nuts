@@ -1,0 +1,10 @@
+apply plugin: 'java'
+
+configurations {
+    compile.exclude module: ':lib'
+}
+
+dependencies {
+    compile fileTree(dir: 'libs', include: ['*.jar'])
+    compile project(':lib-unit-test')
+}

@@ -1,10 +1,9 @@
 package io.demor.nuts.lib.controller;
 
 import android.app.Dialog;
-
 import io.demor.nuts.lib.Globals;
 
-public class DialogListenerImpl<T> implements ControllerListener<T>, Globals {
+public class DialogListenerImpl implements ControllerListener, Globals {
 
     final Dialog mDialog;
 
@@ -25,7 +24,7 @@ public class DialogListenerImpl<T> implements ControllerListener<T>, Globals {
     }
 
     @Override
-    public void onEnd(final T response) {
+    public void onEnd(final Object response) {
         UI_HANDLER.post(new Runnable() {
             @Override
             public void run() {

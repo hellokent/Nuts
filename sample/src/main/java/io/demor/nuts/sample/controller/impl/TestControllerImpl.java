@@ -1,14 +1,14 @@
 package io.demor.nuts.sample.controller.impl;
 
-import java.util.concurrent.TimeUnit;
-
 import io.demor.nuts.lib.controller.BaseController;
 import io.demor.nuts.lib.controller.ExceptionWrapper;
 import io.demor.nuts.lib.controller.Return;
 import io.demor.nuts.lib.controller.VoidReturn;
 import io.demor.nuts.lib.log.L;
 import io.demor.nuts.sample.controller.DemoException;
-import io.demor.nuts.sample.controller.TestController;
+import io.demor.nuts.sample.lib.controller.TestController;
+
+import java.util.concurrent.TimeUnit;
 
 public class TestControllerImpl extends BaseController implements TestController {
 

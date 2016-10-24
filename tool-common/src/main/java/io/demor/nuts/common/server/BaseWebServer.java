@@ -135,6 +135,9 @@ public class BaseWebServer extends NanoHTTPD {
     }
 
     public void registerApi(Object api) {
+        if (api == null) {
+            return;
+        }
         final String globalPath = toUrlPath(api.getClass().getAnnotation(Url.class));
 
         for (java.lang.reflect.Method method : api.getClass().getDeclaredMethods()) {
@@ -163,6 +166,9 @@ public class BaseWebServer extends NanoHTTPD {
     }
 
     public void registerApi(IApi api) {
+        if (api == null) {
+            return;
+        }
         final String name = api.name();
         if (mApiRequestMap.containsKey(name)) {
             throw new MultiPathLoadedException(name);
@@ -171,6 +177,9 @@ public class BaseWebServer extends NanoHTTPD {
     }
 
     public void registerTemplate(final String name, ITemplate template) {
+        if (name == null || template == null) {
+            return;
+        }
         if (mTemplateMap.containsKey(name)) {
             throw new RuntimeException("重复的Template：" + name);
         } else {
@@ -179,6 +188,9 @@ public class BaseWebServer extends NanoHTTPD {
     }
 
     public void registerResourceApi(String name, IResourceApi api) {
+        if (name == null || api == null) {
+            return;
+        }
         if (mResMap.containsKey(name)) {
             throw new RuntimeException("重复的Resource Api:" + name);
         } else {
