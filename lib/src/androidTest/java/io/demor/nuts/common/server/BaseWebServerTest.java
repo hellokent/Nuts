@@ -1,12 +1,10 @@
-package io.demor.nuts.common;
+package io.demor.nuts.common.server;
 
 import android.app.Application;
 import android.test.AndroidTestCase;
 import com.google.gson.Gson;
 import com.squareup.okhttp.OkHttpClient;
 import com.squareup.okhttp.Request;
-import io.demor.nuts.common.server.BaseWebServer;
-import io.demor.nuts.common.server.IApi;
 import io.demor.nuts.common.server.annotation.Url;
 
 import java.io.IOException;
@@ -31,7 +29,7 @@ public class BaseWebServerTest extends AndroidTestCase {
             }
 
             @Override
-            public Object call(Map<String, String> param) {
+            public Object call(Map<String, String> param, String body) {
                 assertNotNull(param);
                 if (param.containsKey("arg1")) {
                     assertEquals("value1", param.get("arg1"));

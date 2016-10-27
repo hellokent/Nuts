@@ -6,5 +6,5 @@ public interface IApi {
 
     String name();
 
-    Object call(Map<String, String> param);
+    Object call(Map<String, String> param, String body);
 }

@@ -16,6 +16,7 @@ import fi.iki.elonen.NanoHTTPD.Response.Status;
 import io.demor.nuts.common.server.annotation.Request;
 import io.demor.nuts.common.server.annotation.Url;
 import io.demor.nuts.lib.log.L;
+import io.demor.nuts.lib.module.BaseResponse;
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -75,10 +76,21 @@ public class BaseWebServer extends NanoHTTPD {
             if (apiMethod == null) {
                 return newFixedLengthResponse(Status.NOT_FOUND, MIME_JSON, mGson.toJson(BaseResponse.API_NOT_FOUND));
             } else {
-                final Response response = newFixedLengthResponse(Status.OK, MIME_JSON, apiMethod.invoke(session.getParms()));
-                response.addHeader("Access-Control-Allow-Origin", "*");
-                response.addHeader("Access-Control-Allow-Methods", "GET, POST");
-                return response;
+                try {
+                    final Response response;
+                    Map<String, String> files = new HashMap<>();
+                    session.parseBody(files);
+                    response = newFixedLengthResponse(Status.OK, MIME_JSON, apiMethod.invoke(session.getParms(), files.get("postData").getBytes()));
+                    response.addHeader("Access-Control-Allow-Origin", "*");
+                    response.addHeader("Access-Control-Allow-Methods", "GET, POST");
+                    return response;
+                } catch (IOException e) {
+                    e.printStackTrace();
+                    return newFixedLengthResponse(Status.BAD_REQUEST, MIME_JSON, "");
+                } catch (ResponseException e) {
+                    e.printStackTrace();
+                    return newFixedLengthResponse(Status.BAD_REQUEST, MIME_JSON, "");
+                }
             }
         } else if ("web".equals(firstWordInPath)) {
             try {

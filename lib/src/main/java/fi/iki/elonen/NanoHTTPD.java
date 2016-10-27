@@ -875,15 +875,13 @@ public abstract class NanoHTTPD {
                     pw.print("Content-Type: " + mime + "\r\n");
                 }
 
-                if (this.header == null || this.header.get("Date") == null) {
+                if (this.header.get("Date") == null) {
                     pw.print("Date: " + gmtFrmt.format(new Date()) + "\r\n");
                 }
 
-                if (this.header != null) {
-                    for (String key : this.header.keySet()) {
-                        String value = this.header.get(key);
-                        pw.print(key + ": " + value + "\r\n");
-                    }
+                for (String key : this.header.keySet()) {
+                    String value = this.header.get(key);
+                    pw.print(key + ": " + value + "\r\n");
                 }
 
                 sendConnectionHeaderIfNotAlreadyPresent(pw, this.header);

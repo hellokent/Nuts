@@ -6,7 +6,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.FrameLayout;
 import android.widget.LinearLayout;
-import io.demor.nuts.common.server.BaseResponse;
+import io.demor.nuts.lib.module.BaseResponse;
 import io.demor.server.ScreenHelper;
 import org.joor.Reflect;
 

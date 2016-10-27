@@ -4,16 +4,10 @@ import io.demor.nuts.lib.ReflectUtils;
 
 import java.lang.reflect.InvocationHandler;
 import java.lang.reflect.Method;
-import java.util.HashMap;
 import java.util.concurrent.Callable;
 
 public class ControllerInvokeHandler<I> implements InvocationHandler {
 
-    static final HashMap<Class, Class> RETURN_CAST_MAP = new HashMap<Class, Class>() {
-        {
-            put(Return.class, ReturnImpl.class);
-        }
-    };
     protected final I mImpl;
 
     public ControllerInvokeHandler(I impl) {
@@ -34,10 +28,10 @@ public class ControllerInvokeHandler<I> implements InvocationHandler {
     @Override
     public Object invoke(final Object proxy, final Method method, final Object[] args) throws Throwable {
         Class<?> returnClz = method.getReturnType();
-        if (ReflectUtils.isSubclassOf(returnClz, Return.class)) {
-            if (RETURN_CAST_MAP.containsKey(returnClz)) {
-                returnClz = RETURN_CAST_MAP.get(returnClz);
-            }
+        if (returnClz == Return.class) {
+            return ReturnImpl.class.getConstructor(Callable.class, Method.class)
+                    .newInstance(new ControllerCallable(method, mImpl, args), method);
+        } else if (ReflectUtils.isSubclassOf(returnClz, Return.class)) {
             return returnClz.getConstructor(Callable.class, Method.class)
                     .newInstance(new ControllerCallable(method, mImpl, args), method);
         } else {

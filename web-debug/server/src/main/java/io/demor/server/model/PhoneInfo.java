@@ -1,6 +1,6 @@
 package io.demor.server.model;
 
-import io.demor.nuts.common.server.BaseResponse;
+import io.demor.nuts.lib.module.BaseResponse;
 
 public class PhoneInfo extends BaseResponse {
 

@@ -12,8 +12,6 @@ import android.content.res.Resources;
 import android.graphics.drawable.BitmapDrawable;
 import android.graphics.drawable.Drawable;
 import android.graphics.drawable.StateListDrawable;
-import android.net.wifi.WifiInfo;
-import android.net.wifi.WifiManager;
 import android.os.*;
 import android.os.Handler.Callback;
 import android.view.ViewGroup;
@@ -21,6 +19,7 @@ import android.view.Window;
 import com.google.common.collect.Maps;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
+import io.demor.nuts.common.server.Server;
 import io.demor.server.api.StateListDrawableInfoApi;
 import io.demor.server.api.WidgetApi;
 import io.demor.server.res.BitmapDrawableResourceApi;
@@ -48,7 +47,6 @@ public class ServerManager {
     public static Application sApplication;
 
     static Server sServer;
-    static WifiManager sWifiManager;
     static Handler sSnifferHandler;
 
     static {
@@ -66,7 +64,6 @@ public class ServerManager {
 
     public static void init(Application application) {
         sApplication = application;
-        sWifiManager = (WifiManager) sApplication.getSystemService(Context.WIFI_SERVICE);
         sServer = new Server(sApplication, GSON);
         sServer.mHttpServer.registerApi(new WidgetApi());
         sServer.mHttpServer.registerTemplate("ws", new WsTemplate());
@@ -145,19 +142,6 @@ public class ServerManager {
         ScreenHelper.init(application);
     }
 
-    public static String getIpAddress() {
-        if (!sWifiManager.isWifiEnabled()) {
-            return "";
-        }
-        WifiInfo wifiInfo = sWifiManager.getConnectionInfo();
-
-        if (wifiInfo == null) {
-            return "";
-        }
-
-        return intToIp(wifiInfo.getIpAddress());
-    }
-
     public static String getHttpHost() {
         return "http://" + getIpAddress() + ":" + getHttpPort();
     }
@@ -168,10 +152,6 @@ public class ServerManager {
 
     public static int getWebSocketPort() {
         return sServer.getWebSocketPort();
-    }
-
-    private static String intToIp(int i) {
-        return (i & 0xFF) + "." + ((i >> 8) & 0xFF) + "." + ((i >> 16) & 0xFF) + "." + ((i >> 24) & 0xFF);
     }
 
 
@@ -233,5 +213,9 @@ public class ServerManager {
                 .setNegativeButton("取消", null)
                 .create()
                 .show();
+    }
+
+    public static String getIpAddress() {
+        return sServer.getIpAddress();
     }
 }

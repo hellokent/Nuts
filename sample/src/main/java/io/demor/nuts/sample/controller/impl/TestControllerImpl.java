@@ -15,6 +15,7 @@ public class TestControllerImpl extends BaseController implements TestController
 
     @Override
     public Return<String> run(final int count) {
+        L.v("run count:%s", count);
         try {
             Thread.sleep(TimeUnit.SECONDS.toMillis(2));
             mCount += count;

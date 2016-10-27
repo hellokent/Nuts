@@ -4,6 +4,8 @@ import com.google.gson.FieldNamingPolicy;
 import com.google.gson.FieldNamingStrategy;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
+import io.demor.nuts.lib.ReflectUtils;
+import org.joor.Reflect;
 
 import java.lang.reflect.Field;
 import java.lang.reflect.InvocationTargetException;
@@ -11,6 +13,7 @@ import java.lang.reflect.Method;
 
 public final class ControllerUtil {
 
+    public static final Gson MODULE_GSON = new Gson();
     private static final Gson GSON = new GsonBuilder()
             .setFieldNamingPolicy(FieldNamingPolicy.LOWER_CASE_WITH_DASHES)
             .setFieldNamingStrategy(new FieldNamingStrategy() {
@@ -40,6 +43,10 @@ public final class ControllerUtil {
             info.mArgs[i] = GSON.toJson(args[i]);
         }
         return GSON.toJson(info);
+    }
+
+    public static ControllerMethodInfo getMethodInfo(String content) {
+        return GSON.fromJson(content, ControllerMethodInfo.class);
     }
 
     public static Object callControllerNative(Object impl, String content) throws
@@ -89,9 +96,12 @@ public final class ControllerUtil {
         for (int i = 0; i < info.mArgs.length; ++i) {
             argArray[i] = GSON.fromJson(info.mArgs[i], argTypeArray[i]);
         }
-        final Method m = impl.getClass().getDeclaredMethod(info.mName, argTypeArray);
-        m.setAccessible(true);
-        return m.invoke(impl, argArray);
+        final Method m = impl.getClass().getInterfaces()[0].getDeclaredMethod(info.mName, argTypeArray);
+        return toJson(Reflect.on(impl)
+                .call(info.mName, argArray)
+                .call("sync")
+                .get(), (Class<?>) ReflectUtils.getGenericType(m.getGenericReturnType()));
+        //return m.invoke(impl, argArray);
     }
 
     public static String toJson(Object obj, Class<?> clz) {

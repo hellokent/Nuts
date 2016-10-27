@@ -1,7 +1,6 @@
-package io.demor.nuts.common.server;
+package io.demor.nuts.lib.module;
 
 public class BaseResponse {
-
     public static final BaseResponse API_NOT_FOUND = new BaseResponse(1, "api找不到");
     public int code;
     public String message;

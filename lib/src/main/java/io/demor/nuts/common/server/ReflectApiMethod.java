@@ -18,7 +18,7 @@ public class ReflectApiMethod implements IApiMethod {
     }
 
     @Override
-    public String invoke(final Map<String, String> parameterMap) {
+    public String invoke(final Map<String, String> parameterMap, byte[] body) {
         Object[] param = new Object[mParamTypeList.length];
         for (int i = 0, n = mParamTypeList.length; i < n; ++i) {
             final Class typeClz = mParamTypeList[i];

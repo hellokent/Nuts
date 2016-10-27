@@ -1,8 +1,8 @@
 package io.demor.server.model.drawable;
 
 import com.google.common.collect.Lists;
-import io.demor.nuts.common.server.BaseResponse;
 import io.demor.nuts.lib.log.L;
+import io.demor.nuts.lib.module.BaseResponse;
 import io.demor.server.Constant;
 import io.demor.server.ServerManager;
 
