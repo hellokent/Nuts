@@ -12,7 +12,8 @@ public class ControllerCheckActivityActivity extends BaseActivity {
 
     @OnClick(R.id.async_run)
     void run() {
-        TEST_CONTROLLER.runCheckActivity().asyncUI(new ControllerCallback<Void>() {
+        TEST_CONTROLLER.runCheckActivity()
+                .asyncUI(new ControllerCallback<Void>() {
             @Override
             public void onResult(final Void aVoid) {
                 ToastUtil.showMessage("on Result");

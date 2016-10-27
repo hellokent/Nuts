@@ -30,7 +30,7 @@ public class StateListDrawableInfoApi implements IApi {
     }
 
     @Override
-    public Object call(final Map<String, String> param) {
+    public Object call(final Map<String, String> param, String body) {
         return new StateListResponse(mStateInfo, mName);
     }
 }
