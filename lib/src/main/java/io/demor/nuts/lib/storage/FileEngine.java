@@ -18,7 +18,7 @@ public class FileEngine implements IStorageEngine {
     public FileEngine(File folder) {
         mFolder = folder;
         if (!mFolder.exists()) {
-            mFolder.mkdir();
+            mFolder.mkdirs();
         }
     }
 

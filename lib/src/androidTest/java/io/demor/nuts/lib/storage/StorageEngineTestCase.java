@@ -21,6 +21,7 @@ public class StorageEngineTestCase extends AndroidTestCase {
     }
 
     private void testEngine(IStorageEngine engine) {
+        engine.delete("key");
         engine.set("key", "value");
         assertEquals("value", engine.get("key"));
         assertTrue(engine.contains("key"));

@@ -1,4 +1,4 @@
-include ':lib', ':tool-common', ':sample-lib', ':lib-unit-test', ':sample-test', ':lib-common'
+include ':lib', ':sample-lib', ':lib-unit-test', ':sample-test', ':lib-common'
 include ':sample'
 include ':rx'
 include ':unit-test'

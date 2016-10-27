@@ -7,5 +7,7 @@ dependencies {
     compile 'com.squareup.okio:okio:1.4.0'
     compile 'uk.com.robust-it:cloning:1.9.1'
     compile 'org.objenesis:objenesis:2.1'
+    compile group: 'org.jooq', name: 'joor', version: '0.9.6'
     compile fileTree(dir: 'libs', include: ['*.jar'])
+    testCompile 'junit:junit:4.12'
 }

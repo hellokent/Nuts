@@ -86,8 +86,7 @@ public abstract class NanoWebSocketServer extends NanoHTTPD {
      * http://stackoverflow.com/a/4265472
      * </p>
      *
-     * @param buf
-     *            the byte array (not null)
+     * @param buf the byte array (not null)
      * @return the translated Base64 string (not null)
      */
     private static String encodeBase64(byte[] buf) {

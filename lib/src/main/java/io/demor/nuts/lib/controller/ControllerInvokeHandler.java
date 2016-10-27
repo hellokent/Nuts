@@ -9,15 +9,17 @@ import java.util.concurrent.Callable;
 
 public class ControllerInvokeHandler<I> implements InvocationHandler {
 
+    static final HashMap<Class, Class> RETURN_CAST_MAP = new HashMap<Class, Class>() {
+        {
+            put(Return.class, ReturnImpl.class);
+        }
+    };
     protected final I mImpl;
-    private final Class<?> mClz;
-    private final HashMap<Class, Class> mCastMap;
 
-    public ControllerInvokeHandler(I impl, HashMap<Class, Class> castMap) {
-        mCastMap = castMap;
+    public ControllerInvokeHandler(I impl) {
         mImpl = impl;
-        mClz = impl.getClass();
-        final Class[] interfaces = mClz.getInterfaces();
+        final Class<?> clz = impl.getClass();
+        final Class[] interfaces = clz.getInterfaces();
         for (Class i : interfaces) {
             for (Method method : i.getDeclaredMethods()) {
                 final Class[] exceptions = method.getExceptionTypes();
@@ -33,8 +35,8 @@ public class ControllerInvokeHandler<I> implements InvocationHandler {
     public Object invoke(final Object proxy, final Method method, final Object[] args) throws Throwable {
         Class<?> returnClz = method.getReturnType();
         if (ReflectUtils.isSubclassOf(returnClz, Return.class)) {
-            if (mCastMap.containsKey(returnClz)) {
-                returnClz = mCastMap.get(returnClz);
+            if (RETURN_CAST_MAP.containsKey(returnClz)) {
+                returnClz = RETURN_CAST_MAP.get(returnClz);
             }
             return returnClz.getConstructor(Callable.class, Method.class)
                     .newInstance(new ControllerCallable(method, mImpl, args), method);

@@ -39,5 +39,9 @@ android {
 dependencies {
     compile fileTree(include: ['*.jar'], dir: 'libs')
     compile project(':lib-common')
+
+    compile 'com.x5dev:chunk-templates:2.6.3'
+
     androidTestCompile 'com.squareup.okhttp:mockwebserver:2.4.0'
+    testCompile 'junit:junit:4.12'
 }

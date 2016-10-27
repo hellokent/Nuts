@@ -15,14 +15,14 @@ public class ControllerExceptionTestCase extends AndroidTestCase {
         final CountDownLatch latch = new CountDownLatch(3);
         final CountDownLatch latch2 = new CountDownLatch(1);
         mController.runThrowWrappedException()
-                .addListener(new ControllerListener<Void>() {
+                .addListener(new ControllerListener() {
                     @Override
                     public void onBegin() {
                         latch.countDown();
                     }
 
                     @Override
-                    public void onEnd(final Void response) {
+                    public void onEnd(final Object response) {
                         latch.countDown();
                     }
 
@@ -60,14 +60,14 @@ public class ControllerExceptionTestCase extends AndroidTestCase {
 
         try {
             mController.runThrowWrappedException()
-                    .addListener(new ControllerListener<Void>() {
+                    .addListener(new ControllerListener() {
                         @Override
                         public void onBegin() {
                             latch.countDown();
                         }
 
                         @Override
-                        public void onEnd(final Void response) {
+                        public void onEnd(final Object response) {
                             latch.countDown();
                         }
 
@@ -99,14 +99,14 @@ public class ControllerExceptionTestCase extends AndroidTestCase {
 
         try {
             mController.runThrowRuntimeException()
-                    .addListener(new ControllerListener<Void>() {
+                    .addListener(new ControllerListener() {
                         @Override
                         public void onBegin() {
                             latch.countDown();
                         }
 
                         @Override
-                        public void onEnd(final Void response) {
+                        public void onEnd(final Object response) {
                             latch.countDown();
                         }
 
@@ -137,14 +137,14 @@ public class ControllerExceptionTestCase extends AndroidTestCase {
         final CountDownLatch latch = new CountDownLatch(3);
         final CountDownLatch latch2 = new CountDownLatch(1);
         mController.runThrowRuntimeException()
-                .addListener(new ControllerListener<Void>() {
+                .addListener(new ControllerListener() {
                     @Override
                     public void onBegin() {
                         latch.countDown();
                     }
 
                     @Override
-                    public void onEnd(final Void response) {
+                    public void onEnd(final Object response) {
                         latch.countDown();
                     }
 
@@ -188,18 +188,16 @@ public class ControllerExceptionTestCase extends AndroidTestCase {
     public void testAsyncRuntimeException3() throws Exception {
         final int count = 5;
         final CountDownLatch latch = new CountDownLatch(count);
-        final VoidReturn voidReturn = mController.runThrowRuntimeException();
+        final Return<Void> voidReturn = mController.runThrowRuntimeException();
         for (int i = 0; i < count; ++i) {
             Thread.sleep(100);
             voidReturn.addListener(new ControllerListener<Void>() {
                 @Override
                 public void onBegin() {
-
                 }
 
                 @Override
-                public void onEnd(final Void response) {
-
+                public void onEnd(Void response) {
                 }
 
                 @Override

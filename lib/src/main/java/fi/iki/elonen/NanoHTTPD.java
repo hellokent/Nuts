@@ -234,10 +234,8 @@ public abstract class NanoHTTPD {
      * create a instance of the client handler, subclasses can return a subclass
      * of the ClientHandler.
      *
-     * @param finalAccept
-     *            the socket the cleint is connected to
-     * @param inputStream
-     *            the input stream
+     * @param finalAccept the socket the cleint is connected to
+     * @param inputStream the input stream
      * @return the client handler
      */
     protected ClientHandler createClientHandler(final Socket finalAccept, final InputStream inputStream) {
@@ -248,8 +246,7 @@ public abstract class NanoHTTPD {
      * Instantiate the server runnable, can be overwritten by subclasses to
      * provide a subclass of the ServerRunnable.
      *
-     * @param timeout
-     *            the socet timeout to use.
+     * @param timeout the socet timeout to use.
      * @return the server runnable.
      */
     protected ServerRunnable createServerRunnable(final int timeout) {
@@ -261,11 +258,10 @@ public abstract class NanoHTTPD {
      * name might have been supplied several times, by return lists of values.
      * In general these lists will contain a single element.
      *
-     * @param parms
-     *            original <b>NanoHTTPD</b> parameters values, as passed to the
-     *            <code>serve()</code> method.
+     * @param parms original <b>NanoHTTPD</b> parameters values, as passed to the
+     *              <code>serve()</code> method.
      * @return a map of <code>String</code> (parameter name) to
-     *         <code>List&lt;String&gt;</code> (a list of the values supplied).
+     * <code>List&lt;String&gt;</code> (a list of the values supplied).
      */
     protected Map<String, List<String>> decodeParameters(Map<String, String> parms) {
         return this.decodeParameters(parms.get(NanoHTTPD.QUERY_STRING_PARAMETER));
@@ -276,10 +272,9 @@ public abstract class NanoHTTPD {
      * name might have been supplied several times, by return lists of values.
      * In general these lists will contain a single element.
      *
-     * @param queryString
-     *            a query string pulled from the URL.
+     * @param queryString a query string pulled from the URL.
      * @return a map of <code>String</code> (parameter name) to
-     *         <code>List&lt;String&gt;</code> (a list of the values supplied).
+     * <code>List&lt;String&gt;</code> (a list of the values supplied).
      */
     protected Map<String, List<String>> decodeParameters(String queryString) {
         Map<String, List<String>> parms = new HashMap<>();
@@ -304,10 +299,9 @@ public abstract class NanoHTTPD {
     /**
      * Decode percent encoded <code>String</code> values.
      *
-     * @param str
-     *            the percent encoded <code>String</code>
+     * @param str the percent encoded <code>String</code>
      * @return expanded form of the input, for example "foo%20bar" becomes
-     *         "foo bar"
+     * "foo bar"
      */
     protected String decodePercent(String str) {
         String decoded = null;
@@ -379,8 +373,7 @@ public abstract class NanoHTTPD {
      * <p/>
      * (By default, this returns a 404 "Not Found" plain text error response.)
      *
-     * @param session
-     *            The HTTP session
+     * @param session The HTTP session
      * @return HTTP response, see class Response for details
      */
     public Response serve(IHTTPSession session) {
@@ -404,8 +397,7 @@ public abstract class NanoHTTPD {
     /**
      * Pluggable strategy for asynchronously executing requests.
      *
-     * @param asyncRunner
-     *            new strategy for handling threads.
+     * @param asyncRunner new strategy for handling threads.
      */
     public void setAsyncRunner(AsyncRunner asyncRunner) {
         this.asyncRunner = asyncRunner;
@@ -414,8 +406,7 @@ public abstract class NanoHTTPD {
     /**
      * Pluggable strategy for creating and cleaning up temporary files.
      *
-     * @param tempFileManagerFactory
-     *            new strategy for handling temp files.
+     * @param tempFileManagerFactory new strategy for handling temp files.
      */
     public void setTempFileManagerFactory(TempFileManagerFactory tempFileManagerFactory) {
         this.tempFileManagerFactory = tempFileManagerFactory;
@@ -432,8 +423,7 @@ public abstract class NanoHTTPD {
     /**
      * Start the server.
      *
-     * @throws IOException
-     *             if the socket is in use.
+     * @throws IOException if the socket is in use.
      */
     public void start() throws IOException {
         start(NanoHTTPD.SOCKET_READ_TIMEOUT);
@@ -441,6 +431,7 @@ public abstract class NanoHTTPD {
 
     /**
      * Set Http port
+     *
      * @param port Http port
      */
     public void setPort(final int port) {
@@ -450,10 +441,8 @@ public abstract class NanoHTTPD {
     /**
      * Start the server.
      *
-     * @param timeout
-     *            timeout to use for socket connections.
-     * @throws IOException
-     *             if the socket is in use.
+     * @param timeout timeout to use for socket connections.
+     * @throws IOException if the socket is in use.
      */
     public void start(final int timeout) throws IOException {
         if (this.sslServerSocketFactory != null) {
@@ -477,7 +466,7 @@ public abstract class NanoHTTPD {
      */
     public void stop() {
         try {
-            safeClose(this.myServerSocket);
+            myServerSocket.close();
             this.asyncRunner.closeAll();
             if (this.myThread != null) {
                 this.myThread.join();
@@ -556,8 +545,7 @@ public abstract class NanoHTTPD {
         /**
          * Adds the files in the request body to the files map.
          *
-         * @param files
-         *            map to modify
+         * @param files map to modify
          */
         void parseBody(Map<String, String> files) throws IOException, ResponseException;
     }
@@ -1058,7 +1046,13 @@ public abstract class NanoHTTPD {
 
         public void close() {
             safeClose(this.inputStream);
-            safeClose(this.acceptSocket);
+            try {
+                if (acceptSocket != null) {
+                    acceptSocket.close();
+                }
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
         }
 
         @Override
@@ -1128,8 +1122,7 @@ public abstract class NanoHTTPD {
          * Set a cookie with an expiration date from a month ago, effectively
          * deleting it on the client side.
          *
-         * @param name
-         *            The cookie name.
+         * @param name The cookie name.
          */
         public void delete(String name) {
             set(name, "-delete-", -30);
@@ -1143,8 +1136,7 @@ public abstract class NanoHTTPD {
         /**
          * Read a cookie from the HTTP Headers.
          *
-         * @param name
-         *            The cookie's name.
+         * @param name The cookie's name.
          * @return The cookie's value if it exists, null otherwise.
          */
         public String read(String name) {
@@ -1158,12 +1150,9 @@ public abstract class NanoHTTPD {
         /**
          * Sets a cookie.
          *
-         * @param name
-         *            The cookie's name.
-         * @param value
-         *            The cookie's value.
-         * @param expires
-         *            How many days until the cookie expires.
+         * @param name    The cookie's name.
+         * @param value   The cookie's value.
+         * @param expires How many days until the cookie expires.
          */
         public void set(String name, String value, int expires) {
             this.queue.add(new Cookie(name, value, Cookie.getHTTPTime(expires)));
@@ -1173,9 +1162,8 @@ public abstract class NanoHTTPD {
          * Internally used by the webserver to add all queued cookies into the
          * Response's HTTP Headers.
          *
-         * @param response
-         *            The Response object to which headers the queued cookies
-         *            will be added.
+         * @param response The Response object to which headers the queued cookies
+         *                 will be added.
          */
         public void unloadQueue(Response response) {
             for (Cookie cookie : this.queue) {

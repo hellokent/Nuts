@@ -3,7 +3,6 @@ package io.demor.nuts.sample.controller.impl;
 import io.demor.nuts.lib.controller.BaseController;
 import io.demor.nuts.lib.controller.ExceptionWrapper;
 import io.demor.nuts.lib.controller.Return;
-import io.demor.nuts.lib.controller.VoidReturn;
 import io.demor.nuts.lib.log.L;
 import io.demor.nuts.sample.controller.DemoException;
 import io.demor.nuts.sample.lib.controller.TestController;
@@ -26,7 +25,7 @@ public class TestControllerImpl extends BaseController implements TestController
     }
 
     @Override
-    public VoidReturn runCheckActivity() {
+    public Return<Void> runCheckActivity() {
         try {
             Thread.sleep(TimeUnit.SECONDS.toMillis(2));
         } catch (InterruptedException e) {
@@ -36,7 +35,7 @@ public class TestControllerImpl extends BaseController implements TestController
     }
 
     @Override
-    public VoidReturn runWithException() {
+    public Return<Void> runWithException() {
         try {
             Thread.sleep(TimeUnit.SECONDS.toMillis(2));
         } catch (InterruptedException e) {

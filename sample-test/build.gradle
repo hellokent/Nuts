@@ -7,4 +7,5 @@ configurations {
 dependencies {
     compile fileTree(dir: 'libs', include: ['*.jar'])
     compile project(':lib-unit-test')
+    compile project(':sample-lib')
 }

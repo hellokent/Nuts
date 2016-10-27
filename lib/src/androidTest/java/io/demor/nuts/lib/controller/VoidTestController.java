@@ -2,41 +2,43 @@ package io.demor.nuts.lib.controller;
 
 import java.util.concurrent.CountDownLatch;
 
+import static io.demor.nuts.lib.controller.BaseController.ofVoid;
+
 public interface VoidTestController {
 
     VoidTestController IMPL = new VoidTestController() {
 
         @Override
-        public VoidReturn load() {
+        public Return<Void> load() {
             try {
                 Thread.sleep(1000);
             } catch (InterruptedException e) {
                 e.printStackTrace();
             }
-            return new VoidReturn();
+            return ofVoid();
         }
 
         @Override
-        public VoidReturn loadBg(CountDownLatch latch) {
+        public Return<Void> loadBg(CountDownLatch latch) {
             latch.countDown();
-            return new VoidReturn();
+            return ofVoid();
         }
 
         @Override
-        public VoidReturn run(final CountDownLatch latch, int start) {
+        public Return<Void> run(final CountDownLatch latch, int start) {
             try {
                 Thread.sleep(100);
             } catch (InterruptedException e) {
                 e.printStackTrace();
             }
             latch.countDown();
-            return new VoidReturn();
+            return ofVoid();
         }
     };
 
-    VoidReturn load();
+    Return<Void> load();
 
-    VoidReturn loadBg(CountDownLatch latch);
+    Return<Void> loadBg(CountDownLatch latch);
 
-    VoidReturn run(CountDownLatch latch, int start);
+    Return<Void> run(CountDownLatch latch, int start);
 }

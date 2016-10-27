@@ -5,6 +5,9 @@ import io.demor.nuts.lib.api.BaseResponse;
 import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.TimeUnit;
 
+import static io.demor.nuts.lib.controller.BaseController.of;
+import static io.demor.nuts.lib.controller.BaseController.ofVoid;
+
 public interface TestController {
 
     TestController IMPL = new TestController() {
@@ -17,13 +20,13 @@ public interface TestController {
             }
             BaseResponse response = new BaseResponse();
             response.msg = "hello";
-            return new Return<>(response);
+            return of(response);
         }
 
         @Override
-        public VoidReturn loadBg(CountDownLatch latch) {
+        public Return<Void> loadBg(CountDownLatch latch) {
             latch.countDown();
-            return new VoidReturn();
+            return ofVoid();
         }
 
         @Override
@@ -34,16 +37,16 @@ public interface TestController {
                 e.printStackTrace();
             }
             latch.countDown();
-            return new Return<>(start + 1);
+            return of(start + 1);
         }
 
         @Override
         public Return<BaseResponse> single(final TestApi2 api, final int count) {
-            return new Return<>(api.get(count));
+            return of(api.get(count));
         }
 
         @Override
-        public VoidReturn runThrowWrappedException() {
+        public Return<Void> runThrowWrappedException() {
             try {
                 Thread.sleep(100);
             } catch (InterruptedException e) {
@@ -53,7 +56,7 @@ public interface TestController {
         }
 
         @Override
-        public VoidReturn runThrowRuntimeException() {
+        public Return<Void> runThrowRuntimeException() {
             try {
                 Thread.sleep(100);
             } catch (InterruptedException e) {
@@ -63,27 +66,27 @@ public interface TestController {
         }
 
         @Override
-        public VoidReturn sleep(final int seconds) {
+        public Return<Void> sleep(final int seconds) {
             try {
                 Thread.sleep(TimeUnit.SECONDS.toMillis(seconds));
             } catch (InterruptedException e) {
                 e.printStackTrace();
             }
-            return new VoidReturn();
+            return ofVoid();
         }
     };
 
     Return<BaseResponse> load();
 
-    VoidReturn loadBg(CountDownLatch latch);
+    Return<Void> loadBg(CountDownLatch latch);
 
     Return<Integer> run(CountDownLatch latch, int start);
 
     Return<BaseResponse> single(TestApi2 api, int count);
 
-    VoidReturn runThrowWrappedException();
+    Return<Void> runThrowWrappedException();
 
-    VoidReturn runThrowRuntimeException();
+    Return<Void> runThrowRuntimeException();
 
-    VoidReturn sleep(int seconds);
+    Return<Void> sleep(int seconds);
 }

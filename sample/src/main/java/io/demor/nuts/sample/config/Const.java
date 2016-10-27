@@ -9,7 +9,7 @@ import io.demor.nuts.sample.controller.impl.TestControllerImpl;
 import io.demor.nuts.sample.lib.controller.TestController;
 
 public interface Const extends Globals{
-    TestController TEST_CONTROLLER = Reflection.newProxy(TestController.class, new ControllerInvokeHandler<>(new TestControllerImpl(), Globals.RETURN_CAST_MAP));
+    TestController TEST_CONTROLLER = Reflection.newProxy(TestController.class, new ControllerInvokeHandler<>(new TestControllerImpl()));
 
     Jumper JUMPER = Reflection.newProxy(Jumper.class, new JumperInvokeHandler(GlobalApplication.getGlobalContext()));
 }

@@ -76,14 +76,15 @@ public class ControllerApiTestCase extends AndroidTestCase {
                     break;
                 case 1:
                     mController.single(mApi, 100)
-                            .addListener(new ControllerListener<BaseResponse>() {
+                            .addListener(new ControllerListener() {
                                 @Override
                                 public void onBegin() {
 
                                 }
 
                                 @Override
-                                public void onEnd(final BaseResponse response) {
+                                public void onEnd(final Object obj) {
+                                    BaseResponse response = (BaseResponse) obj;
                                     assertNotNull(response);
                                     assertNotSame(0, response.code);
                                     assertEquals(BaseResponse.SUCCESS, response.getErrorCode());

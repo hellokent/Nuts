@@ -5,7 +5,6 @@ import android.app.Dialog;
 import android.app.Fragment;
 import android.content.Context;
 import android.view.View;
-import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
 import io.demor.nuts.lib.Globals;
 import io.demor.nuts.lib.ReflectUtils;
@@ -17,7 +16,6 @@ import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.util.Date;
 import java.util.HashMap;
-import java.util.List;
 import java.util.concurrent.*;
 
 public class ReturnImpl<T> extends Return<T> implements Globals {
@@ -26,14 +24,13 @@ public class ReturnImpl<T> extends Return<T> implements Globals {
     static final Class[] CHECK_CLASSES = {Activity.class, Fragment.class, View.class};
 
     final boolean mCreatedByConstructor;
-    final List<ControllerListener> mListeners = Lists.newCopyOnWriteArrayList();
+
     volatile ControllerCallback<T> mCallback;
     volatile boolean mStarted;
     volatile boolean mEnded;
-    T mData;
     boolean mNeedCheckActivity = false;
     Activity mActivity;
-    Method mMethod;
+
     Future<T> mFuture;
     Throwable mWrappedException;
     Throwable mHappenedThrowable;
@@ -61,8 +58,6 @@ public class ReturnImpl<T> extends Return<T> implements Globals {
         super(callable, method);
         mCreatedByConstructor = false;
         mNeedCheckActivity = method.getAnnotation(CheckActivity.class) != null;
-        mMethod = method;
-
         mFuture = SafeTask.THREAD_POOL_EXECUTOR.submit(new Callable<T>() {
             @Override
             public T call() throws Exception {
@@ -128,7 +123,7 @@ public class ReturnImpl<T> extends Return<T> implements Globals {
     public final void asyncUIWithDialog(final ControllerCallback<T> callback, final Dialog dialog) {
         updateCallbackFieldCache(callback);
         if (dialog != null) {
-            addListener(new DialogListenerImpl(dialog));
+            addListener(new DialogListenerImpl<T>(dialog));
         }
         if (mNeedCheckActivity) {
             try {
@@ -150,8 +145,8 @@ public class ReturnImpl<T> extends Return<T> implements Globals {
     }
 
     @Override
-    public Return<T> addListener(final ControllerListener listener) {
-        mListeners.add(listener);
+    public Return<T> addListener(final ControllerListener<T> listener) {
+        super.addListener(listener);
         Globals.UI_HANDLER.post(new Runnable() {
             @Override
             public void run() {
@@ -195,9 +190,7 @@ public class ReturnImpl<T> extends Return<T> implements Globals {
         postThenWait(new Runnable() {
             @Override
             public void run() {
-                for (ControllerListener l : mListeners) {
-                    l.onBegin();
-                }
+                callOnBegin();
                 mStarted = true;
             }
         });
@@ -207,25 +200,23 @@ public class ReturnImpl<T> extends Return<T> implements Globals {
         postThenWait(new Runnable() {
             @Override
             public void run() {
-                for (ControllerListener l : mListeners) {
-                    l.onEnd(data);
-                }
+                callOnEnd(data);
                 mEnded = true;
             }
         });
     }
+
 
     private void performLiftCircleException(final Throwable throwable) {
         mHappenedThrowable = throwable;
         postThenWait(new Runnable() {
             @Override
             public void run() {
-                for (ControllerListener l : mListeners) {
-                    l.onException(throwable);
-                }
+                callOnException(throwable);
             }
         });
     }
+
 
     private boolean validateReturn() {
         if (isTimeout() && !mTimeoutListener.onTimeout(mBeginTime, mEndTime)) {

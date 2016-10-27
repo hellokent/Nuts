@@ -1,41 +1,46 @@
 package io.demor.nuts.lib.controller;
 
+import com.squareup.okhttp.MediaType;
+import com.squareup.okhttp.OkHttpClient;
+import com.squareup.okhttp.Request;
+import com.squareup.okhttp.RequestBody;
+
+import java.io.IOException;
 import java.lang.reflect.Method;
-import java.util.concurrent.Callable;
-import java.util.concurrent.TimeUnit;
 
 public final class ReturnImpl<T> extends Return<T> {
 
-    public ReturnImpl(T data) {
-        super(data);
-    }
+    private final String mHost;
+    private final int mPort;
+    private final OkHttpClient mClient;
+    private final Object[] mArgs;
 
-    public ReturnImpl(Callable<Object> callable, Method method) {
-        super(callable, method);
+    public ReturnImpl(Method method, String host, int port, Object[] args) {
+        super(null, method);
+        mHost = host;
+        mPort = port;
+        mClient = new OkHttpClient();
+        mArgs = args;
     }
 
     @Override
     public T sync() {
-        return null;
+        try {
+            String resp = mClient.newCall(new Request.Builder()
+                    .url(String.format("http://%s:%d/api/controller", mHost, mPort))
+                    .post(RequestBody.create(MediaType.parse("json"), ControllerUtil.generateControllerMethod(mMethod, mArgs)))
+                    .build())
+                    .execute()
+                    .body()
+                    .string();
+            return (T) ControllerUtil.fromJson(resp, mMethod.getReturnType());
+        } catch (IOException e) {
+            throw new Error("bad network", e);
+        }
     }
 
     @Override
     public void asyncUI(ControllerCallback<T> callback) {
-
-    }
-
-    @Override
-    public Return<T> setNeedCheckActivity(boolean needCheckActivity) {
-        return null;
-    }
-
-    @Override
-    public Return<T> addListener(ControllerListener listener) {
-        return null;
-    }
-
-    @Override
-    public Return<T> setTimeout(int time, TimeUnit unit, TimeoutListener listener) {
-        return null;
+        throw new Error("No ui thread in PC mode");
     }
 }
