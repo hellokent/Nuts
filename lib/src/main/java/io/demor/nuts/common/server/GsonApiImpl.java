@@ -15,7 +15,7 @@ class GsonApiImpl implements IApiMethod {
 
     @Override
     public String invoke(final Map<String, String> parameterMap, byte[] body) {
-        Object o = mIApi.call(parameterMap, new String(body));
+        Object o = mIApi.call(parameterMap, body == null ? "" : new String(body));
         if (o instanceof String) {
             return o.toString();
         } else {

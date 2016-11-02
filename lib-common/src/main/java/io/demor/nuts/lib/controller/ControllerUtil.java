@@ -26,6 +26,55 @@ public final class ControllerUtil {
                     }
                 }
             })
+//            .registerTypeAdapter(LocalApiResponse.class, new TypeAdapter<LocalApiResponse>() {
+//                @Override
+//                public void write(final JsonWriter out, final LocalApiResponse value) throws IOException {
+//                    if (value == null) {
+//                        out.nullValue();
+//                    } else {
+//                        out.beginObject()
+//                                .name("code").value(value.code)
+//                                .name("message").value(value.message)
+//                                .name("clz").value(value.data == null ? "null" : value.data.getClass().getName())
+//                                .name("data").value(value.data == null ? "null" : ControllerUtil.GSON.toJson(value.data))
+//                                .endObject();
+//                    }
+//                }
+//
+//                @Override
+//                public LocalApiResponse read(final JsonReader in) throws IOException {
+//                    final LocalApiResponse result = new LocalApiResponse();
+//                    in.beginObject();
+//                    String clz = null;
+//                    while (in.hasNext()) {
+//                        switch (in.nextName()) {
+//                            case "code":
+//                                result.code = in.nextInt();
+//                                break;
+//                            case "message":
+//                                result.message = in.nextString();
+//                                break;
+//                            case "clz":
+//                                clz = in.nextString();
+//                                break;
+//                            case "data":
+//                                String content = in.nextString();
+//                                if ("null".equals(clz)) {
+//                                    result.data = null;
+//                                } else {
+//                                    try {
+//                                        result.data = ControllerUtil.GSON.fromJson(content, Class.forName(clz));
+//                                    } catch (ClassNotFoundException e) {
+//                                        throw new Error(e);
+//                                    }
+//                                }
+//                                break;
+//                        }
+//                    }
+//                    in.endObject();
+//                    return result;
+//                }
+//            })
             .serializeNulls()
             .create();
 
@@ -45,7 +94,7 @@ public final class ControllerUtil {
         return GSON.toJson(info);
     }
 
-    public static Object callControllerNative(Object impl, String content) throws
+    public static String callControllerNative(Object impl, String content) throws
             NoSuchMethodException,
             InvocationTargetException,
             IllegalAccessException,

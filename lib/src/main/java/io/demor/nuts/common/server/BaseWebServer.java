@@ -80,7 +80,8 @@ public class BaseWebServer extends NanoHTTPD {
                     final Response response;
                     Map<String, String> files = new HashMap<>();
                     session.parseBody(files);
-                    response = newFixedLengthResponse(Status.OK, MIME_JSON, apiMethod.invoke(session.getParms(), files.get("postData").getBytes()));
+                    response = newFixedLengthResponse(Status.OK, MIME_JSON, apiMethod.invoke(session.getParms(),
+                            files.containsKey("postData") ? files.get("postData").getBytes() : null));
                     response.addHeader("Access-Control-Allow-Origin", "*");
                     response.addHeader("Access-Control-Allow-Methods", "GET, POST");
                     return response;

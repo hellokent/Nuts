@@ -2,7 +2,7 @@ package io.demor.nuts.lib.controller;
 
 import com.squareup.okhttp.*;
 import io.demor.nuts.lib.ReflectUtils;
-import io.demor.nuts.lib.module.ApiResponse;
+import io.demor.nuts.lib.module.ControllerInvocationResponse;
 import okio.Buffer;
 
 import java.io.IOException;
@@ -79,9 +79,9 @@ public final class ReturnImpl<T> extends Return<T> {
                     .execute()
                     .body()
                     .string();
-            ApiResponse response = GSON.fromJson(resp, ApiResponse.class);
+            ControllerInvocationResponse response = GSON.fromJson(resp, ControllerInvocationResponse.class);
             if (response.code == 0) {
-                return (T) fromJson(response.data.toString(), (Class<?>) ReflectUtils.getGenericType(mMethod.getGenericReturnType()));
+                return (T) fromJson(response.mData, (Class<?>) ReflectUtils.getGenericType(mMethod.getGenericReturnType()));
             } else {
                 throw new Error("bad response:" + response.message);
             }

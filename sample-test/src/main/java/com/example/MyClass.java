@@ -10,7 +10,8 @@ import io.demor.nuts.sample.lib.controller.TestController;
 public class MyClass {
 
     public static void main(String[] args) throws Exception {
-        final AppInstance appInstance = new AppInstance("172.16.141.221", 8080, 40765);
+        //final AppInstance appInstance = new AppInstance("172.16.141.221", 8080, 40765);
+        final AppInstance appInstance = new AppInstance("io.demor.nuts.sample", "172.16.141.221");
         final Object o = new Object();
         BaseBarrier baseBarrier = new BaseBarrier(appInstance) {
             @Override

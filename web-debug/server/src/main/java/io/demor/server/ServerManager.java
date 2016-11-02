@@ -155,13 +155,9 @@ public class ServerManager {
     }
 
 
-    public synchronized static void start(int port) {
-        sServer.shutdown();
-        sServer.start(port);
-    }
-
     public synchronized static void start() {
-        start(0);
+        sServer.shutdown();
+        sServer.start();
     }
 
     public synchronized static void stop() {

@@ -24,10 +24,9 @@ public class Server {
         return (i & 0xFF) + "." + ((i >> 8) & 0xFF) + "." + ((i >> 16) & 0xFF) + "." + ((i >> 24) & 0xFF);
     }
 
-    public void start(int port) {
+    public void start() {
         try {
-            mHttpServer.setPort(port);
-            mHttpServer.start();
+            mHttpServer.start(0);
             mWebSocketServer.start(0);
         } catch (IOException ignored) {
         }

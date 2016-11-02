@@ -14,4 +14,10 @@ public class BaseResponse {
         this.message = message;
         this.code = code;
     }
+
+    public BaseResponse ofFailed(String msg) {
+        code = -1;
+        message = msg;
+        return this;
+    }
 }

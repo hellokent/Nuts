@@ -6,9 +6,12 @@ import io.demor.nuts.lib.controller.ControllerUtil;
 import io.demor.nuts.lib.eventbus.BaseEvent;
 import io.demor.nuts.lib.eventbus.EventBus;
 import io.demor.nuts.lib.eventbus.IPostListener;
-import io.demor.nuts.lib.module.ApiResponse;
+import io.demor.nuts.lib.log.L;
+import io.demor.nuts.lib.module.BaseResponse;
+import io.demor.nuts.lib.module.ControllerInvocationResponse;
 import io.demor.nuts.lib.module.PushObject;
 
+import java.io.IOException;
 import java.lang.reflect.InvocationTargetException;
 import java.util.Map;
 
@@ -17,9 +20,11 @@ import static io.demor.nuts.lib.controller.ControllerUtil.GSON;
 public final class ApiServer {
 
     public Server mServer;
+    public Application mApplication;
 
     public ApiServer(Application application) {
         mServer = new Server(application, GSON);
+        mApplication = application;
     }
 
     public <T> ApiServer registerController(final Class<T> api, final T impl) {
@@ -32,20 +37,22 @@ public final class ApiServer {
             @Override
             public Object call(Map<String, String> param, String body) {
                 try {
-                    return ApiResponse.ofSuccess(ControllerUtil.callControllerNative(impl, body));
+                    ControllerInvocationResponse response = new ControllerInvocationResponse();
+                    response.mData = ControllerUtil.callControllerNative(impl, body);
+                    return response;
                 } catch (NoSuchMethodException e) {
                     e.printStackTrace();
-                    return ApiResponse.ofFailed("no such method");
+                    return new BaseResponse().ofFailed("no such method");
                 } catch (InvocationTargetException e) {
                     e.printStackTrace();
-                    return ApiResponse.ofFailed("invoke target exception:" + e.getMessage() + "\n" +
+                    return new BaseResponse().ofFailed("invoke target exception:" + e.getMessage() + "\n" +
                             Joiner.on('\n').join(e.getTargetException().getStackTrace()));
                 } catch (IllegalAccessException e) {
                     e.printStackTrace();
-                    return ApiResponse.ofFailed("illegal access exception:" + e.getMessage());
+                    return new BaseResponse().ofFailed("illegal access exception:" + e.getMessage());
                 } catch (ClassNotFoundException e) {
                     e.printStackTrace();
-                    return ApiResponse.ofFailed("class not found:" + e.getMessage());
+                    return new BaseResponse().ofFailed("class not found:" + e.getMessage());
                 }
             }
         });
@@ -67,10 +74,16 @@ public final class ApiServer {
     }
 
     public void start() {
-        start(0);
-    }
-
-    public void start(int port) {
-        mServer.start(port);
+        mServer.start();
+        new Thread("config-server") {
+            @Override
+            public void run() {
+                try {
+                    ConfigServer.initConfig(mApplication, mServer);
+                } catch (IOException e) {
+                    L.exception(e);
+                }
+            }
+        }.start();
     }
 }
