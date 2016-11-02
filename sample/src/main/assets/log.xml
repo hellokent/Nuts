@@ -1,5 +1,4 @@
 <?xml version="1.0" encoding="utf-8"?>
-<log_config package="com.nuts">
+<log_config package="io.demor">
     <item range=".">log</item>
-    <item range="">common</item>
 </log_config>

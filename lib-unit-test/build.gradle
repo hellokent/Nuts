@@ -2,4 +2,6 @@ apply plugin: 'java'
 
 dependencies {
     compile project(':lib-common')
+    compile group: 'org.eclipse.jetty.websocket', name: 'websocket-client', version: '9.2.19.v20160908'
+
 }

@@ -71,6 +71,7 @@ public class BaseWebSocketServer extends NanoWebSocketServer {
         synchronized (mAvailableWebSocketList) {
             for (NanoWebSocketServer.WebSocket socket : mAvailableWebSocketList) {
                 try {
+                    L.v("web socket, send:%s", msg);
                     socket.send(msg);
                 } catch (IOException e) {
                     e.printStackTrace();

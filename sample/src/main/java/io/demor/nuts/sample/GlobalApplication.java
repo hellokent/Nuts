@@ -11,6 +11,7 @@ public class GlobalApplication extends NutsApplication {
         super.onCreate();
         initApiServer()
                 .registerController(TestController.class, Const.TEST_CONTROLLER)
+                .registerEventBus(Const.BUS)
                 .start(8080);
     }
 }

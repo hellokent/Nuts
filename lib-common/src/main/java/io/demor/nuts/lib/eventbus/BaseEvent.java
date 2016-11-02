@@ -10,4 +10,11 @@ public abstract class BaseEvent<T> {
     public T getData() {
         return mData;
     }
+
+    @Override
+    public String toString() {
+        return "BaseEvent{" +
+                "mData=" + mData +
+                '}';
+    }
 }

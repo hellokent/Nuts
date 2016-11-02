@@ -13,14 +13,13 @@ import java.lang.reflect.Method;
 
 public final class ControllerUtil {
 
-    public static final Gson MODULE_GSON = new Gson();
-    private static final Gson GSON = new GsonBuilder()
+    public static final Gson GSON = new GsonBuilder()
             .setFieldNamingPolicy(FieldNamingPolicy.LOWER_CASE_WITH_DASHES)
             .setFieldNamingStrategy(new FieldNamingStrategy() {
                 @Override
                 public String translateName(Field f) {
                     String name = f.getName();
-                    if (name.length() > 1 && name.startsWith("m") && Character.isLowerCase(name.charAt(1))) {
+                    if (name.length() > 1 && name.startsWith("m") && Character.isUpperCase(name.charAt(1))) {
                         return ("" + name.charAt(1)).toLowerCase() + name.substring(2);
                     } else {
                         return name;
@@ -38,15 +37,12 @@ public final class ControllerUtil {
             final Class clz = method.getParameterTypes()[i];
             info.mArgsType[i] = clz.getName();
         }
-        info.mArgs = new String[args.length];
-        for (int i = 0; i < args.length; ++i) {
+        final int length = args == null ? 0 : args.length;
+        info.mArgs = new String[length];
+        for (int i = 0; i < length; ++i) {
             info.mArgs[i] = GSON.toJson(args[i]);
         }
         return GSON.toJson(info);
-    }
-
-    public static ControllerMethodInfo getMethodInfo(String content) {
-        return GSON.fromJson(content, ControllerMethodInfo.class);
     }
 
     public static Object callControllerNative(Object impl, String content) throws
@@ -101,7 +97,6 @@ public final class ControllerUtil {
                 .call(info.mName, argArray)
                 .call("sync")
                 .get(), (Class<?>) ReflectUtils.getGenericType(m.getGenericReturnType()));
-        //return m.invoke(impl, argArray);
     }
 
     public static String toJson(Object obj, Class<?> clz) {

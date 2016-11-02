@@ -17,7 +17,9 @@ public class MainActivity extends BaseActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        mIpAddress.setText(NutsApplication.getIpAddress() + ":" + NutsApplication.getListerningPort());
+        mIpAddress.setText(String.format("http://%s:%d\nws://%s:%d",
+                NutsApplication.getIpAddress(), NutsApplication.getHttpPort(),
+                NutsApplication.getIpAddress(), NutsApplication.getWebSocketPort()));
     }
 
     @OnClick(R.id.controller)

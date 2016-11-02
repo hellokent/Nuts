@@ -11,4 +11,10 @@ public interface TestController {
     Return<Void> runCheckActivity();
 
     Return<Void> runWithException();
+
+    Return<Void> sendEvent();
+
+    Return<Void> callListenerInt(int count);
+
+    Return<Void> callListenerString(String msg);
 }

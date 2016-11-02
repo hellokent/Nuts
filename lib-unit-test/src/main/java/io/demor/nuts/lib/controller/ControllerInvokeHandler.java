@@ -16,7 +16,7 @@ public class ControllerInvokeHandler<I> implements InvocationHandler {
     @Override
     public Object invoke(final Object proxy, final Method method, final Object[] args) throws Throwable {
         return Reflect.on(ReturnImpl.class)
-                .create(method, mApp.mHost, mApp.mPort, args)
+                .create(method, mApp.mHost, mApp.mHttpPort, args)
                 .get();
     }
 

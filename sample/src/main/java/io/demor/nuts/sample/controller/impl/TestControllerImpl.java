@@ -6,8 +6,12 @@ import io.demor.nuts.lib.controller.Return;
 import io.demor.nuts.lib.log.L;
 import io.demor.nuts.sample.controller.DemoException;
 import io.demor.nuts.sample.lib.controller.TestController;
+import io.demor.nuts.sample.lib.event.TestEvent;
 
 import java.util.concurrent.TimeUnit;
+
+import static io.demor.nuts.lib.Globals.BUS;
+import static io.demor.nuts.sample.config.Const.TEST_CONTROLLER;
 
 public class TestControllerImpl extends BaseController implements TestController {
 
@@ -43,5 +47,23 @@ public class TestControllerImpl extends BaseController implements TestController
             e.printStackTrace();
         }
         throw new ExceptionWrapper(new DemoException());
+    }
+
+    @Override
+    public Return<Void> sendEvent() {
+        BUS.post(new TestEvent(String.valueOf(mCount)));
+        return ofVoid();
+    }
+
+    @Override
+    public Return<Void> callListenerInt(final int count) {
+        TEST_CONTROLLER.callListenerInt(count);
+        return ofVoid();
+    }
+
+    @Override
+    public Return<Void> callListenerString(final String msg) {
+        TEST_CONTROLLER.callListenerString(msg);
+        return ofVoid();
     }
 }

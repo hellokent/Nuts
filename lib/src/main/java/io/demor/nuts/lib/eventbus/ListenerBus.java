@@ -15,6 +15,9 @@ public final class ListenerBus {
     private static final Multimap<Class<?>, Object> METHOD_CONSUMER = ArrayListMultimap.create();
     private static final HashMap<Class<?>, ListenerClassContext<?>> METHOD_PROVIDER = Maps.newHashMap();
 
+    private ListenerBus() {
+    }
+
     public static synchronized <T> void register(Class<T> clz, T obj) {
         if (clz == null || obj == null) {
             return;

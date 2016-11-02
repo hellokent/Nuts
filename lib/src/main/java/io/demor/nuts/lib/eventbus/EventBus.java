@@ -7,6 +7,7 @@ import com.google.common.collect.Multimap;
 import io.demor.nuts.lib.Globals;
 import io.demor.nuts.lib.annotation.eventbus.DeepClone;
 import io.demor.nuts.lib.log.L;
+import io.demor.nuts.lib.task.SafeTask;
 
 import java.lang.reflect.Method;
 import java.util.LinkedList;
@@ -23,7 +24,7 @@ public final class EventBus implements Globals {
 
     private final List<BaseEvent> mStickEvent = Lists.newCopyOnWriteArrayList();
 
-    private IPostEvent mPostListener = null;
+    private IPostListener mPostListener = null;
 
     public EventBus() {
     }
@@ -70,7 +71,12 @@ public final class EventBus implements Globals {
             return false;
         }
         if (mPostListener != null) {
-            mPostListener.onPostEvent(event);
+            SafeTask.execute(new Runnable() {
+                @Override
+                public void run() {
+                    mPostListener.onPostEvent(event);
+                }
+            });
         }
         final Class<?> clz = event.getClass();
         L.v("event:%s from:%s", clz.getSimpleName(), Thread.currentThread().getStackTrace()[3].toString());
@@ -95,12 +101,8 @@ public final class EventBus implements Globals {
         return mStickEvent.size();
     }
 
-    public void setPostListener(IPostEvent postListener) {
+    public void setPostListener(IPostListener postListener) {
         this.mPostListener = postListener;
-    }
-
-    public interface IPostEvent {
-        void onPostEvent(BaseEvent o);
     }
 
     private static class BusClassContext extends ClassContext {

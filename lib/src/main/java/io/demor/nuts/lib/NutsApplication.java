@@ -21,8 +21,12 @@ public class NutsApplication extends Application {
         }
     }
 
-    public static int getListerningPort() {
+    public static int getHttpPort() {
         return mApiServer == null ? 0 : mApiServer.mServer.getHttpPort();
+    }
+
+    public static int getWebSocketPort() {
+        return mApiServer == null ? 0 : mApiServer.mServer.getWebSocketPort();
     }
 
     @Override
