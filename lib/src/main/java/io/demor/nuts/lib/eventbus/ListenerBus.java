@@ -4,7 +4,11 @@ import com.google.common.collect.ArrayListMultimap;
 import com.google.common.collect.Maps;
 import com.google.common.collect.Multimap;
 import com.google.common.reflect.Reflection;
+import io.demor.nuts.common.server.ApiServer;
+import io.demor.nuts.lib.NutsApplication;
 import io.demor.nuts.lib.annotation.eventbus.DeepClone;
+import io.demor.nuts.lib.controller.ControllerUtil;
+import io.demor.nuts.lib.task.SafeTask;
 
 import java.lang.reflect.InvocationHandler;
 import java.lang.reflect.Method;
@@ -78,6 +82,15 @@ public final class ListenerBus {
                         context.call(o, args);
                     }
                 }
+            }
+            final ApiServer s = NutsApplication.sApiServer;
+            if (s != null && s.mCanSendListener) {
+                SafeTask.execute(new Runnable() {
+                    @Override
+                    public void run() {
+                        s.sendListenerMethod(ControllerUtil.generateControllerMethod(method, args));
+                    }
+                });
             }
             return null;
         }

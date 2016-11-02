@@ -95,7 +95,10 @@ public final class ReturnImpl<T> extends Return<T> {
         new Thread() {
             @Override
             public void run() {
-                callback.onResult(sync());
+                final T data = sync();
+                if (callback != null) {
+                    callback.onResult(data);
+                }
             }
         }.start();
     }

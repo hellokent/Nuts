@@ -11,7 +11,7 @@ import io.demor.nuts.sample.lib.event.TestEvent;
 import java.util.concurrent.TimeUnit;
 
 import static io.demor.nuts.lib.Globals.BUS;
-import static io.demor.nuts.sample.config.Const.TEST_CONTROLLER;
+import static io.demor.nuts.sample.config.Const.SIMPLE_LISTENER;
 
 public class TestControllerImpl extends BaseController implements TestController {
 
@@ -57,13 +57,13 @@ public class TestControllerImpl extends BaseController implements TestController
 
     @Override
     public Return<Void> callListenerInt(final int count) {
-        TEST_CONTROLLER.callListenerInt(count);
+        SIMPLE_LISTENER.onGotInt(count);
         return ofVoid();
     }
 
     @Override
     public Return<Void> callListenerString(final String msg) {
-        TEST_CONTROLLER.callListenerString(msg);
+        SIMPLE_LISTENER.onGotString(msg);
         return ofVoid();
     }
 }

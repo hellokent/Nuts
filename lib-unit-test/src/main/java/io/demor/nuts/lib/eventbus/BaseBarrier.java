@@ -16,6 +16,7 @@ import java.io.Closeable;
 import java.io.IOException;
 import java.net.URI;
 import java.util.concurrent.BlockingQueue;
+import java.util.concurrent.TimeUnit;
 
 public abstract class BaseBarrier implements WebSocketListener, Closeable {
 
@@ -52,17 +53,17 @@ public abstract class BaseBarrier implements WebSocketListener, Closeable {
 
     @Override
     public void onWebSocketText(final String message) {
+        System.out.println("message:" + message);
         final JsonElement element = new JsonParser().parse(message);
         if (!(element instanceof JsonObject)) {
             return;
         }
-        System.out.println("message:" + message);
         final JsonObject jsonObject = (JsonObject) element;
         final PushObject o = new PushObject();
         o.mType = jsonObject.get("type").getAsInt();
         o.mDataClz = jsonObject.get("dataClz").getAsString();
         try {
-            o.mData = ControllerUtil.GSON.fromJson(jsonObject.getAsJsonObject("data"), Class.forName(o.mDataClz));
+            o.mData = ControllerUtil.GSON.fromJson(jsonObject.get("data"), Class.forName(o.mDataClz));
             PUSH_QUEUE.add(o);
         } catch (ClassNotFoundException e) {
             e.printStackTrace();
@@ -80,5 +81,46 @@ public abstract class BaseBarrier implements WebSocketListener, Closeable {
         } catch (Exception e) {
             throw new IOException(e);
         }
+    }
+
+    protected void waitForAll(long timeout, TimeUnit unit, PushHandler handler) {
+        long startTime = System.currentTimeMillis();
+        while ((System.currentTimeMillis() - startTime) < unit.toMillis(timeout)) {
+            try {
+                final PushObject o = PUSH_QUEUE.poll(unit.toMillis(timeout) - (System.currentTimeMillis() - startTime), TimeUnit.MILLISECONDS);
+                handler.onReceivePush(o);
+            } catch (InterruptedException e) {
+                e.printStackTrace();
+            }
+        }
+    }
+
+    public PushObject waitForSingle(long timeout, TimeUnit unit, PushFilter filter) {
+        if (timeout <= 0) {
+            return null;
+        }
+        try {
+            long startTime = System.currentTimeMillis();
+            PushObject o = PUSH_QUEUE.poll(timeout, unit);
+            if (o == null) {
+                return null;
+            } else if (filter.checkPush(o)) {
+                return o;
+            } else {
+                return waitForSingle(unit.toMillis(timeout) - (System.currentTimeMillis() - startTime), TimeUnit.MILLISECONDS, filter);
+            }
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+            return null;
+        }
+    }
+
+
+    interface PushHandler {
+        void onReceivePush(PushObject object);
+    }
+
+    interface PushFilter {
+        boolean checkPush(PushObject object);
     }
 }

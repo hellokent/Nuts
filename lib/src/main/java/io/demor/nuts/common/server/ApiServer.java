@@ -21,6 +21,7 @@ public final class ApiServer {
 
     public Server mServer;
     public Application mApplication;
+    public boolean mCanSendListener;
 
     public ApiServer(Application application) {
         mServer = new Server(application, GSON);
@@ -71,6 +72,19 @@ public final class ApiServer {
             }
         });
         return this;
+    }
+
+    public ApiServer registerListenBus() {
+        mCanSendListener = true;
+        return this;
+    }
+
+    public void sendListenerMethod(String info) {
+        final PushObject pushObject = new PushObject();
+        pushObject.mType = PushObject.TYPE_LISTENER;
+        pushObject.mDataClz = String.class.getName();
+        pushObject.mData = info;
+        mServer.mWebSocketServer.sendMessage(GSON.toJson(pushObject));
     }
 
     public void start() {

@@ -6,27 +6,27 @@ import android.content.pm.PackageManager;
 import io.demor.nuts.common.server.ApiServer;
 
 public class NutsApplication extends Application {
-    static NutsApplication sApplication;
-    static ApiServer mApiServer;
+    public static NutsApplication sApplication;
+    public static ApiServer sApiServer;
 
     public static NutsApplication getGlobalContext() {
         return sApplication;
     }
 
     public static String getIpAddress() {
-        if (mApiServer != null) {
-            return mApiServer.mServer.getIpAddress();
+        if (sApiServer != null) {
+            return sApiServer.mServer.getIpAddress();
         } else {
             return "";
         }
     }
 
     public static int getHttpPort() {
-        return mApiServer == null ? 0 : mApiServer.mServer.getHttpPort();
+        return sApiServer == null ? 0 : sApiServer.mServer.getHttpPort();
     }
 
     public static int getWebSocketPort() {
-        return mApiServer == null ? 0 : mApiServer.mServer.getWebSocketPort();
+        return sApiServer == null ? 0 : sApiServer.mServer.getWebSocketPort();
     }
 
     @Override
@@ -36,8 +36,8 @@ public class NutsApplication extends Application {
     }
 
     public ApiServer initApiServer() {
-        mApiServer = new ApiServer(this);
-        return mApiServer;
+        sApiServer = new ApiServer(this);
+        return sApiServer;
     }
 
     public final int getVersionCode() {

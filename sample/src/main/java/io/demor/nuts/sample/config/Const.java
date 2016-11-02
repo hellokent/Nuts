@@ -8,12 +8,15 @@ import io.demor.nuts.lib.jumper.JumperInvokeHandler;
 import io.demor.nuts.sample.GlobalApplication;
 import io.demor.nuts.sample.controller.impl.TestControllerImpl;
 import io.demor.nuts.sample.lib.controller.TestController;
+import io.demor.nuts.sample.lib.event.SimpleListener;
 import junit.framework.TestListener;
 
 public interface Const extends Globals{
     TestController TEST_CONTROLLER = Reflection.newProxy(TestController.class, new ControllerInvokeHandler<>(new TestControllerImpl()));
 
     TestListener TEST_LISTENER = ListenerBus.provide(TestListener.class);
+
+    SimpleListener SIMPLE_LISTENER = ListenerBus.provide(SimpleListener.class);
 
     Jumper JUMPER = Reflection.newProxy(Jumper.class, new JumperInvokeHandler(GlobalApplication.getGlobalContext()));
 }
