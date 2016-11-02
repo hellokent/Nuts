@@ -91,7 +91,12 @@ public final class ReturnImpl<T> extends Return<T> {
     }
 
     @Override
-    public void asyncUI(ControllerCallback<T> callback) {
-        throw new Error("No ui thread in PC mode");
+    public void asyncUI(final ControllerCallback<T> callback) {
+        new Thread() {
+            @Override
+            public void run() {
+                callback.onResult(sync());
+            }
+        }.start();
     }
 }

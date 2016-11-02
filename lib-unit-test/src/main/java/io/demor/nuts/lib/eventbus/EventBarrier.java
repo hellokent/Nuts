@@ -17,18 +17,38 @@ public class EventBarrier<T extends BaseEvent> extends BaseBarrier {
     }
 
     public T waitForSingleEvent(long timeout, TimeUnit unit) {
-        return null;
+        if (timeout <= 0) {
+            return null;
+        }
+        try {
+            long startTime = System.currentTimeMillis();
+            PushObject o = PUSH_QUEUE.poll(timeout, unit);
+            if (o == null) {
+                return null;
+            } else if (mClz.getName().equals(o.mDataClz)) {
+                return (T) o.mData;
+            } else {
+                return waitForSingleEvent(unit.toMillis(timeout) - (System.currentTimeMillis() - startTime), TimeUnit.MILLISECONDS);
+            }
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+            return null;
+        }
     }
 
     public List<T> waitForAllEvent(long timeout, TimeUnit unit) {
         final List<T> list = Lists.newArrayList();
+        long startTime = System.currentTimeMillis();
+        while ((System.currentTimeMillis() - startTime) < unit.toMillis(timeout)) {
+            try {
+                final PushObject o = PUSH_QUEUE.poll(unit.toMillis(timeout) - (System.currentTimeMillis() - startTime), TimeUnit.MILLISECONDS);
+                if (o != null && mClz.getName().equals(o.mDataClz)) {
+                    list.add((T) o.mData);
+                }
+            } catch (InterruptedException e) {
+                e.printStackTrace();
+            }
+        }
         return list;
     }
-
-    @Override
-    protected void onReceiveData(final PushObject object) {
-
-    }
-
-
 }
