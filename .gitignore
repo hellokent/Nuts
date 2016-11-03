@@ -82,6 +82,7 @@ crashlytics-build.properties
 .metadata
 .gradle
 tmp/
+.idea/
 *.tmp
 *.bak
 *.swp
