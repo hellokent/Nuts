@@ -3,6 +3,7 @@ package io.demor.nuts.sample.config;
 import io.demor.nuts.lib.annotation.jumper.ActivityInfo;
 import io.demor.nuts.lib.annotation.jumper.Extra;
 import io.demor.nuts.lib.jumper.IntentHandler;
+import io.demor.nuts.sample.ui.NetWatcherActivity;
 import io.demor.nuts.sample.ui.controller.ControllerActivity;
 import io.demor.nuts.sample.ui.controller.ControllerCheckActivityActivity;
 import io.demor.nuts.sample.ui.controller.ControllerLifeCircleActivity;
@@ -32,4 +33,7 @@ public interface Jumper {
 
     @ActivityInfo(action = "action")
     IntentHandler sendBroadcast();
+
+    @ActivityInfo(clz = NetWatcherActivity.class)
+    IntentHandler viewNetWatcher();
 }

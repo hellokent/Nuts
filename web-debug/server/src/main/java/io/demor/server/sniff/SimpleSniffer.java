@@ -1,7 +1,7 @@
 package io.demor.server.sniff;
 
 import android.os.Handler;
-import io.demor.server.ServerManager;
+import io.demor.server.WebDebug;
 
 import java.util.List;
 import java.util.Vector;
@@ -23,7 +23,7 @@ public class SimpleSniffer {
     }
 
     public void addJsonRecord(Object obj) {
-        addRecord(ServerManager.GSON.toJson(obj));
+        addRecord(WebDebug.GSON.toJson(obj));
     }
 
     public String getTag() {

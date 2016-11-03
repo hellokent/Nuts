@@ -38,6 +38,9 @@
         <activity
                 android:name=".ui.controller.ControllerLifeCircleActivity"
                 android:label="@string/title_activity_controller_life_circle"/>
+        <activity
+            android:name=".ui.NetWatcherActivity"
+            android:label="NetWatcher"/>
     </application>
 
 </manifest>

@@ -44,8 +44,6 @@ function render(e) {
     } else {
         console.log(data);
         /***
-
-
          var tr = $('<tr></tr>');
          tr.attr('class', 'id_' + data.id);
          tr.append($('<td>' +data.url + '</td>'));
@@ -53,9 +51,6 @@ function render(e) {
          tr.append($('<td>' + params(data.param) + '</td>'));
          tr.append($('<td class="status">' +data.status + '</td>'));
          tr.append($('<td class="json"></td>'));
-
-
-
          */
         var item = '<tr class="id_' + data.id + '">' +
             '<td>' + data.url + '</td>' +
@@ -76,13 +71,15 @@ function params(params) {
         html += param.key + '=' + param.value + '<br>'
     });
     return html;
-
 }
 
 function json(data) {
     return '<span style="color: #f1592a;font-weight:bold;">' + HTMLEncode(data) + '</span>';
 }
 
+/**
+ * @return {string}
+ */
 function HTMLEncode(html) {
     var temp = document.createElement("div");
     (temp.textContent != null) ? (temp.textContent = html) : (temp.innerText = html);

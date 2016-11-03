@@ -8,7 +8,7 @@ import android.view.Display;
 import android.view.WindowManager;
 import io.demor.nuts.common.server.annotation.Url;
 import io.demor.server.ScreenHelper;
-import io.demor.server.ServerManager;
+import io.demor.server.WebDebug;
 import io.demor.server.model.PhoneInfo;
 import io.demor.server.model.view.ViewModel;
 import io.demor.server.model.view.ViewModelFactory;
@@ -23,7 +23,7 @@ public class WidgetApi {
 
     @Url("/phone")
     public PhoneInfo getPhoneInfo() {
-        final WindowManager manager = (WindowManager) ServerManager.sApplication.getSystemService(Context.WINDOW_SERVICE);
+        final WindowManager manager = (WindowManager) WebDebug.sApplication.getSystemService(Context.WINDOW_SERVICE);
         final PhoneInfo result = new PhoneInfo();
         final Display display = manager.getDefaultDisplay();
         final Point point = new Point();

@@ -3,6 +3,7 @@ package io.demor.nuts.sample;
 import io.demor.nuts.lib.NutsApplication;
 import io.demor.nuts.sample.config.Const;
 import io.demor.nuts.sample.lib.controller.TestController;
+import io.demor.server.WebDebug;
 
 public class GlobalApplication extends NutsApplication {
 
@@ -14,5 +15,6 @@ public class GlobalApplication extends NutsApplication {
                 .registerEventBus(Const.BUS)
                 .registerListenBus()
                 .start();
+        WebDebug.init(this);
     }
 }

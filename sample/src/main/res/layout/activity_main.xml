@@ -25,6 +25,18 @@
             android:layout_height="wrap_content"
             android:textColor="@android:color/white"/>
 
+        <Button
+            android:id="@+id/show_web_debug"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="Show Web Debug Dialig"/>
+
+        <Button
+            android:id="@+id/net_watcher"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="NetWatcher"/>
+
     </LinearLayout>
 
 </ScrollView>

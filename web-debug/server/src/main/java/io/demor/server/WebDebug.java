@@ -36,7 +36,7 @@ import java.lang.reflect.Field;
 import java.util.HashMap;
 import java.util.concurrent.atomic.AtomicInteger;
 
-public class ServerManager {
+public class WebDebug {
 
     public static final Gson GSON = new GsonBuilder()
             .disableHtmlEscaping()
@@ -68,7 +68,7 @@ public class ServerManager {
         sServer.mHttpServer.registerApi(new WidgetApi());
         sServer.mHttpServer.registerTemplate("ws", new WsTemplate());
         sServer.mHttpServer.registerTemplate("widget", new WidgetTemplate());
-        sServer.mHttpServer.registerTemplate("sniff", new SnifferTemplate());
+        sServer.mHttpServer.registerTemplate("sniffer", new SnifferTemplate());
         sServer.mHttpServer.registerResourceApi("screen.jpg", new ScreenImageResourceApi());
 
         final Resources res = application.getResources();

@@ -4,7 +4,7 @@ import com.google.common.collect.Lists;
 import io.demor.nuts.lib.log.L;
 import io.demor.nuts.lib.module.BaseResponse;
 import io.demor.server.Constant;
-import io.demor.server.ServerManager;
+import io.demor.server.WebDebug;
 
 import java.util.ArrayList;
 
@@ -24,7 +24,7 @@ public class StateListResponse extends BaseResponse {
             }
             final State state = new State();
             state.info = new StateListDrawableInfo(data[i]);
-            state.url = ServerManager.getHttpHost() + "/res/" + name + ".jpg?index=" + i;
+            state.url = WebDebug.getHttpHost() + "/res/" + name + ".jpg?index=" + i;
             list.add(state);
         }
     }

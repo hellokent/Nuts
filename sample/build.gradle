@@ -20,7 +20,7 @@ android {
 
     defaultConfig {
         applicationId "io.demor.nuts.sample"
-        minSdkVersion 11
+        minSdkVersion 19
         targetSdkVersion 23
         versionCode 1
         versionName "1.0"
@@ -37,5 +37,7 @@ dependencies {
     compile fileTree(include: ['*.jar'], dir: 'libs')
     compile project(':lib')
     compile project(':sample-lib')
+    debugCompile project(':web-debug:server')
+    releaseCompile project(':web-debug:server-release')
     compile 'org.jooq:joor:0.9.5'
 }

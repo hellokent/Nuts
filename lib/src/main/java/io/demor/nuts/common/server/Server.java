@@ -41,10 +41,14 @@ public class Server {
     }
 
     public void shutdown() {
-        mWebSocketServer.closeAllConnections();
-        mHttpServer.closeAllConnections();
-        mWebSocketServer.stop();
-        mHttpServer.stop();
+        if (mWebSocketServer != null) {
+            mWebSocketServer.closeAllConnections();
+            mWebSocketServer.stop();
+        }
+        if (mHttpServer != null) {
+            mHttpServer.closeAllConnections();
+            mHttpServer.stop();
+        }
     }
 
     public String getIpAddress() {
