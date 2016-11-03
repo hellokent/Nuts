@@ -17,6 +17,6 @@ enum LogLevel {
     }
 
     public boolean isValidLevel(int level) {
-        return level > mLevel;
+        return level >= mLevel;
     }
 }

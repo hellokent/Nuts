@@ -98,6 +98,7 @@ public final class ControllerUtil {
         result.mArgsType = info.mArgsType;
         result.mArgArray = argArray;
         result.mImpl = impl;
+        result.mArgTypeArray = argTypeArray;
         return result;
     }
 

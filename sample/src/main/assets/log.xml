@@ -1,4 +1,4 @@
 <?xml version="1.0" encoding="utf-8"?>
 <log_config package="io.demor">
-    <item range=".">log</item>
+    <item min="verbose" range=".">log</item>
 </log_config>
