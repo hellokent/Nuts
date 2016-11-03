@@ -26,7 +26,7 @@ public final class ControllerUtil {
             .serializeNulls()
             .create();
 
-    public static String generateControllerMethod(Method method, Object[] args) {
+    public static String generateMethodInfo(Method method, Object[] args) {
         final ControllerMethodInfo info = new ControllerMethodInfo();
         info.mName = method.getName();
         info.mClz = method.getDeclaringClass().getName();
@@ -43,8 +43,7 @@ public final class ControllerUtil {
         return GSON.toJson(info);
     }
 
-    //TODO do not just invoke method directly
-    public static String callControllerNative(Object impl, String content) throws
+    public static InvokeMethodInfo parseMethodInfo(Object impl, String content) throws
             NoSuchMethodException,
             InvocationTargetException,
             IllegalAccessException,
@@ -91,65 +90,15 @@ public final class ControllerUtil {
         for (int i = 0; i < info.mArgs.length; ++i) {
             argArray[i] = GSON.fromJson(info.mArgs[i], argTypeArray[i]);
         }
-        final Method m = impl.getClass().getInterfaces()[0].getDeclaredMethod(info.mName, argTypeArray);
-        return toJson(Reflect.on(impl)
-                .call(info.mName, argArray)
-                .call("sync")
-                .get(), (Class<?>) ReflectUtils.getGenericType(m.getGenericReturnType()));
-    }
 
-    public static String callMethodNative(Object impl, String content) throws
-            NoSuchMethodException,
-            InvocationTargetException,
-            IllegalAccessException,
-            ClassNotFoundException {
-
-        final ControllerMethodInfo info = GSON.fromJson(content, ControllerMethodInfo.class);
-        final Class[] argTypeArray = new Class[info.mArgsType.length];
-        final Object[] argArray = new Object[info.mArgs.length];
-
-        for (int i = 0; i < info.mArgsType.length; ++i) {
-            switch (info.mArgsType[i]) {
-                case "boolean":
-                    argTypeArray[i] = boolean.class;
-                    break;
-                case "char":
-                    argTypeArray[i] = char.class;
-                    break;
-                case "byte":
-                    argTypeArray[i] = byte.class;
-                    break;
-                case "short":
-                    argTypeArray[i] = short.class;
-                    break;
-                case "int":
-                    argTypeArray[i] = int.class;
-                    break;
-                case "long":
-                    argTypeArray[i] = long.class;
-                    break;
-                case "float":
-                    argTypeArray[i] = float.class;
-                    break;
-                case "double":
-                    argTypeArray[i] = double.class;
-                    break;
-                case "void":
-                    argTypeArray[i] = void.class;
-                    break;
-                default:
-                    argTypeArray[i] = Class.forName(info.mArgsType[i]);
-            }
-        }
-
-        for (int i = 0; i < info.mArgs.length; ++i) {
-            argArray[i] = GSON.fromJson(info.mArgs[i], argTypeArray[i]);
-        }
-        //TODO
-        Reflect.on(impl)
-                .call(info.mName, argArray)
-                .get();
-        return null;
+        final InvokeMethodInfo result = new InvokeMethodInfo();
+        result.mClz = info.mClz;
+        result.mName = info.mName;
+        result.mArgs = info.mArgs;
+        result.mArgsType = info.mArgsType;
+        result.mArgArray = argArray;
+        result.mImpl = impl;
+        return result;
     }
 
 
@@ -170,5 +119,30 @@ public final class ControllerUtil {
         public String mName;
         public String[] mArgsType;
         public String[] mArgs;
+    }
+
+    public static class InvokeMethodInfo extends ControllerMethodInfo {
+        public Object[] mArgArray;
+        public Class<?>[] mArgTypeArray;
+        public Object mImpl;
+
+        public String callController() {
+            final Method m;
+            try {
+                m = mImpl.getClass().getInterfaces()[0].getDeclaredMethod(mName, mArgTypeArray);
+            } catch (NoSuchMethodException e) {
+                throw new IllegalArgumentException(e);
+            }
+            return toJson(Reflect.on(mImpl)
+                    .call(mName, mArgArray)
+                    .call("sync")
+                    .get(), (Class<?>) ReflectUtils.getGenericType(m.getGenericReturnType()));
+        }
+
+        public Object callImpl() {
+            return Reflect.on(mImpl)
+                    .call(mName, mArgArray)
+                    .get();
+        }
     }
 }

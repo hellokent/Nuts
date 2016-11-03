@@ -74,7 +74,7 @@ public final class ReturnImpl<T> extends Return<T> {
             String resp = mClient.newCall(new Request.Builder()
                     .url(String.format("http://%s:%d/api/controller/%s", mHost, mPort, mMethod.getDeclaringClass().getName()))
                     .header("content-type", "application/json")
-                    .post(RequestBody.create(MediaType.parse("json"), ControllerUtil.generateControllerMethod(mMethod, mArgs)))
+                    .post(RequestBody.create(MediaType.parse("json"), ControllerUtil.generateMethodInfo(mMethod, mArgs)))
                     .build())
                     .execute()
                     .body()

@@ -88,7 +88,7 @@ public final class ListenerBus {
                 SafeTask.execute(new Runnable() {
                     @Override
                     public void run() {
-                        s.sendListenerMethod(ControllerUtil.generateControllerMethod(method, args));
+                        s.sendListenerMethod(ControllerUtil.generateMethodInfo(method, args));
                     }
                 });
             }

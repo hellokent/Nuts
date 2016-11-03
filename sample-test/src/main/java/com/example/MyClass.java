@@ -8,6 +8,7 @@ import io.demor.nuts.sample.lib.controller.TestController;
 import io.demor.nuts.sample.lib.event.SimpleListener;
 
 import java.util.concurrent.CountDownLatch;
+import java.util.concurrent.TimeUnit;
 
 public class MyClass {
 
@@ -26,7 +27,7 @@ public class MyClass {
 //        }
         final CountDownLatch latch = new CountDownLatch(1);
         ListenerBarrier barrier = new ListenerBarrier(appInstance);
-        barrier.register(new SimpleListener() {
+        barrier.registerOnce(new SimpleListener() {
             @Override
             public void onGotInt(final int count) {
                 System.out.println("count:" + count);
@@ -37,7 +38,7 @@ public class MyClass {
             public void onGotString(final String msg) {
 
             }
-        });
+        }, 5, TimeUnit.SECONDS);
         controller.callListenerInt(1).asyncUI(null);
         latch.await();
         barrier.close();

@@ -38,8 +38,8 @@ public final class ApiServer {
             @Override
             public Object call(Map<String, String> param, String body) {
                 try {
-                    ControllerInvocationResponse response = new ControllerInvocationResponse();
-                    response.mData = ControllerUtil.callControllerNative(impl, body);
+                    final ControllerInvocationResponse response = new ControllerInvocationResponse();
+                    response.mData = ControllerUtil.parseMethodInfo(impl, body).callController();
                     return response;
                 } catch (NoSuchMethodException e) {
                     e.printStackTrace();
