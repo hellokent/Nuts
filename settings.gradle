@@ -1,6 +1,6 @@
-include ':lib'
 include ':lib-common'
-include ':lib-unit-test'
+include ':lib-android'
+include ':lib-java'
 include ':rx'
 include ':unit-test'
 include ':web-debug:server'

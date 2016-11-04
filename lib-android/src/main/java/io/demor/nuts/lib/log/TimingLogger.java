@@ -2,10 +2,9 @@ package io.demor.nuts.lib.log;
 
 import android.os.SystemClock;
 import android.util.Log;
+import com.google.common.collect.Lists;
 
 import java.util.ArrayList;
-
-import com.google.common.collect.Lists;
 
 public class TimingLogger {
 

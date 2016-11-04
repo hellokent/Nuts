@@ -7,6 +7,11 @@ import android.content.Intent;
 import android.net.Uri;
 import android.os.Parcelable;
 import android.text.TextUtils;
+import com.google.common.collect.Lists;
+import io.demor.nuts.lib.BuildConfig;
+import io.demor.nuts.lib.NutsApplication;
+import io.demor.nuts.lib.ReflectUtils;
+import io.demor.nuts.lib.annotation.jumper.*;
 
 import java.io.File;
 import java.io.Serializable;
@@ -15,22 +20,8 @@ import java.lang.reflect.InvocationHandler;
 import java.lang.reflect.Method;
 import java.lang.reflect.Type;
 import java.security.InvalidParameterException;
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.LinkedList;
-import java.util.Map;
+import java.util.*;
 
-import com.google.common.collect.Lists;
-import io.demor.nuts.lib.BuildConfig;
-import io.demor.nuts.lib.NutsApplication;
-import io.demor.nuts.lib.ReflectUtils;
-import io.demor.nuts.lib.annotation.jumper.ActivityInfo;
-import io.demor.nuts.lib.annotation.jumper.BroadcastInfo;
-import io.demor.nuts.lib.annotation.jumper.Extra;
-import io.demor.nuts.lib.annotation.jumper.IntentFlag;
-import io.demor.nuts.lib.annotation.jumper.IntentType;
-import io.demor.nuts.lib.annotation.jumper.IntentUri;
 import static io.demor.nuts.lib.ReflectUtils.checkGenericType;
 import static io.demor.nuts.lib.ReflectUtils.isSubclassOf;
 

@@ -1,11 +1,12 @@
 package io.demor.nuts.lib;
 
-import java.util.HashMap;
-
 import com.google.common.collect.Maps;
 import com.google.gson.Gson;
 import io.demor.nuts.lib.storage.IStorageEngine;
 import io.demor.nuts.lib.storage.SharedPreferenceStorageEngine;
+
+import java.util.HashMap;
+
 import static io.demor.nuts.lib.Globals.CLONER;
 
 public class Storage<T> {

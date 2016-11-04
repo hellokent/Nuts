@@ -4,6 +4,7 @@ import android.os.Environment;
 import android.os.Handler;
 import android.os.HandlerThread;
 import android.text.TextUtils;
+import com.google.common.io.Files;
 
 import java.io.File;
 import java.io.IOException;
@@ -11,8 +12,6 @@ import java.nio.charset.Charset;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.Locale;
-
-import com.google.common.io.Files;
 
 public enum LogWriter {
     INSTANCE;

@@ -808,14 +808,14 @@ public abstract class NanoHTTPD {
             return this.data;
         }
 
+        public void setData(InputStream data) {
+            this.data = data;
+        }
+
         public void setData(String data) {
             byte[] dataByteArray = data.getBytes();
             this.data = new ByteArrayInputStream(dataByteArray);
             this.contentLength = dataByteArray.length;
-        }
-
-        public void setData(InputStream data) {
-            this.data = data;
         }
 
         public String getHeader(String name) {

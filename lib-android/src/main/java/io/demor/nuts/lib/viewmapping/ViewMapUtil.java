@@ -7,11 +7,10 @@ import android.util.Pair;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-
-import java.lang.reflect.Field;
-
 import io.demor.nuts.lib.NutsApplication;
 import io.demor.nuts.lib.annotation.viewmapping.ViewMapping;
+
+import java.lang.reflect.Field;
 
 public final class ViewMapUtil {
 

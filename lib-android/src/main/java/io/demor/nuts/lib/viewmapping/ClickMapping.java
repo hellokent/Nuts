@@ -5,12 +5,11 @@ import android.util.SparseArray;
 import android.view.View;
 import android.view.View.OnClickListener;
 import android.view.ViewGroup;
+import io.demor.nuts.lib.annotation.viewmapping.OnClick;
 
 import java.lang.reflect.InvocationHandler;
 import java.lang.reflect.Method;
 import java.lang.reflect.Proxy;
-
-import io.demor.nuts.lib.annotation.viewmapping.OnClick;
 
 /**
  * 用于设置一个类中View的点击事件，可以映射。使用方法如下： 1.将点击事件的方法上加上注解{@link ClickMapping}

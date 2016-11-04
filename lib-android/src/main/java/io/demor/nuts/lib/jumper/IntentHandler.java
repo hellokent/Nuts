@@ -3,10 +3,9 @@ package io.demor.nuts.lib.jumper;
 import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
+import io.demor.nuts.lib.NutsApplication;
 
 import java.lang.reflect.Method;
-
-import io.demor.nuts.lib.NutsApplication;
 
 public class IntentHandler {
     final Intent mIntent;

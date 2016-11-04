@@ -34,7 +34,7 @@ android {
 
 dependencies {
     deployAar 'org.apache.maven.wagon:wagon-http:2.2'
-    compile project(':lib')
+    compile project(':lib-android')
     compile 'org.jooq:joor:0.9.5'
 }
 

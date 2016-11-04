@@ -1,8 +1,8 @@
 package io.demor.nuts.lib.storage;
 
-import java.util.HashMap;
-
 import com.google.common.collect.Maps;
+
+import java.util.HashMap;
 
 public class MemoryEngine implements IStorageEngine {
 

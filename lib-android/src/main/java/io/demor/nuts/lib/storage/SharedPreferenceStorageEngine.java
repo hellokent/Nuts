@@ -2,7 +2,6 @@ package io.demor.nuts.lib.storage;
 
 import android.content.Context;
 import android.content.SharedPreferences;
-
 import io.demor.nuts.lib.NutsApplication;
 
 public class SharedPreferenceStorageEngine implements IStorageEngine {

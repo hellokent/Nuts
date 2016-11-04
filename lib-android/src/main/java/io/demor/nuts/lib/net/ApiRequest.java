@@ -35,36 +35,12 @@ public final class ApiRequest {
         mUrl = url;
     }
 
-    public HttpMethod getHttpMethod() {
-        return mHttpMethod;
-    }
-
-    public void setHttpMethod(HttpMethod httpMethod) {
-        mHttpMethod = httpMethod;
-    }
-
     public Map<String, String> getParams() {
         return mParams;
     }
 
-    public void setParams(Map<String, String> params) {
-        mParams = params;
-    }
-
     public Map<String, String> getHeaders() {
         return mHeaders;
-    }
-
-    public void setHeaders(Map<String, String> headers) {
-        mHeaders = headers;
-    }
-
-    public TreeMap<String, UploadFileRequest> getFiles() {
-        return mFiles;
-    }
-
-    public void setFiles(TreeMap<String, UploadFileRequest> files) {
-        mFiles = files;
     }
 
     public void addMapParam(final Map<String, String> map) {
