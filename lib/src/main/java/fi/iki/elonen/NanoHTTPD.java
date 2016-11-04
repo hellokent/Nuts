@@ -466,10 +466,12 @@ public abstract class NanoHTTPD {
      */
     public void stop() {
         try {
-            myServerSocket.close();
-            this.asyncRunner.closeAll();
-            if (this.myThread != null) {
-                this.myThread.join();
+            if (myServerSocket != null) {
+                myServerSocket.close();
+                this.asyncRunner.closeAll();
+                if (this.myThread != null) {
+                    this.myThread.join();
+                }
             }
         } catch (Exception e) {
             NanoHTTPD.LOG.log(Level.SEVERE, "Could not stop all connections", e);
@@ -806,14 +808,14 @@ public abstract class NanoHTTPD {
             return this.data;
         }
 
-        public void setData(InputStream data) {
-            this.data = data;
-        }
-
         public void setData(String data) {
             byte[] dataByteArray = data.getBytes();
             this.data = new ByteArrayInputStream(dataByteArray);
             this.contentLength = dataByteArray.length;
+        }
+
+        public void setData(InputStream data) {
+            this.data = data;
         }
 
         public String getHeader(String name) {
