@@ -18,6 +18,11 @@ public class TestControllerImpl extends BaseController implements TestController
     int mCount;
 
     @Override
+    public Return<Integer> get() {
+        return of(mCount);
+    }
+
+    @Override
     public Return<String> run(final int count) {
         L.v("run count:%s", count);
         try {

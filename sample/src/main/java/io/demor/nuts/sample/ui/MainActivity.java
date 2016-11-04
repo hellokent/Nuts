@@ -22,7 +22,7 @@ public class MainActivity extends BaseActivity {
         mIpAddress.setText(String.format(
                 "http://%s:%d\n" +
                         "ws://%s:%d\n" +
-                        "WebDebug:http://%s:%d/web/widget",
+                        "WebDebug:%s:%d/web/widget",
                 NutsApplication.getIpAddress(), NutsApplication.getHttpPort(),
                 NutsApplication.getIpAddress(), NutsApplication.getWebSocketPort(),
                 NutsApplication.getIpAddress(), WebDebug.getHttpPort()));

@@ -41,18 +41,15 @@ public class WebDebug {
     public static final Gson GSON = new GsonBuilder()
             .disableHtmlEscaping()
             .create();
-
+    static final Handler SNIFFER_HANDLER;
     private static final HashMap<String, SimpleSniffer> SNIFFER_MAP = Maps.newHashMap();
-
     public static Application sApplication;
-
     static Server sServer;
-    static Handler sSnifferHandler;
 
     static {
         final HandlerThread sniffThread = new HandlerThread("sniff-thread");
         sniffThread.start();
-        sSnifferHandler = new Handler(sniffThread.getLooper(), new Callback() {
+        SNIFFER_HANDLER = new Handler(sniffThread.getLooper(), new Callback() {
             @Override
             public boolean handleMessage(final Message msg) {
                 final String textMsg = (String) msg.obj;
@@ -62,9 +59,10 @@ public class WebDebug {
         });
     }
 
-    public static void init(Application application) {
+    public static void init(Application application, int httpPort) {
         sApplication = application;
         sServer = new Server(sApplication, GSON);
+        sServer.mHttpServer.setPort(httpPort);
         sServer.mHttpServer.registerApi(new WidgetApi());
         sServer.mHttpServer.registerTemplate("ws", new WsTemplate());
         sServer.mHttpServer.registerTemplate("widget", new WidgetTemplate());
@@ -169,13 +167,13 @@ public class WebDebug {
             return SNIFFER_MAP.get(tag);
         }
 
-        final SimpleSniffer sniff = new SimpleSniffer(tag, sSnifferHandler);
+        final SimpleSniffer sniff = new SimpleSniffer(tag, SNIFFER_HANDLER);
         SNIFFER_MAP.put(tag, sniff);
         return sniff;
     }
 
     public static NetworkSniffer getNetworkSniffer() {
-        return new NetworkSniffer(sSnifferHandler);
+        return new NetworkSniffer(SNIFFER_HANDLER);
     }
 
     public static void showAddressDialog(Context context) {

@@ -15,6 +15,6 @@ public class GlobalApplication extends NutsApplication {
                 .registerEventBus(Const.BUS)
                 .registerListenBus()
                 .start();
-        WebDebug.init(this);
+        WebDebug.init(this, 8888);
     }
 }

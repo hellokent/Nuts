@@ -67,6 +67,10 @@ public final class ApiRequest {
         mFiles = files;
     }
 
+    public void addMapParam(final Map<String, String> map) {
+        mParams.putAll(map);
+    }
+
     public void addParam(Param param, Object object) {
         if (object == null || param == null) {
             return;

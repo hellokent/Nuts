@@ -143,6 +143,11 @@ public class ApiTest extends AndroidTestCase {
 
         assertEquals("v1", response.getHeader("h1"));
         assertEquals("v2", response.getHeader("h2"));
+
+        mServer.enqueue(new MockResponse().setBody(mGson.toJson(new BaseResponse())));
+        mApi.header1("header");
+        request = mServer.takeRequest();
+        assertEquals("header", request.getHeader("p1"));
     }
 
     public void testGson() {
@@ -153,12 +158,86 @@ public class ApiTest extends AndroidTestCase {
     }
 
     public void testParamUrl() throws Exception {
-        BaseResponse response = new BaseResponse();
-        mServer.enqueue(new MockResponse().setBody(mGson.toJson(response)));
+        mServer.enqueue(new MockResponse().setBody(mGson.toJson(new BaseResponse())));
 
         mApi.testParamUrl("123");
 
         RecordedRequest request = mServer.takeRequest();
         assertEquals("/123/user", request.getPath());
+    }
+
+    public void testParamList() throws Exception {
+        mServer.enqueue(new MockResponse().setBody(mGson.toJson(new BaseResponse())));
+
+        final ParamList list1 = new ParamList.Builder().skipNullValue(false).nullValue("null").build();
+        list1.add("test", null);
+        list1.add("int", 1);
+        assertEquals("null", list1.getData().get("test"));
+
+        final ParamList list2 = new ParamList.Builder().skipNullValue(true).build();
+        list2.add("test1", null);
+        list2.add("long", 2L);
+        assertFalse(list2.getData().containsKey("test1"));
+
+        mApi.testParamList(list1, list2);
+
+        RecordedRequest request = mServer.takeRequest();
+        final Map<String, String> queryMap = Splitter.on('&')
+                .withKeyValueSeparator("=")
+                .split(request.getPath()
+                        .substring("/paramList".length() + 1));
+
+        assertEquals("null", queryMap.get("test"));
+        assertEquals("1", queryMap.get("int"));
+        assertEquals("2", queryMap.get("long"));
+    }
+
+    public void testParamMap() throws Exception {
+        Map<Integer, Long> map = Maps.newHashMap();
+        map.put(1, 2L);
+        map.put(3, null);
+        map.put(null, 4L);
+
+        mServer.enqueue(new MockResponse().setBody(mGson.toJson(new BaseResponse())));
+
+        mApi.testMap(map);
+        RecordedRequest request = mServer.takeRequest();
+        final Map<String, String> queryMap = Splitter.on('&')
+                .withKeyValueSeparator("=")
+                .split(request.getPath()
+                        .substring("/map".length() + 1));
+
+        assertEquals("2", queryMap.get("1"));
+        assertFalse(queryMap.containsKey("3"));
+    }
+
+    public void testMap2() throws Exception {
+        Map<String, Integer> map = Maps.newHashMap();
+        map.put("key1", 1);
+
+        ParamList list = new ParamList.Builder().skipNullValue(true).build();
+        list.add("key2", "2");
+
+        mServer.enqueue(new MockResponse().setBody(mGson.toJson(new BaseResponse())));
+        mApi.testMap2(map, list, "3");
+
+        RecordedRequest request = mServer.takeRequest();
+        final Map<String, String> queryMap = Splitter.on('&')
+                .withKeyValueSeparator("=")
+                .split(request.getPath()
+                        .substring("/map2".length() + 1));
+
+        assertEquals("1", queryMap.get("key1"));
+        assertEquals("2", queryMap.get("key2"));
+        assertEquals("3", queryMap.get("param"));
+    }
+
+    public void testRetry() throws Exception {
+        mServer.enqueue(new MockResponse().setStatus("404"));
+        mServer.enqueue(new MockResponse().setStatus("502"));
+        mServer.enqueue(new MockResponse().setBody(mGson.toJson(new BaseResponse())));
+
+        BaseResponse response = mApi.retry();
+        assertEquals("hello", response.msg);
     }
 }

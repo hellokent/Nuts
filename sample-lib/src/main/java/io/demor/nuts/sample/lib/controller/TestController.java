@@ -7,6 +7,8 @@ public interface TestController {
 
     Return<String> run(int count);
 
+    Return<Integer> get();
+
     @CheckActivity
     Return<Void> runCheckActivity();
 

@@ -1,9 +1,11 @@
 package io.demor.nuts.lib.api;
 
 import io.demor.nuts.lib.annotation.net.*;
+import io.demor.nuts.lib.net.ParamList;
 import io.demor.nuts.lib.net.ProgressListener;
 
 import java.io.File;
+import java.util.Map;
 
 public interface TestApi {
 
@@ -25,6 +27,19 @@ public interface TestApi {
 
     @Get("%s/user")
     BaseResponse testParamUrl(@Path String id);
+
+    @Get("paramList")
+    BaseResponse testParamList(ParamList list1, @Param("invalid") ParamList list2);
+
+    @Get("map")
+    BaseResponse testMap(Map<Integer, Long> map);
+
+    @Get("map2")
+    BaseResponse testMap2(Map<String, Integer> map, ParamList list, @Param("param") String p);
+
+    @Get("retry")
+    @Retry(3)
+    BaseResponse retry();
 
     @Multipart("upload")
     BaseResponse uploadFile(@Param("file") File file, @Param("file") ProgressListener listener);

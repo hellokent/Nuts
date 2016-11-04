@@ -11,6 +11,7 @@ import java.lang.reflect.InvocationHandler;
 import java.lang.reflect.Method;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 import java.util.concurrent.Callable;
 
 public class ApiInvokeHandler implements InvocationHandler {
@@ -36,7 +37,6 @@ public class ApiInvokeHandler implements InvocationHandler {
         final Patch patch = method.getAnnotation(Patch.class);
         final Put put = method.getAnnotation(Put.class);
         final Delete delete = method.getAnnotation(Delete.class);
-
 
         final Headers headers = method.getAnnotation(Headers.class);
         final int tryCount = method.getAnnotation(Retry.class) == null ? 1 : method.getAnnotation(Retry.class).value();
@@ -86,6 +86,21 @@ public class ApiInvokeHandler implements InvocationHandler {
         final Annotation[][] annotations = method.getParameterAnnotations();
         if (annotations.length != 0) {
             for (int i = 0, n = args == null ? 0 : args.length; i < n; ++i) {
+                final Object arg = args[i];
+                if (arg != null) {
+                    if (arg instanceof ParamList) {
+                        request.addMapParam(((ParamList) arg).getData());
+                        continue;
+                    } else if (arg instanceof Map) {
+                        for (Object o : ((Map) arg).entrySet()) {
+                            Map.Entry entry = (Map.Entry) o;
+                            if (entry.getKey() != null && entry.getValue() != null) {
+                                request.mParams.put(entry.getKey().toString(), entry.getValue().toString());
+                            }
+                        }
+                        continue;
+                    }
+                }
                 if (annotations[i].length == 0) {
                     continue;
                 }
