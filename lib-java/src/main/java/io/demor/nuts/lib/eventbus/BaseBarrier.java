@@ -92,7 +92,8 @@ public abstract class BaseBarrier implements WebSocketListener, Closeable {
         long startTime = System.currentTimeMillis();
         while ((System.currentTimeMillis() - startTime) < unit.toMillis(timeout)) {
             try {
-                final PushObject o = PUSH_QUEUE.poll(unit.toMillis(timeout) - (System.currentTimeMillis() - startTime), TimeUnit.MILLISECONDS);
+                final PushObject o = PUSH_QUEUE.poll(unit.toMillis(timeout) - (System.currentTimeMillis() - startTime)
+                        , TimeUnit.MILLISECONDS);
                 handler.onReceivePush(o);
             } catch (InterruptedException e) {
                 e.printStackTrace();
@@ -100,7 +101,7 @@ public abstract class BaseBarrier implements WebSocketListener, Closeable {
         }
     }
 
-    public PushObject waitForSingle(long timeout, TimeUnit unit, PushFilter filter) {
+    protected PushObject waitForSingle(long timeout, TimeUnit unit, PushFilter filter) {
         if (timeout <= 0) {
             return null;
         }

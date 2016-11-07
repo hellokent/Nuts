@@ -134,10 +134,19 @@ public final class ControllerUtil {
             } catch (NoSuchMethodException e) {
                 throw new IllegalArgumentException(e);
             }
-            return toJson(Reflect.on(mImpl)
-                    .call(mName, mArgArray)
-                    .call("sync")
-                    .get(), (Class<?>) ReflectUtils.getGenericType(m.getGenericReturnType()));
+            if (ReflectUtils.isSubclassOf(m.getReturnType(), Return.class)) {
+                return toJson(Reflect.on(mImpl)
+                        .call(mName, mArgArray)
+                        .call("sync")
+                        .get(), (Class<?>) ReflectUtils.getGenericType(m.getGenericReturnType()));
+            } else {
+                try {
+                    m.setAccessible(true);
+                    return toJson(m.invoke(mImpl, mArgArray), m.getReturnType());
+                } catch (IllegalAccessException | InvocationTargetException e) {
+                    throw new IllegalStateException(e);
+                }
+            }
         }
 
         public Object callImpl() {

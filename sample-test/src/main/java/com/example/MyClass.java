@@ -14,8 +14,8 @@ public class MyClass {
 
     public static void main(String[] args) throws Exception {
         final AppInstance appInstance = new AppInstance("io.demor.nuts.sample", "172.16.141.221");
-        final TestController controller = Reflection.newProxy(TestController.class, new ControllerInvokeHandler<>(appInstance));
-//        controller.run(1).asyncUI(new ControllerCallback<String>() {
+        final TestController controller = Reflection.newProxy(TestController.class, new ControllerInvokeHandler(appInstance));
+//        controller.add(1).asyncUI(new ControllerCallback<String>() {
 //            @Override
 //            public void onResult(final String s) {
 //                controller.sendEvent().sync();

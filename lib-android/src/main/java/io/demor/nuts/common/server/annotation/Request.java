@@ -9,6 +9,4 @@ import java.lang.annotation.Target;
 @Target(ElementType.PARAMETER)
 public @interface Request {
     String value();
-
-    boolean required() default true;
 }

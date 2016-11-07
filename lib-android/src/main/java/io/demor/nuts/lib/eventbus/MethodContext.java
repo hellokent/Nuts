@@ -1,10 +1,10 @@
 package io.demor.nuts.lib.eventbus;
 
+import io.demor.nuts.lib.storage.Storage;
 import io.demor.nuts.lib.task.RunnableTask;
 
 import java.lang.reflect.Method;
 
-import static io.demor.nuts.lib.Globals.CLONER;
 import static io.demor.nuts.lib.Globals.UI_HANDLER;
 
 abstract class MethodContext {
@@ -49,7 +49,7 @@ abstract class MethodContext {
         }
         try {
             if (needDeepClone()) {
-                mMethod.invoke(obj, CLONER.deepClone(args));
+                mMethod.invoke(obj, Storage.CLONER.deepClone(args));
             } else {
                 mMethod.invoke(obj, args);
             }

@@ -7,11 +7,13 @@ import io.demor.nuts.lib.log.L;
 import io.demor.nuts.sample.controller.DemoException;
 import io.demor.nuts.sample.lib.controller.TestController;
 import io.demor.nuts.sample.lib.event.TestEvent;
+import io.demor.nuts.sample.lib.module.SimpleObject;
 
 import java.util.concurrent.TimeUnit;
 
 import static io.demor.nuts.lib.Globals.BUS;
 import static io.demor.nuts.sample.config.Const.SIMPLE_LISTENER;
+import static io.demor.nuts.sample.config.Const.SIMPLE_OBJECT_STORAGE;
 
 public class TestControllerImpl extends BaseController implements TestController {
 
@@ -23,8 +25,8 @@ public class TestControllerImpl extends BaseController implements TestController
     }
 
     @Override
-    public Return<String> run(final int count) {
-        L.v("run count:%s", count);
+    public Return<String> add(final int count) {
+        L.v("add count:%s", count);
         try {
             Thread.sleep(TimeUnit.SECONDS.toMillis(2));
             mCount += count;
@@ -70,5 +72,15 @@ public class TestControllerImpl extends BaseController implements TestController
     public Return<Void> callListenerString(final String msg) {
         SIMPLE_LISTENER.onGotString(msg);
         return ofVoid();
+    }
+
+    @Override
+    public int getCount() {
+        return mCount;
+    }
+
+    @Override
+    public SimpleObject getStorage() {
+        return SIMPLE_OBJECT_STORAGE.get();
     }
 }

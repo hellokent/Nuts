@@ -1,43 +1,27 @@
-package io.demor.nuts.lib;
+package io.demor.nuts.lib.storage;
 
+import com.google.common.base.Strings;
 import com.google.common.collect.Maps;
 import com.google.gson.Gson;
-import io.demor.nuts.lib.storage.IStorageEngine;
-import io.demor.nuts.lib.storage.SharedPreferenceStorageEngine;
+import com.rits.cloning.Cloner;
+import io.demor.nuts.lib.controller.ControllerUtil;
 
-import java.util.HashMap;
-
-import static io.demor.nuts.lib.Globals.CLONER;
+import java.util.Map;
 
 public class Storage<T> {
 
-    private static final HashMap<String, Object> CACHE_MAP = Maps.newHashMap();
+    public static final Cloner CLONER = new Cloner();
+    private static final Map<String, Object> CACHE_MAP = Maps.newConcurrentMap();
 
-    private static final Gson GSON = new Gson();
-
-    IStorageEngine mStorageEngine = new SharedPreferenceStorageEngine();
+    IStorageEngine mStorageEngine;
 
     Class<T> mClass;
 
-    String mKey;
+    String mKey = null;
 
-    Gson mGson;
+    Gson mGson = ControllerUtil.GSON;
 
-    private Storage() {
-    }
-
-    public Storage(Class<T> clz) {
-        this(null, clz);
-    }
-
-    public Storage(Gson gson, Class<T> clz) {
-        this(gson, clz, clz.getName());
-    }
-
-    public Storage(Gson gson, Class<T> clz, String key) {
-        mClass = clz;
-        mKey = key;
-        mGson = gson == null ? GSON : gson;
+    protected Storage() {
     }
 
     public synchronized boolean contains() {
@@ -68,16 +52,18 @@ public class Storage<T> {
 
     public static class Builder<R> {
 
-        private IStorageEngine mStorageEngine = new SharedPreferenceStorageEngine();
-
-        private Class<R> mClass;
-
-        private String mKey;
-
         private Storage<R> mStorage = new Storage<>();
+
+        public Builder<R> setGson(Gson gson) {
+            mStorage.mGson = gson;
+            return this;
+        }
 
         public Builder<R> setClass(Class<R> clz) {
             mStorage.mClass = clz;
+            if (Strings.isNullOrEmpty(mStorage.mKey)) {
+                mStorage.mKey = clz.getName();
+            }
             return this;
         }
 

@@ -32,4 +32,8 @@ public class AppInstance {
         mHttpPort = httpPort;
         mSocketPort = socketPort;
     }
+
+    public final String getApiUrl() {
+        return "http://" + mHost + ":" + mHttpPort + "/api/";
+    }
 }

@@ -18,7 +18,7 @@ public class ControllerSimpleActivity extends BaseActivity {
 
     @OnClick(R.id.async_run)
     public void asyncRun() {
-        TEST_CONTROLLER.run(1)
+        TEST_CONTROLLER.add(1)
                 .addListener(this.<String>createDialogListener())
                 .asyncUI(new ControllerCallback<String>() {
                     @Override

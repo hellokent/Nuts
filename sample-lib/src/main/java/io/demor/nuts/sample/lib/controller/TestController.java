@@ -2,10 +2,11 @@ package io.demor.nuts.sample.lib.controller;
 
 import io.demor.nuts.lib.annotation.controller.CheckActivity;
 import io.demor.nuts.lib.controller.Return;
+import io.demor.nuts.sample.lib.module.SimpleObject;
 
 public interface TestController {
 
-    Return<String> run(int count);
+    Return<String> add(int count);
 
     Return<Integer> get();
 
@@ -19,4 +20,8 @@ public interface TestController {
     Return<Void> callListenerInt(int count);
 
     Return<Void> callListenerString(String msg);
+
+    int getCount();
+
+    SimpleObject getStorage();
 }

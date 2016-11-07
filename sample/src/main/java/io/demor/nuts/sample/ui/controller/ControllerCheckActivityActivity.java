@@ -23,7 +23,7 @@ public class ControllerCheckActivityActivity extends BaseActivity {
 
     @OnClick(R.id.async_run_finish)
     void runAndFinish() {
-        TEST_CONTROLLER.run(1)
+        TEST_CONTROLLER.add(1)
                 .setNeedCheckActivity(true)
                 .asyncUI(new ControllerCallback<String>() {
                     @Override

@@ -10,8 +10,16 @@ public class ControllerTest extends BaseTest {
 
     @Test
     public void simple() throws Exception {
-        final TestController controller = Reflection.newProxy(TestController.class, new ControllerInvokeHandler<>(mAppInstance));
+        final TestController controller = Reflection.newProxy(TestController.class, new ControllerInvokeHandler(mAppInstance));
         int count = controller.get().sync();
-        Assert.assertEquals(String.valueOf(count + 1), controller.run(1).sync());
+        Assert.assertEquals("Count:" + (count + 1), controller.add(1).sync());
+    }
+
+    @Test
+    public void callDirect() throws Exception {
+        final TestController controller = Reflection.newProxy(TestController.class, new ControllerInvokeHandler(mAppInstance));
+        int count = controller.get().sync();
+        controller.add(10).sync();
+        Assert.assertEquals(10 + count, controller.getCount());
     }
 }

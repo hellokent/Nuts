@@ -15,7 +15,7 @@ public class EventBusTest extends BaseTest {
 
     @Test
     public void waitForSingle() throws Exception {
-        final TestController controller = Reflection.newProxy(TestController.class, new ControllerInvokeHandler<>(mAppInstance));
+        final TestController controller = Reflection.newProxy(TestController.class, new ControllerInvokeHandler(mAppInstance));
         final int count = controller.get().sync();
         try (EventBarrier<TestEvent> barrier = new EventBarrier<>(mAppInstance, TestEvent.class);) {
             controller.sendEvent().sync();
@@ -28,7 +28,7 @@ public class EventBusTest extends BaseTest {
 
     @Test
     public void waitForAll() throws Exception {
-        final TestController controller = Reflection.newProxy(TestController.class, new ControllerInvokeHandler<>(mAppInstance));
+        final TestController controller = Reflection.newProxy(TestController.class, new ControllerInvokeHandler(mAppInstance));
         try (EventBarrier<TestEvent> barrier = new EventBarrier<>(mAppInstance, TestEvent.class)) {
             int count = 10;
             for (int i = 0; i < count; ++i) {
