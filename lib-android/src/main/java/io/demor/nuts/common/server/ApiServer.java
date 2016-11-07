@@ -68,6 +68,7 @@ public final class ApiServer {
                 pushObject.mType = PushObject.TYPE_EVENT;
                 pushObject.mDataClz = o.getClass().getName();
                 pushObject.mData = o;
+                System.out.println("send Message :" + GSON.toJson(pushObject));
                 mServer.mWebSocketServer.sendMessage(GSON.toJson(pushObject));
             }
         });

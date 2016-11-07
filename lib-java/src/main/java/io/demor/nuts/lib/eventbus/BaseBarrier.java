@@ -29,6 +29,9 @@ public abstract class BaseBarrier implements WebSocketListener, Closeable {
         mClient = new WebSocketClient();
         mClient.start();
         mClient.connect(this, new URI(String.format("ws://%s:%d", mAppInstance.mHost, mAppInstance.mSocketPort)));
+        synchronized (this) {
+            wait();
+        }
     }
 
     @Override
@@ -43,7 +46,9 @@ public abstract class BaseBarrier implements WebSocketListener, Closeable {
 
     @Override
     public void onWebSocketConnect(final Session session) {
-
+        synchronized (this) {
+            notifyAll();
+        }
     }
 
     @Override
