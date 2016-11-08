@@ -55,7 +55,7 @@ public final class ListenerBus {
             throw new IllegalArgumentException("clz cannot have super interface");
         }
 
-        ListenerClassContext<T> result = new ListenerClassContext<T>(clz);
+        ListenerClassContext<T> result = new ListenerClassContext<>(clz);
         METHOD_PROVIDER.put(clz, result);
         return result;
     }
@@ -75,7 +75,6 @@ public final class ListenerBus {
 
         @Override
         public Object invoke(Object proxy, final Method method, final Object[] args) throws Throwable {
-            //TODO map?
             for (MethodContext context : mMethodList) {
                 if (context.mMethod.equals(method)) {
                     for (Object o : METHOD_CONSUMER.get(mClass)) {

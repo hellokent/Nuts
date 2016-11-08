@@ -11,7 +11,7 @@ import org.junit.Test;
 import java.util.List;
 import java.util.concurrent.TimeUnit;
 
-public class EventBusTest extends BaseTest {
+public class EventBarrierTest extends BaseTest {
 
     @Test
     public void waitForSingle() throws Exception {

@@ -14,4 +14,29 @@
 
 ## 使用方法
 
-首先需要
+首先需要定义Listener接口：
+
+```java
+public interface SimpleListener {
+
+    void onGotInt(int count);
+
+    void onGotString(String msg);
+}
+```
+这里需要注意的是，消息发送函数都必须是void返回值类型，因为消息的发送是一个单向的过程，不存在双向的情况。
+
+接下来，利用动态代理创建消息生成者：
+
+```java
+SimpleListener SIMPLE_LISTENER = ListenerBus.provide(SimpleListener.class);
+```
+
+注册消息接收者：
+
+```java
+ListenerBus.register(SimpleListener.class, this);
+```
+
+第二个参数需要实现SimpleListener，可以在实现的方法上用注解`Event`来标识调用线程：UI线程、后台线程或者同步调用。
+

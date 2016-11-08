@@ -11,7 +11,7 @@ import org.junit.Test;
 import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.TimeUnit;
 
-public class ListenerBus extends BaseTest {
+public class ListenerBarrierTest extends BaseTest {
 
     @Test
     public void simple() throws Exception {
@@ -31,7 +31,7 @@ public class ListenerBus extends BaseTest {
                 public void onGotString(final String msg) {
                     Assert.assertEquals("msg", msg);
                     latch.countDown();
-                }
+        }
             }, 5, TimeUnit.SECONDS);
         }
         latch.await(5, TimeUnit.SECONDS);

@@ -123,19 +123,6 @@ ACCOUNT_CONTROLLER.login(account, password)
         },);
 </code></pre>
 
-在很多时候，调用前后会显示一个Dialog，可以使用asyncUIWithDialog方法。
-
-asyncUIWithDialog这个方法需要传入一个Dialog参数，用来通知Nuts在方法调用前后需要展示和消失哪个Dialog。
-
-<pre><code>
-ACCOUNT_CONTROLLER.logout().asyncUIWithDialog(new ControllerCallback<Void>() {
-    @Override
-    public void onResult(final Void aVoid) {
-        // 回调方法执行处，这里的代码会在UI线程中执行
-    }
-}, Dialogs.createLoadingDialog(this));
-</code></pre>
-
 #### 2. 同步调用
 
 同步调用很简单，sync方法：
