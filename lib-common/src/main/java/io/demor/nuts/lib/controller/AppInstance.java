@@ -36,4 +36,8 @@ public class AppInstance {
     public final String getApiUrl() {
         return "http://" + mHost + ":" + mHttpPort + "/api/";
     }
+
+    public final String getWebSocketUrl() {
+        return "ws://" + mHost + ":" + mSocketPort + "/";
+    }
 }

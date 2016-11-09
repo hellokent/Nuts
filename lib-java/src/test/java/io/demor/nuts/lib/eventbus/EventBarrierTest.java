@@ -42,4 +42,21 @@ public class EventBarrierTest extends BaseTest {
             }
         }
     }
+
+    @Test
+    public void restartConnection() throws Exception {
+        final TestController controller = Reflection.newProxy(TestController.class, new ControllerInvokeHandler(mAppInstance));
+        try (EventBarrier<TestEvent> barrier = new EventBarrier<>(mAppInstance, TestEvent.class)) {
+            controller.sendEvent().sync();
+            barrier.closeSession();
+            controller.sendEvent().sync();
+
+            List<TestEvent> list = barrier.waitForAllEvent(1, TimeUnit.SECONDS);
+            Assert.assertEquals(2, list.size());
+            for (TestEvent event : list) {
+                Assert.assertNotNull(event);
+            }
+        }
+
+    }
 }

@@ -1,9 +1,12 @@
-package io.demor.nuts.common.server;
+package io.demor.nuts.lib.server;
 
 import android.app.Application;
 import com.google.common.collect.Maps;
 import com.squareup.okhttp.OkHttpClient;
 import com.squareup.okhttp.Request;
+import io.demor.nuts.common.server.BaseWebServer;
+import io.demor.nuts.common.server.IApi;
+import io.demor.nuts.common.server.Server;
 import io.demor.nuts.lib.NutsApplication;
 import io.demor.nuts.lib.controller.AppInstance;
 import io.demor.nuts.lib.controller.ControllerUtil;

@@ -10,9 +10,9 @@ import java.io.IOException;
 
 public class Server {
 
-    public final BaseWebServer mHttpServer;
-    public final BaseWebSocketServer mWebSocketServer;
     public final WifiManager mWifiManager;
+    public BaseWebServer mHttpServer;
+    public BaseWebSocketServer mWebSocketServer;
 
     public Server(final Application application, final Gson gson) {
         mWebSocketServer = new BaseWebSocketServer(0);

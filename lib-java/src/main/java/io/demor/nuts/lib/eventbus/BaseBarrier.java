@@ -15,6 +15,7 @@ import org.eclipse.jetty.websocket.common.WebSocketSession;
 import java.io.Closeable;
 import java.io.IOException;
 import java.net.URI;
+import java.util.Random;
 import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.TimeUnit;
 
@@ -22,16 +23,17 @@ public abstract class BaseBarrier implements WebSocketListener, Closeable {
 
     protected static final BlockingQueue<PushObject> PUSH_QUEUE = new BlockingArrayQueue<>();
     final AppInstance mAppInstance;
-    final WebSocketClient mClient;
+    final String mId;
+    final URI mURI;
+    protected boolean mStopped = false;
+    WebSocketClient mClient;
 
     public BaseBarrier(final AppInstance appInstance) throws Exception {
         mAppInstance = appInstance;
-        mClient = new WebSocketClient();
-        mClient.start();
-        mClient.connect(this, new URI(String.format("ws://%s:%d", mAppInstance.mHost, mAppInstance.mSocketPort)));
-        synchronized (this) {
-            wait();
-        }
+        mId = getUniqueId();
+        mURI = new URI(mAppInstance.getWebSocketUrl() + mId);
+
+        connect();
     }
 
     @Override
@@ -41,19 +43,34 @@ public abstract class BaseBarrier implements WebSocketListener, Closeable {
 
     @Override
     public void onWebSocketClose(final int statusCode, final String reason) {
-
+        System.out.println("close " + mStopped);
+        if (mStopped) {
+            return;
+        }
+        connect();
     }
 
     @Override
     public void onWebSocketConnect(final Session session) {
-        synchronized (this) {
-            notifyAll();
-        }
+        System.out.println("connect");
     }
 
     @Override
     public void onWebSocketError(final Throwable cause) {
+        if (mStopped) {
+            return;
+        }
+        connect();
+    }
 
+    protected void connect() {
+        try {
+            mClient = new WebSocketClient();
+            mClient.start();
+            mClient.connect(this, mURI).get();
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
     }
 
     @Override
@@ -73,11 +90,16 @@ public abstract class BaseBarrier implements WebSocketListener, Closeable {
         } catch (ClassNotFoundException e) {
             e.printStackTrace();
         }
-
     }
 
     @Override
     public void close() throws IOException {
+        mStopped = true;
+        closeSession();
+    }
+
+    protected void closeSession() throws IOException {
+        System.out.println("close session");
         for (WebSocketSession socketSession : mClient.getOpenSessions()) {
             socketSession.close();
         }
@@ -90,9 +112,10 @@ public abstract class BaseBarrier implements WebSocketListener, Closeable {
 
     protected void waitForAll(long timeout, TimeUnit unit, PushHandler handler) {
         long startTime = System.currentTimeMillis();
-        while ((System.currentTimeMillis() - startTime) < unit.toMillis(timeout)) {
+        final long millisTimeout = unit.toMillis(timeout);
+        while ((System.currentTimeMillis() - startTime) < millisTimeout) {
             try {
-                final PushObject o = PUSH_QUEUE.poll(unit.toMillis(timeout) - (System.currentTimeMillis() - startTime)
+                final PushObject o = PUSH_QUEUE.poll(millisTimeout - (System.currentTimeMillis() - startTime)
                         , TimeUnit.MILLISECONDS);
                 handler.onReceivePush(o);
             } catch (InterruptedException e) {
@@ -121,6 +144,11 @@ public abstract class BaseBarrier implements WebSocketListener, Closeable {
         }
     }
 
+    private String getUniqueId() {
+        final Random random = new Random();
+        random.setSeed(System.currentTimeMillis() + hashCode());
+        return String.valueOf(random.nextLong());
+    }
 
     interface PushHandler {
         void onReceivePush(PushObject object);

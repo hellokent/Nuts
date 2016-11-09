@@ -1,8 +1,10 @@
-package io.demor.nuts.common.server;
+package io.demor.nuts.lib.server;
 
 import android.app.Application;
 import com.google.common.base.Joiner;
 import com.google.common.base.Strings;
+import io.demor.nuts.common.server.IApi;
+import io.demor.nuts.common.server.Server;
 import io.demor.nuts.lib.eventbus.BaseEvent;
 import io.demor.nuts.lib.eventbus.EventBus;
 import io.demor.nuts.lib.eventbus.IPostListener;
@@ -20,19 +22,19 @@ import java.util.Map;
 import static io.demor.nuts.lib.controller.ControllerUtil.GSON;
 import static io.demor.nuts.lib.controller.ControllerUtil.parseMethodInfo;
 
-public final class ApiServer {
+public final class ApiServer extends Server {
 
-    public Server mServer;
     public Application mApplication;
     public boolean mCanSendListener;
 
     public ApiServer(Application application) {
-        mServer = new Server(application, GSON);
+        super(application, GSON);
+        mWebSocketServer = new ApiWebSocketServer(0);
         mApplication = application;
     }
 
     public <T> ApiServer registerController(final Class<T> api, final T impl) {
-        mServer.mHttpServer.registerApi(new IApi() {
+        mHttpServer.registerApi(new IApi() {
             @Override
             public String name() {
                 return "controller/" + api.getName();
@@ -62,7 +64,7 @@ public final class ApiServer {
     }
 
     public <T> ApiServer registerStorage(final Class<T> typeClz, final Storage<T> storage) {
-        mServer.mHttpServer.registerApi(new IApi() {
+        mHttpServer.registerApi(new IApi() {
             @Override
             public String name() {
                 return "storage/" + typeClz.getName();
@@ -109,7 +111,7 @@ public final class ApiServer {
                 pushObject.mDataClz = o.getClass().getName();
                 pushObject.mData = o;
                 System.out.println("send Message :" + GSON.toJson(pushObject));
-                mServer.mWebSocketServer.sendMessage(GSON.toJson(pushObject));
+                mWebSocketServer.sendMessage(GSON.toJson(pushObject));
             }
         });
         return this;
@@ -125,16 +127,16 @@ public final class ApiServer {
         pushObject.mType = PushObject.TYPE_LISTENER;
         pushObject.mDataClz = String.class.getName();
         pushObject.mData = info;
-        mServer.mWebSocketServer.sendMessage(GSON.toJson(pushObject));
+        mWebSocketServer.sendMessage(GSON.toJson(pushObject));
     }
 
     public void start() {
-        mServer.start();
+        super.start();
         new Thread("config-server") {
             @Override
             public void run() {
                 try {
-                    ConfigServer.initConfig(mApplication, mServer);
+                    ConfigServer.initConfig(mApplication, ApiServer.this);
                 } catch (IOException e) {
                     L.exception(e);
                 }

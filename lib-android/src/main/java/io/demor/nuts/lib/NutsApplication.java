@@ -3,7 +3,7 @@ package io.demor.nuts.lib;
 import android.app.Application;
 import android.content.pm.PackageInfo;
 import android.content.pm.PackageManager;
-import io.demor.nuts.common.server.ApiServer;
+import io.demor.nuts.lib.server.ApiServer;
 
 public class NutsApplication extends Application {
     public static NutsApplication sApplication;
@@ -15,18 +15,18 @@ public class NutsApplication extends Application {
 
     public static String getIpAddress() {
         if (sApiServer != null) {
-            return sApiServer.mServer.getIpAddress();
+            return sApiServer.getIpAddress();
         } else {
             return "";
         }
     }
 
     public static int getHttpPort() {
-        return sApiServer == null ? 0 : sApiServer.mServer.getHttpPort();
+        return sApiServer == null ? 0 : sApiServer.getHttpPort();
     }
 
     public static int getWebSocketPort() {
-        return sApiServer == null ? 0 : sApiServer.mServer.getWebSocketPort();
+        return sApiServer == null ? 0 : sApiServer.getWebSocketPort();
     }
 
     @Override
