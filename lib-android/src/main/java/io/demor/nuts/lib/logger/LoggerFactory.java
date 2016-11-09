@@ -45,7 +45,7 @@ public final class LoggerFactory {
     public static void readConfigFromAsset(final Application app, final String fileName) {
         InputStream stream = null;
         try {
-            stream = app.getAssets().open("logger_testcase.xml");
+            stream = app.getAssets().open(fileName);
             LoggerFactory.loadConfig(app, stream);
         } catch (IOException e) {
             e.printStackTrace();
