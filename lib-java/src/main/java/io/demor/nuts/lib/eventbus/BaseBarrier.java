@@ -16,12 +16,11 @@ import java.io.Closeable;
 import java.io.IOException;
 import java.net.URI;
 import java.util.Random;
-import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.TimeUnit;
 
 public abstract class BaseBarrier implements WebSocketListener, Closeable {
 
-    protected static final BlockingQueue<PushObject> PUSH_QUEUE = new BlockingArrayQueue<>();
+    protected static final BlockingArrayQueue<PushObject> PUSH_QUEUE = new BlockingArrayQueue<>();
     final AppInstance mAppInstance;
     final String mId;
     final URI mURI;
@@ -86,7 +85,7 @@ public abstract class BaseBarrier implements WebSocketListener, Closeable {
         o.mDataClz = jsonObject.get("dataClz").getAsString();
         try {
             o.mData = ControllerUtil.GSON.fromJson(jsonObject.get("data"), Class.forName(o.mDataClz));
-            PUSH_QUEUE.add(o);
+            PUSH_QUEUE.offer(o);
         } catch (ClassNotFoundException e) {
             e.printStackTrace();
         }
@@ -126,7 +125,7 @@ public abstract class BaseBarrier implements WebSocketListener, Closeable {
 
     protected PushObject waitForSingle(long timeout, TimeUnit unit, PushFilter filter) {
         if (timeout <= 0) {
-            return null;
+            return PUSH_QUEUE.peek();
         }
         try {
             long startTime = System.currentTimeMillis();

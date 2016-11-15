@@ -41,11 +41,11 @@ Nuts认为，一个业务是有一系列业务逻辑组成。业务逻辑就是�
 
 每回创建业务实例会略耗时，同时为了方便业务间互相调用，所以需要将业务实例成为静态变量。
 
-<pre><code>
+```java
 public interface Const {
     AccountController ACCOUNT_CONTROLLER = new ProxyInvokeHandler<AccountController>(new AccountControllerImpl()).createProxy();
 }
-</code></pre>
+```
 
 ### 定义业务逻辑
 
@@ -55,7 +55,7 @@ public interface Const {
 
 需要支持同步异步调用的函数，需要用Return对象封装一下函数返回值，对于void类型的返回值，使用VoidReturn对象。
 
-<pre><code>
+```java
 public interface AccountController {
 
     String token(); //获取当前用户token
@@ -64,13 +64,13 @@ public interface AccountController {
     
     VoidReturn logout(); //登出操作
 }
-</code></pre>
+```
 
 ### 实现业务逻辑
 
 返回值需要被Return对象包装一次再返回出来，示例如下：
 
-<pre><code>
+```java
 public class AccountControllerImpl implements AccountController {
 
      @Override
@@ -85,11 +85,11 @@ public class AccountControllerImpl implements AccountController {
          return new VoidReturn();
      }
 }
-</code></pre>
+```
 
 假如是没有被Return包装的，直接返回即可，示例如下：
 
-<pre><code>
+```java
 @Override
 public String token() {
     return hasLogin() ? USER_INFO.get().mToken : "";
@@ -114,22 +114,22 @@ public String token() {
 
 很多时候，调用方都会关心方法执行的结果：
 
-<pre><code>
+```java
 ACCOUNT_CONTROLLER.login(account, password)
         .asyncUIWithDialog(new ControllerCallback<Boolean>() {
             @Override
             public void onResult(final Boolean result) {
             }
         },);
-</code></pre>
+```
 
 #### 2. 同步调用
 
 同步调用很简单，sync方法：
 
-<pre><code>
+```java
 ACCOUNT_CONTROLLER.logout().sync();
-</code></pre>
+```
 
 一般sync方法出现业务之间调用会使用到。
 
@@ -137,7 +137,7 @@ ACCOUNT_CONTROLLER.logout().sync();
 
 在异步调用的时候，可以添加一个回调来监听这个方法调用前，调用后，调用时抛异常这三种情况：
 
-<pre><code>
+```java
 public interface TestController {
     Return<String> run(int count);
 }
@@ -159,7 +159,7 @@ TEST_CONTROLLER.run(1)
                 ToastUtil.showMessage("onResult: " + s);
             }
         });
-</code></pre>
+```
 
 addListener是链式调用，可以添加多个Listener。
 
@@ -173,17 +173,17 @@ checkActivity，就是设置在回调和业务逻辑方法执行前，检查Acti
 
 1. 业务方法上添加注解
 
-<pre><code>
+```java
 public interface TestController {
 
     @CheckActivity
     VoidReturn runCheckActivity();
 }
-</code></pre>
+```
 
 2. Return对象的链式调用里设置checkActivity
 
-<pre><code>
+```java
 TEST_CONTROLLER.run(1)
         .setNeedCheckActivity(true) //这里设置checkActivity
         .asyncUI(new ControllerCallback<String>() {
@@ -192,7 +192,7 @@ TEST_CONTROLLER.run(1)
                 ToastUtil.showMessage("onResult");
             }
         });
-</code></pre>
+```
 
 
 ### 异常处理
@@ -203,9 +203,9 @@ TEST_CONTROLLER.run(1)
 
 当是异步调用时，需要实现传入的ControllerListener里面有`onException`的方法：
 
-<pre><code>
+```java
 public void onException(Exception e) {}
-</code></pre>
+```
 
 //TODO 异步处理回调，同步异常处理，异常包装 
 
