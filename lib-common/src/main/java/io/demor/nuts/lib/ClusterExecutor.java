@@ -18,9 +18,10 @@ public class ClusterExecutor extends ThreadPoolExecutor {
     public ClusterExecutor(final int corePoolSize, final int maximumPoolSize,
                            final long keepAliveTime, final TimeUnit unit, final RejectedExecutionHandler handler) {
         super(corePoolSize, maximumPoolSize, keepAliveTime, unit, new ClusterQueue(), handler);
-        final ClusterThreadFactor factory = new ClusterThreadFactor();
-        setThreadFactory(factory);
         cQueue = (ClusterQueue) getQueue();
+        final ClusterThreadFactor factory = new ClusterThreadFactor();
+        factory.mThreadExitCallback = cQueue;
+        setThreadFactory(factory);
         cQueue.mAllThreadList = factory.mThreadList;
         cQueue.mAffineThreadLocal = cAffineThreadLocal;
         prestartAllCoreThreads();
@@ -40,7 +41,11 @@ public class ClusterExecutor extends ThreadPoolExecutor {
         }
     }
 
-    protected static class ClusterQueue extends LinkedBlockingQueue<Runnable> {
+    private interface IThreadExit {
+        void onExit(Thread thread);
+    }
+
+    protected static class ClusterQueue extends LinkedBlockingQueue<Runnable> implements IThreadExit {
 
         public static final Random RANDOM = new Random();
 
@@ -81,19 +86,7 @@ public class ClusterExecutor extends ThreadPoolExecutor {
                             }
                         }
                     } else {
-                        Multiset<Thread> threadMultiset = HashMultiset.create();
-                        threadMultiset.addAll(mAllThreadList);
-                        for (Thread t : mAffineThreadMap.keySet()) {
-                            threadMultiset.add(t, mAffineThreadMap.get(t).size());
-                        }
-
-                        affineThread = new Ordering<Multiset.Entry<Thread>>() {
-                            @Override
-                            public int compare(final Multiset.Entry<Thread> left, final Multiset.Entry<Thread> right) {
-                                return Ints.compare(left.getCount(), right.getCount());
-                            }
-                        }.immutableSortedCopy(threadMultiset.entrySet())
-                                .get(0).getElement();
+                        affineThread = minAffineCountThread();
                         mAffineThreadMap.put(affineThread, affine);
                     }
                     mRunnableMap.put(affine, runnable);
@@ -110,6 +103,22 @@ public class ClusterExecutor extends ThreadPoolExecutor {
                     affineThread.notifyAll();
                 }
             }
+        }
+
+        private Thread minAffineCountThread() {
+            final Multiset<Thread> threadMultiset = HashMultiset.create();
+            threadMultiset.addAll(mAllThreadList);
+            for (Thread t : mAffineThreadMap.keySet()) {
+                threadMultiset.add(t, mAffineThreadMap.get(t).size());
+            }
+
+            return new Ordering<Multiset.Entry<Thread>>() {
+                @Override
+                public int compare(final Multiset.Entry<Thread> left, final Multiset.Entry<Thread> right) {
+                    return Ints.compare(left.getCount(), right.getCount());
+                }
+            }.immutableSortedCopy(threadMultiset.entrySet())
+                    .get(0).getElement();
         }
 
         @Override
@@ -177,6 +186,18 @@ public class ClusterExecutor extends ThreadPoolExecutor {
             }
         }
 
+        @Override
+        public synchronized void onExit(final Thread thread) {
+            for (String affine : mAffineThreadMap.removeAll(thread)) {
+                Thread t = minAffineCountThread();
+                mAffineThreadMap.put(t, affine);
+                if (mAffineLockMap.get(thread).contains(affine)) {
+                    mAffineLockMap.put(t, affine);
+                }
+            }
+            mAffineLockMap.removeAll(thread);
+        }
+
         protected synchronized Runnable pollRunnableFromMap() throws InterruptedException {
             final Thread t = Thread.currentThread();
             for (String affine : mAffineLockMap.get(t)) {
@@ -210,10 +231,18 @@ public class ClusterExecutor extends ThreadPoolExecutor {
     private class ClusterThreadFactor implements ThreadFactory {
         private final AtomicInteger mCount = new AtomicInteger(0);
         private ArrayList<Thread> mThreadList = Lists.newArrayList();
+        private IThreadExit mThreadExitCallback;
 
         @Override
         public Thread newThread(final Runnable r) {
-            Thread t = new Thread(r, "Nuts Task Thread #" + mCount.getAndIncrement());
+            Thread t = new Thread(r, "Nuts Task Thread #" + mCount.getAndIncrement()) {
+                @Override
+                public void run() {
+                    super.run();
+                    mThreadList.remove(this);
+                    mThreadExitCallback.onExit(this);
+                }
+            };
             mThreadList.add(t);
             return t;
         }
