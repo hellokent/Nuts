@@ -16,7 +16,7 @@ public class ClusterExecutorTest {
 
     @Test
     public void normal() throws Exception {
-        int jMax = 4;
+        int jMax = 21;
         int iMax = 50;
         final CountDownLatch latch = new CountDownLatch(iMax * jMax * 2);
         for (int j = 0; j < jMax; ++j) {
@@ -38,7 +38,7 @@ public class ClusterExecutorTest {
                 });
             }
         }
-        latch.await(15, TimeUnit.SECONDS);
+        latch.await(25, TimeUnit.SECONDS);
         Assert.assertEquals(0, latch.getCount());
     }
 

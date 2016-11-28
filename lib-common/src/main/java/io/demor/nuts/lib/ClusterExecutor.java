@@ -27,11 +27,16 @@ public class ClusterExecutor extends ThreadPoolExecutor {
     }
 
     public void execute(final String tag, final Runnable command) {
-        cAffineThreadLocal.set(tag);
-        try {
+        if (tag == null) {
             execute(command);
-        } finally {
             cAffineThreadLocal.remove();
+        } else {
+            cAffineThreadLocal.set(tag);
+            try {
+                execute(command);
+            } finally {
+                cAffineThreadLocal.remove();
+            }
         }
     }
 
@@ -213,6 +218,4 @@ public class ClusterExecutor extends ThreadPoolExecutor {
             return t;
         }
     }
-
-
 }
