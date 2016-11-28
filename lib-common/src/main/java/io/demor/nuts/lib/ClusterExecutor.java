@@ -5,19 +5,14 @@ import com.google.common.base.Strings;
 import com.google.common.collect.*;
 import com.google.common.primitives.Ints;
 
-import java.util.ArrayList;
-import java.util.Iterator;
-import java.util.List;
-import java.util.Random;
+import java.util.*;
 import java.util.concurrent.*;
 import java.util.concurrent.atomic.AtomicInteger;
 
 public class ClusterExecutor extends ThreadPoolExecutor {
-
-
     private static final String DEFAULT_LOCK = "CLUSTER";
 
-    public final ThreadLocal<String> cAffineThreadLocal = new ThreadLocal<>();
+    protected final ThreadLocal<String> cAffineThreadLocal = new ThreadLocal<>();
     protected final ClusterQueue cQueue;
 
     public ClusterExecutor(final int corePoolSize, final int maximumPoolSize,
@@ -48,9 +43,10 @@ public class ClusterExecutor extends ThreadPoolExecutor {
             RANDOM.setSeed(System.currentTimeMillis());
         }
 
-        public Multimap<String, Runnable> mRunnableMap = MultimapBuilder.treeKeys().linkedListValues().build();
+        public Multimap<String, Runnable> mRunnableMap = MultimapBuilder.hashKeys().linkedListValues().build();
         public Multimap<Thread, String> mAffineThreadMap = MultimapBuilder.hashKeys().linkedListValues().build();
         public Multimap<Thread, String> mAffineLockMap = MultimapBuilder.hashKeys().linkedListValues().build();
+        public Set<Thread> mWaitingThreadSet = Sets.newConcurrentHashSet();
         public List<Thread> mAllThreadList;
         public ThreadLocal<String> mAffineThreadLocal;
 
@@ -61,7 +57,11 @@ public class ClusterExecutor extends ThreadPoolExecutor {
             try {
                 if (Strings.isNullOrEmpty(affine)) {
                     affine = DEFAULT_LOCK;
-                    affineThread = mAllThreadList.get(RANDOM.nextInt(mAllThreadList.size()));
+                    if (mWaitingThreadSet.isEmpty()) {
+                        affineThread = mAllThreadList.get(RANDOM.nextInt(mAllThreadList.size()));
+                    } else {
+                        affineThread = mWaitingThreadSet.iterator().next();
+                    }
                     return super.offer(runnable);
                 } else {
                     if (DEFAULT_LOCK.equals(affine)) {
@@ -136,29 +136,39 @@ public class ClusterExecutor extends ThreadPoolExecutor {
         @Override
         public Runnable poll(final long timeout, final TimeUnit unit) throws InterruptedException {
             final Thread t = Thread.currentThread();
-            Runnable result = pollRunnableFromMap();
-            if (result != null) {
-                return result;
-            }
             System.out.println("pool:" + t);
-            synchronized (t) {
-                t.wait(unit.toMillis(timeout), 0);
+            try {
+                mWaitingThreadSet.add(t);
+                Runnable result = pollRunnableFromMap();
+                if (result != null) {
+                    return result;
+                }
+                synchronized (t) {
+                    t.wait(unit.toMillis(timeout), 0);
+                }
+                return pollRunnableFromMap();
+            } finally {
+                mWaitingThreadSet.remove(t);
             }
-            return pollRunnableFromMap();
         }
 
         @Override
         public Runnable take() throws InterruptedException {
             final Thread t = Thread.currentThread();
             System.out.println("take:" + t);
-            Runnable result = pollRunnableFromMap();
-            if (result != null) {
-                return result;
+            try {
+                mWaitingThreadSet.add(t);
+                Runnable result = pollRunnableFromMap();
+                if (result != null) {
+                    return result;
+                }
+                synchronized (t) {
+                    t.wait();
+                }
+                return pollRunnableFromMap();
+            } finally {
+                mWaitingThreadSet.remove(t);
             }
-            synchronized (t) {
-                t.wait();
-            }
-            return pollRunnableFromMap();
         }
 
         protected synchronized Runnable pollRunnableFromMap() throws InterruptedException {
