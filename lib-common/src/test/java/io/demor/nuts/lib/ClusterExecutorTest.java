@@ -17,8 +17,8 @@ public class ClusterExecutorTest {
     @Test
     public void normal() throws Exception {
         int jMax = 4;
-        int iMax = 500;
-        final CountDownLatch latch = new CountDownLatch(iMax * jMax);
+        int iMax = 50;
+        final CountDownLatch latch = new CountDownLatch(iMax * jMax * 2);
         for (int j = 0; j < jMax; ++j) {
             for (int i = 0; i < iMax; ++i) {
                 final String tag = String.valueOf((char) ('a' + j));

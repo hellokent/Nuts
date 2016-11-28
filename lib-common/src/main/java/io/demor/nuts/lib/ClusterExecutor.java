@@ -53,6 +53,7 @@ public class ClusterExecutor extends ThreadPoolExecutor {
         @Override
         public synchronized boolean offer(final Runnable runnable) {
             String affine = mAffineThreadLocal.get();
+            System.out.println("offer:" + affine);
             Thread affineThread = null;
             try {
                 if (Strings.isNullOrEmpty(affine)) {
@@ -175,10 +176,12 @@ public class ClusterExecutor extends ThreadPoolExecutor {
             final Thread t = Thread.currentThread();
             for (String affine : mAffineLockMap.get(t)) {
                 if (DEFAULT_LOCK.equals(affine)) {
+                    mAffineLockMap.get(t).remove(DEFAULT_LOCK);
                     return super.take();
                 }
                 Runnable runnable = pollAffineRunnable(affine);
                 if (runnable != null) {
+                    mAffineLockMap.get(t).remove(affine);
                     return runnable;
                 }
             }
