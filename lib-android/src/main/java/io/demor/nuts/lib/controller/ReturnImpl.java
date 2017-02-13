@@ -58,7 +58,7 @@ public class ReturnImpl<T> extends Return<T> implements Globals {
         super(callable, method);
         mCreatedByConstructor = false;
         mNeedCheckActivity = method.getAnnotation(CheckActivity.class) != null;
-        mFuture = SafeTask.THREAD_POOL_EXECUTOR.submit(new Callable<T>() {
+        Callable<T> wrappedCallable = new Callable<T>() {
             @Override
             public T call() throws Exception {
                 if (isActivityFinishing()) {
@@ -95,7 +95,14 @@ public class ReturnImpl<T> extends Return<T> implements Globals {
 
                 return mData;
             }
-        });
+        };
+
+        String tag = TagCache.getTag(mMethod);
+        if (TagCache.NO_TAG.equals(tag)) {
+            mFuture = SafeTask.THREAD_POOL_EXECUTOR.submit(wrappedCallable);
+        } else {
+            mFuture = TagCache.run(tag, wrappedCallable);
+        }
     }
 
     @Override

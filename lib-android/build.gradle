@@ -3,13 +3,11 @@ buildscript {
         jcenter()
     }
     dependencies {
-        classpath 'com.android.tools.build:gradle:2.0.0'
-        //classpath 'com.uphyca.gradle:gradle-android-aspectj-plugin:0.9.14'
+        classpath 'com.android.tools.build:gradle:2.2.2'
     }
 }
 
 apply plugin: 'com.android.library'
-//apply plugin: 'com.uphyca.android-aspectj'
 
 repositories {
     jcenter()
@@ -33,6 +31,11 @@ android {
             minifyEnabled false
             proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
         }
+    }
+
+    compileOptions {
+        sourceCompatibility JavaVersion.VERSION_1_7
+        targetCompatibility JavaVersion.VERSION_1_7
     }
 }
 
