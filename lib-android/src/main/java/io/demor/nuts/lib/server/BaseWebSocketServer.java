@@ -43,7 +43,7 @@ public class BaseWebSocketServer extends NanoWebSocketServer {
         }
         final String text = messageFrame.getTextPayload();
         LOGGER.v("onMessage:%s", text);
-        if (CharMatcher.whitespace().matchesAllOf(text)) {
+        if (CharMatcher.WHITESPACE.matchesAllOf(text)) {
             return;
         }
         ++mCount;

@@ -4,7 +4,6 @@ import android.util.Log;
 import com.google.common.base.Throwables;
 import com.google.common.collect.Lists;
 
-import java.io.IOException;
 import java.util.ArrayList;
 
 public class Logger {
@@ -101,8 +100,8 @@ public class Logger {
         return context;
     }
 
-    public void exception(final IOException e) {
+    public void exception(final Throwable t) {
         final int level = Log.ERROR;
-        log(level, Throwables.getStackTraceAsString(e));
+        log(level, Throwables.getStackTraceAsString(t));
     }
 }

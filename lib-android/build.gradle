@@ -44,7 +44,7 @@ dependencies {
     rootProject
     compile project(':lib-common')
     compile 'com.x5dev:chunk-templates:3.2.4'
-    compile 'com.google.guava:guava:21.0'
+    compile 'com.google.guava:guava:18.0'
     compile 'com.google.code.gson:gson:2.8.0'
     compile 'com.squareup.okhttp:okhttp:2.4.0'
     compile 'com.squareup.okio:okio:1.4.0'
