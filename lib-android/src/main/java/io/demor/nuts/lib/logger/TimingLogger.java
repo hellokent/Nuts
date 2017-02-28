@@ -1,4 +1,4 @@
-package io.demor.nuts.lib.log;
+package io.demor.nuts.lib.logger;
 
 import android.os.SystemClock;
 import android.util.Log;

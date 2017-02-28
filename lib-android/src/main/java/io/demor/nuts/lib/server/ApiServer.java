@@ -8,7 +8,8 @@ import io.demor.nuts.common.server.Server;
 import io.demor.nuts.lib.eventbus.BaseEvent;
 import io.demor.nuts.lib.eventbus.EventBus;
 import io.demor.nuts.lib.eventbus.IPostListener;
-import io.demor.nuts.lib.log.L;
+import io.demor.nuts.lib.logger.Logger;
+import io.demor.nuts.lib.logger.LoggerFactory;
 import io.demor.nuts.lib.module.BaseResponse;
 import io.demor.nuts.lib.module.ControllerInvocationResponse;
 import io.demor.nuts.lib.module.PushObject;
@@ -24,6 +25,7 @@ import static io.demor.nuts.lib.controller.ControllerUtil.parseMethodInfo;
 
 public final class ApiServer extends Server {
 
+    private static final Logger LOGGER = LoggerFactory.getLogger(ApiServer.class);
     public Application mApplication;
     public boolean mCanSendListener;
 
@@ -138,7 +140,7 @@ public final class ApiServer extends Server {
                 try {
                     ConfigServer.initConfig(mApplication, ApiServer.this);
                 } catch (IOException e) {
-                    L.exception(e);
+                    LOGGER.exception(e);
                 }
             }
         }.start();

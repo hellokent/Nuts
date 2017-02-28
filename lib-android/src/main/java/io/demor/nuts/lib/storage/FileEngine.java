@@ -2,7 +2,8 @@ package io.demor.nuts.lib.storage;
 
 import com.google.common.base.Joiner;
 import com.google.common.io.Files;
-import io.demor.nuts.lib.log.L;
+import io.demor.nuts.lib.logger.Logger;
+import io.demor.nuts.lib.logger.LoggerFactory;
 
 import java.io.File;
 import java.io.IOException;
@@ -10,6 +11,7 @@ import java.nio.charset.Charset;
 
 public class FileEngine implements IStorageEngine {
 
+    static final Logger LOGGER = LoggerFactory.getLogger(FileEngine.class);
     protected File mFolder;
 
     protected FileEngine() {
@@ -27,7 +29,7 @@ public class FileEngine implements IStorageEngine {
         try {
             Files.write(value.getBytes(), new File(mFolder, key));
         } catch (IOException e) {
-            L.e("error in write file(%s). %s", key, e.getMessage());
+            LOGGER.e("error in write file(%s). %s", key, e.getMessage());
         }
     }
 
@@ -38,7 +40,7 @@ public class FileEngine implements IStorageEngine {
                     .join(Files.asCharSource(new File(mFolder, key), Charset.defaultCharset())
                             .readLines());
         } catch (IOException e) {
-            L.e("error in read file(%s), %s", key, e.getMessage());
+            LOGGER.e("error in read file(%s), %s", key, e.getMessage());
             return "";
         }
     }

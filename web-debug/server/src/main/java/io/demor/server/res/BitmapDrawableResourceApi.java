@@ -2,7 +2,8 @@ package io.demor.server.res;
 
 import android.graphics.Bitmap;
 import io.demor.nuts.common.server.IResourceApi;
-import io.demor.nuts.lib.log.L;
+import io.demor.nuts.lib.logger.Logger;
+import io.demor.nuts.lib.logger.LoggerFactory;
 
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
@@ -11,6 +12,7 @@ import java.util.Map;
 
 public class BitmapDrawableResourceApi implements IResourceApi {
 
+    static final Logger LOGGER = LoggerFactory.getLogger(BitmapDrawableResourceApi.class);
     final Bitmap mBitmap;
 
     public BitmapDrawableResourceApi(Bitmap bitmap) {
@@ -19,7 +21,7 @@ public class BitmapDrawableResourceApi implements IResourceApi {
 
     public static InputStream getStreamFromBitmap(Bitmap bitmap) {
         if (bitmap == null) {
-            L.v("get stream. empty bitmap");
+            LOGGER.v("get stream. empty bitmap");
             return null;
         }
         final ByteArrayOutputStream outputStream = new ByteArrayOutputStream();

@@ -3,13 +3,15 @@ package io.demor.nuts.common.server;
 import com.google.common.base.CharMatcher;
 import com.google.common.collect.Sets;
 import fi.iki.elonen.NanoWebSocketServer;
-import io.demor.nuts.lib.log.L;
+import io.demor.nuts.lib.logger.Logger;
+import io.demor.nuts.lib.logger.LoggerFactory;
 
 import java.io.IOException;
 import java.util.Set;
 
 public class BaseWebSocketServer extends NanoWebSocketServer {
 
+    static final Logger LOGGER = LoggerFactory.getLogger(BaseWebSocketServer.class);
     final Set<NanoWebSocketServer.WebSocket> mAvailableWebSocketList = Sets.newConcurrentHashSet();
     int mCount = 0;
 
@@ -23,7 +25,7 @@ public class BaseWebSocketServer extends NanoWebSocketServer {
         synchronized (mAvailableWebSocketList) {
             mAvailableWebSocketList.remove(webSocket);
         }
-        L.v("onClose");
+        LOGGER.v("onClose");
     }
 
     @Override
@@ -31,7 +33,7 @@ public class BaseWebSocketServer extends NanoWebSocketServer {
         synchronized (mAvailableWebSocketList) {
             mAvailableWebSocketList.remove(webSocket);
         }
-        L.exception(e);
+        LOGGER.exception(e);
     }
 
     @Override
@@ -40,7 +42,7 @@ public class BaseWebSocketServer extends NanoWebSocketServer {
             mAvailableWebSocketList.add(webSocket);
         }
         final String text = messageFrame.getTextPayload();
-        L.v("onMessage:%s", text);
+        LOGGER.v("onMessage:%s", text);
         if (CharMatcher.WHITESPACE.matchesAllOf(text)) {
             return;
         }
@@ -48,19 +50,19 @@ public class BaseWebSocketServer extends NanoWebSocketServer {
         try {
             webSocket.send(messageFrame.getTextPayload() + mCount);
         } catch (IOException e) {
-            L.exception(e);
+            LOGGER.exception(e);
         }
     }
 
     @Override
     protected void onPong(final WebSocket webSocket, final WebSocketFrame pongFrame) {
-        L.v("onPong");
+        LOGGER.v("onPong");
     }
 
     @Override
     public WebSocket openWebSocket(final IHTTPSession handshake) {
         final WebSocket result = super.openWebSocket(handshake);
-        L.v("open web socket, uri:%s", handshake.getUri());
+        LOGGER.v("open web socket, uri:%s", handshake.getUri());
         synchronized (mAvailableWebSocketList) {
             mAvailableWebSocketList.add(result);
         }
@@ -71,7 +73,7 @@ public class BaseWebSocketServer extends NanoWebSocketServer {
         synchronized (mAvailableWebSocketList) {
             for (NanoWebSocketServer.WebSocket socket : mAvailableWebSocketList) {
                 try {
-                    L.v("web socket, send:%s", msg);
+                    LOGGER.v("web socket, send:%s", msg);
                     socket.send(msg);
                 } catch (IOException e) {
                     e.printStackTrace();

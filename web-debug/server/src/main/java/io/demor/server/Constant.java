@@ -1,7 +1,6 @@
 package io.demor.server;
 
 import android.util.SparseArray;
-import io.demor.nuts.lib.log.L;
 import org.joor.Reflect;
 
 import java.lang.reflect.Field;
@@ -24,7 +23,6 @@ public class Constant {
             for (Map.Entry<String, Reflect> entry : reflect.fields().entrySet()) {
 
                 final String name = entry.getKey();
-                L.v("state.name=%s", name);
                 if (!name.startsWith("DrawableStates_state")) {
                     continue;
                 }

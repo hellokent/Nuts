@@ -3,7 +3,8 @@ package io.demor.nuts.sample.controller.impl;
 import io.demor.nuts.lib.controller.BaseController;
 import io.demor.nuts.lib.controller.ExceptionWrapper;
 import io.demor.nuts.lib.controller.Return;
-import io.demor.nuts.lib.log.L;
+import io.demor.nuts.lib.logger.Logger;
+import io.demor.nuts.lib.logger.LoggerFactory;
 import io.demor.nuts.sample.controller.DemoException;
 import io.demor.nuts.sample.lib.controller.TestController;
 import io.demor.nuts.sample.lib.event.TestEvent;
@@ -17,6 +18,7 @@ import static io.demor.nuts.sample.config.Const.SIMPLE_OBJECT_STORAGE;
 
 public class TestControllerImpl extends BaseController implements TestController {
 
+    static final Logger LOGGER = LoggerFactory.getLogger(TestControllerImpl.class);
     int mCount;
 
     @Override
@@ -26,12 +28,12 @@ public class TestControllerImpl extends BaseController implements TestController
 
     @Override
     public Return<String> add(final int count) {
-        L.v("add count:%s", count);
+        LOGGER.v("add count:%s", count);
         try {
             Thread.sleep(TimeUnit.SECONDS.toMillis(2));
             mCount += count;
         } catch (InterruptedException e) {
-            L.exception(e);
+            LOGGER.exception(e);
         }
         return of("Count:" + mCount);
     }

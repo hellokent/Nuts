@@ -10,7 +10,8 @@ import io.demor.nuts.common.server.Server;
 import io.demor.nuts.lib.NutsApplication;
 import io.demor.nuts.lib.controller.AppInstance;
 import io.demor.nuts.lib.controller.ControllerUtil;
-import io.demor.nuts.lib.log.L;
+import io.demor.nuts.lib.logger.Logger;
+import io.demor.nuts.lib.logger.LoggerFactory;
 import io.demor.nuts.lib.module.AppInstanceResponse;
 import io.demor.nuts.lib.module.BaseResponse;
 
@@ -19,6 +20,7 @@ import java.util.HashMap;
 import java.util.Map;
 
 public final class ConfigServer {
+    static final Logger LOGGER = LoggerFactory.getLogger(ConfigServer.class);
     static final int CONFIG_SERVER_PORT = 8080;
     static final HashMap<String, AppInstance> APPLICATION_MAP = Maps.newHashMap();
     static BaseWebServer sServer;
@@ -58,7 +60,7 @@ public final class ConfigServer {
             sServer.start();
             APPLICATION_MAP.put(application.getPackageName(), new AppInstance(NutsApplication.getIpAddress(), server.getHttpPort(), server.getWebSocketPort()));
         } catch (IOException e) {
-            L.exception(e);
+            LOGGER.exception(e);
             new OkHttpClient()
                     .newCall(new Request.Builder()
                             .url(String.format("http://%s:%d/api/updateApp?app=%s&http=%d&websocket=%d",

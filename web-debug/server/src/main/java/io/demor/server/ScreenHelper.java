@@ -8,7 +8,8 @@ import android.util.SparseArray;
 import android.view.View;
 import android.view.ViewTreeObserver.OnGlobalLayoutListener;
 import android.view.ViewTreeObserver.OnPreDrawListener;
-import io.demor.nuts.lib.log.L;
+import io.demor.nuts.lib.logger.Logger;
+import io.demor.nuts.lib.logger.LoggerFactory;
 import io.demor.server.model.view.ViewModel;
 import io.demor.server.model.view.ViewModelFactory;
 
@@ -18,7 +19,9 @@ import java.lang.ref.WeakReference;
 import java.lang.reflect.Field;
 
 public final class ScreenHelper {
+
     public static final SparseArray<String> ID_MAP = new SparseArray<>();
+    static final Logger LOGGER = LoggerFactory.getLogger(ScreenHelper.class);
     public static int sYOffset;
     public static int sXOffset;
     public static ViewModel sModel;
@@ -72,9 +75,9 @@ public final class ScreenHelper {
         }
         final Canvas canvas = new Canvas(sBitmap);
         view.draw(canvas);
-        L.v("get screen: draw:" + (System.currentTimeMillis() - start));
+        LOGGER.v("get screen: draw:" + (System.currentTimeMillis() - start));
         sBitmap.compress(Bitmap.CompressFormat.JPEG, 100, sStream);
-        L.v("get screen:" + (System.currentTimeMillis() - start));
+        LOGGER.v("get screen:" + (System.currentTimeMillis() - start));
         sStream.reset();
         return sStream.getByteArray();
     }

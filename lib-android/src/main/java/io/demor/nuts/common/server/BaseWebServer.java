@@ -15,7 +15,8 @@ import fi.iki.elonen.NanoHTTPD;
 import fi.iki.elonen.NanoHTTPD.Response.Status;
 import io.demor.nuts.common.server.annotation.Request;
 import io.demor.nuts.common.server.annotation.Url;
-import io.demor.nuts.lib.log.L;
+import io.demor.nuts.lib.logger.Logger;
+import io.demor.nuts.lib.logger.LoggerFactory;
 import io.demor.nuts.lib.module.BaseResponse;
 
 import java.io.IOException;
@@ -27,13 +28,14 @@ import java.util.Map;
 
 public class BaseWebServer extends NanoHTTPD {
 
+    static final Logger LOGGER = LoggerFactory.getLogger(BaseWebServer.class);
+
     final HashMap<String, IApiMethod> mApiRequestMap = Maps.newHashMap();
     final HashMap<String, ITemplate> mTemplateMap = Maps.newHashMap();
     final HashMap<String, IResourceApi> mResMap = Maps.newHashMap();
     final AssetManager mAssetManager;
     final AssetTemplateLoader mTemplateLoader;
     final Gson mGson;
-
 
     public BaseWebServer(Application application, Gson gson, int port) {
         super(port);
@@ -52,7 +54,7 @@ public class BaseWebServer extends NanoHTTPD {
     @Override
     public Response serve(final IHTTPSession session) {
 
-        L.v("server:%s", session.getUri());
+        LOGGER.v("server:%s", session.getUri());
 
         final String uri = session.getUri();
         final List<String> path = Splitter.on("/")
@@ -111,7 +113,7 @@ public class BaseWebServer extends NanoHTTPD {
                     }
                 } else {
                     final String data = new String(ByteStreams.toByteArray(mAssetManager.open("web/" + remainPath)));
-                    L.v("url:%s", session.getUri());
+                    LOGGER.v("url:%s", session.getUri());
                     Response response = newFixedLengthResponse(Status.OK, null, data);
                     if (uri.endsWith("css")) {
                         response.setMimeType(MIME_CSS);
@@ -123,7 +125,7 @@ public class BaseWebServer extends NanoHTTPD {
                     return response;
                 }
             } catch (IOException e) {
-                L.exception(e);
+                LOGGER.exception(e);
                 return newFixedLengthResponse(Status.NOT_FOUND, MIME_PLAINTEXT, "404 not found");
             }
         } else if ("res".equals(firstWordInPath)) {
@@ -141,7 +143,7 @@ public class BaseWebServer extends NanoHTTPD {
             try {
                 return newChunkedResponse(Status.OK, "x-icon", mAssetManager.open("favicon.ico"));
             } catch (IOException e) {
-                L.exception(e);
+                LOGGER.exception(e);
             }
         }
         return newFixedLengthResponse("error");
@@ -169,7 +171,7 @@ public class BaseWebServer extends NanoHTTPD {
                 }
             }
             final String urlPath = Joiner.on('/').skipNulls().join(globalPath, toUrlPath(method.getAnnotation(Url.class)));
-            L.v("register api:%s class:%s", urlPath, apiMethod.mMethod.getName());
+            LOGGER.v("register api:%s class:%s", urlPath, apiMethod.mMethod.getName());
             if (mApiRequestMap.containsKey(urlPath)) {
                 throw new MultiPathLoadedException(urlPath);
             } else {

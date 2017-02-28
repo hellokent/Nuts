@@ -1,7 +1,8 @@
 package io.demor.nuts.lib.net;
 
 import com.squareup.okhttp.*;
-import io.demor.nuts.lib.log.L;
+import io.demor.nuts.lib.logger.Logger;
+import io.demor.nuts.lib.logger.LoggerFactory;
 import okio.Buffer;
 
 import java.io.IOException;
@@ -10,6 +11,7 @@ import java.nio.charset.Charset;
 public class CurlLoggingInterceptor implements Interceptor {
 
     private static final Charset UTF8 = Charset.forName("UTF-8");
+    private static final Logger LOGGER = LoggerFactory.getLogger(CurlLoggingInterceptor.class);
 
     private String curlOptions;
 
@@ -56,9 +58,9 @@ public class CurlLoggingInterceptor implements Interceptor {
 
         curlCmd.append((compressed) ? " --compressed " : " ").append(request.url());
 
-        L.d("╭--- cURL (%s)", request.url());
-        L.d(curlCmd.toString());
-        L.d("╰--- (copy and paste the above line to a terminal)");
+        LOGGER.d("╭--- cURL (%s)", request.url());
+        LOGGER.d(curlCmd.toString());
+        LOGGER.d("╰--- (copy and paste the above line to a terminal)");
 
         return chain.proceed(request);
     }

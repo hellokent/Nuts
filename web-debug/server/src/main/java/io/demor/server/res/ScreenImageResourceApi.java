@@ -2,7 +2,8 @@ package io.demor.server.res;
 
 import fi.iki.elonen.NanoHTTPD;
 import io.demor.nuts.common.server.IResourceApi;
-import io.demor.nuts.lib.log.L;
+import io.demor.nuts.lib.logger.Logger;
+import io.demor.nuts.lib.logger.LoggerFactory;
 import io.demor.server.ScreenHelper;
 
 import java.io.ByteArrayInputStream;
@@ -11,6 +12,9 @@ import java.io.InputStream;
 import java.util.Map;
 
 public class ScreenImageResourceApi implements IResourceApi {
+
+    static final Logger LOGGER = LoggerFactory.getLogger(ScreenImageResourceApi.class);
+
     @Override
     public InputStream getContent(Map<String, String> param) {
         try {
@@ -20,7 +24,7 @@ public class ScreenImageResourceApi implements IResourceApi {
             }
             return new ByteArrayInputStream(bytes);
         } catch (IOException e) {
-            L.e("error in get Screen file stream", e);
+            LOGGER.e("error in get Screen file stream", e);
             return null;
         }
     }

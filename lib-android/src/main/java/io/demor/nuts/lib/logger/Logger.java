@@ -1,8 +1,10 @@
 package io.demor.nuts.lib.logger;
 
 import android.util.Log;
+import com.google.common.base.Throwables;
 import com.google.common.collect.Lists;
 
+import java.io.IOException;
 import java.util.ArrayList;
 
 public class Logger {
@@ -99,4 +101,8 @@ public class Logger {
         return context;
     }
 
+    public void exception(final IOException e) {
+        final int level = Log.ERROR;
+        log(level, Throwables.getStackTraceAsString(e));
+    }
 }

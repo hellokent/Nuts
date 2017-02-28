@@ -3,7 +3,8 @@ package io.demor.server.res;
 import android.graphics.drawable.Drawable;
 import android.graphics.drawable.StateListDrawable;
 import io.demor.nuts.common.server.IResourceApi;
-import io.demor.nuts.lib.log.L;
+import io.demor.nuts.lib.logger.Logger;
+import io.demor.nuts.lib.logger.LoggerFactory;
 import io.demor.server.Constant;
 import org.joor.Reflect;
 
@@ -12,6 +13,7 @@ import java.util.Map;
 
 public class StateListDrawableResourceApi implements IResourceApi {
 
+    static final Logger LOGGER = LoggerFactory.getLogger(StateListDrawableResourceApi.class);
     Drawable[] mDrawableList;
 
     public StateListDrawableResourceApi(StateListDrawable drawable) {
@@ -19,7 +21,7 @@ public class StateListDrawableResourceApi implements IResourceApi {
                 .field("mDrawableContainerState")
                 .field("mDrawables")
                 .get();
-        L.v("mDrawableList is null:" + (mDrawableList == null));
+        LOGGER.v("mDrawableList is null:" + (mDrawableList == null));
     }
 
     @Override

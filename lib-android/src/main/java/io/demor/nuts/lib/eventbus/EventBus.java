@@ -6,7 +6,8 @@ import com.google.common.collect.Maps;
 import com.google.common.collect.Multimap;
 import io.demor.nuts.lib.Globals;
 import io.demor.nuts.lib.annotation.eventbus.DeepClone;
-import io.demor.nuts.lib.log.L;
+import io.demor.nuts.lib.logger.Logger;
+import io.demor.nuts.lib.logger.LoggerFactory;
 import io.demor.nuts.lib.task.SafeTask;
 
 import java.lang.reflect.Method;
@@ -17,6 +18,8 @@ import java.util.Map;
 import static io.demor.nuts.lib.ReflectUtils.isSubclassOf;
 
 public final class EventBus implements Globals {
+
+    static final Logger LOGGER = LoggerFactory.getLogger(EventBus.class);
 
     private final static Map<Class, ClassContext> CACHE_MAP = Maps.newConcurrentMap();
 
@@ -79,7 +82,7 @@ public final class EventBus implements Globals {
             });
         }
         final Class<?> clz = event.getClass();
-        L.v("event:%s from:%s", clz.getSimpleName(), Thread.currentThread().getStackTrace()[3].toString());
+        LOGGER.v("event:%s from:%s", clz.getSimpleName(), Thread.currentThread().getStackTrace()[3].toString());
         boolean post = false;
         for (Map.Entry<Object, MethodContext> entry : mSlotMap.entries()) {
             final BusMethodContext method = (BusMethodContext) entry.getValue();
