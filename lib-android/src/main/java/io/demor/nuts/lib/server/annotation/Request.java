@@ -1,4 +1,4 @@
-package io.demor.nuts.common.server.annotation;
+package io.demor.nuts.lib.server.annotation;
 
 import java.lang.annotation.ElementType;
 import java.lang.annotation.Retention;

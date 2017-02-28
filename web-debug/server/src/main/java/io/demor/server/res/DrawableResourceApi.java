@@ -4,7 +4,7 @@ import android.graphics.Bitmap;
 import android.graphics.Bitmap.Config;
 import android.graphics.Canvas;
 import android.graphics.drawable.Drawable;
-import io.demor.nuts.common.server.IResourceApi;
+import io.demor.nuts.lib.server.IResourceApi;
 import io.demor.server.Constant;
 
 import java.io.InputStream;

@@ -1,6 +1,6 @@
 package io.demor.server.template;
 
-import io.demor.nuts.common.server.AbstractTemplate;
+import io.demor.nuts.lib.server.AbstractTemplate;
 import io.demor.server.WebDebug;
 
 import java.util.Map;

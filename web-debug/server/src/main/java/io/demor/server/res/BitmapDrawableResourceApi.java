@@ -1,9 +1,9 @@
 package io.demor.server.res;
 
 import android.graphics.Bitmap;
-import io.demor.nuts.common.server.IResourceApi;
 import io.demor.nuts.lib.logger.Logger;
 import io.demor.nuts.lib.logger.LoggerFactory;
+import io.demor.nuts.lib.server.IResourceApi;
 
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;

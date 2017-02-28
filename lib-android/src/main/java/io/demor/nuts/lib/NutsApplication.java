@@ -3,7 +3,7 @@ package io.demor.nuts.lib;
 import android.app.Application;
 import android.content.pm.PackageInfo;
 import android.content.pm.PackageManager;
-import io.demor.nuts.lib.server.ApiServer;
+import io.demor.nuts.lib.server.impl.ApiServer;
 
 public class NutsApplication extends Application {
     public static NutsApplication sApplication;

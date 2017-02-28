@@ -1,4 +1,4 @@
-package io.demor.nuts.common.server;
+package io.demor.nuts.lib.server;
 
 import android.app.Application;
 import android.content.res.AssetManager;
@@ -13,11 +13,11 @@ import com.x5.template.Chunk;
 import com.x5.template.Theme;
 import fi.iki.elonen.NanoHTTPD;
 import fi.iki.elonen.NanoHTTPD.Response.Status;
-import io.demor.nuts.common.server.annotation.Request;
-import io.demor.nuts.common.server.annotation.Url;
 import io.demor.nuts.lib.logger.Logger;
 import io.demor.nuts.lib.logger.LoggerFactory;
 import io.demor.nuts.lib.module.BaseResponse;
+import io.demor.nuts.lib.server.annotation.Request;
+import io.demor.nuts.lib.server.annotation.Url;
 
 import java.io.IOException;
 import java.io.InputStream;

@@ -1,4 +1,4 @@
-package io.demor.nuts.common.server;
+package io.demor.nuts.lib.server;
 
 import com.google.common.base.CharMatcher;
 import com.google.common.collect.Sets;
@@ -43,7 +43,7 @@ public class BaseWebSocketServer extends NanoWebSocketServer {
         }
         final String text = messageFrame.getTextPayload();
         LOGGER.v("onMessage:%s", text);
-        if (CharMatcher.WHITESPACE.matchesAllOf(text)) {
+        if (CharMatcher.whitespace().matchesAllOf(text)) {
             return;
         }
         ++mCount;

@@ -1,7 +1,7 @@
 package io.demor.server.api;
 
 import android.graphics.drawable.StateListDrawable;
-import io.demor.nuts.common.server.IApi;
+import io.demor.nuts.lib.server.IApi;
 import io.demor.server.model.drawable.StateListResponse;
 import org.joor.Reflect;
 

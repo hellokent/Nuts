@@ -5,7 +5,9 @@ import android.test.AndroidTestCase;
 import com.google.gson.Gson;
 import com.squareup.okhttp.OkHttpClient;
 import com.squareup.okhttp.Request;
-import io.demor.nuts.common.server.annotation.Url;
+import io.demor.nuts.lib.server.BaseWebServer;
+import io.demor.nuts.lib.server.IApi;
+import io.demor.nuts.lib.server.annotation.Url;
 
 import java.io.IOException;
 import java.util.Map;

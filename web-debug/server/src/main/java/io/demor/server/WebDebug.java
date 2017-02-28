@@ -19,7 +19,7 @@ import android.view.Window;
 import com.google.common.collect.Maps;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
-import io.demor.nuts.common.server.Server;
+import io.demor.nuts.lib.server.Server;
 import io.demor.server.api.StateListDrawableInfoApi;
 import io.demor.server.api.WidgetApi;
 import io.demor.server.res.BitmapDrawableResourceApi;

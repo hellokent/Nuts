@@ -1,4 +1,4 @@
-package io.demor.nuts.lib.server;
+package io.demor.nuts.lib.server.impl;
 
 import android.os.Handler;
 import android.os.HandlerThread;
@@ -6,7 +6,7 @@ import android.os.Message;
 import com.google.common.base.Strings;
 import com.google.common.collect.Multimap;
 import com.google.common.collect.MultimapBuilder;
-import io.demor.nuts.common.server.BaseWebSocketServer;
+import io.demor.nuts.lib.server.BaseWebSocketServer;
 
 import java.io.IOException;
 import java.util.concurrent.TimeUnit;

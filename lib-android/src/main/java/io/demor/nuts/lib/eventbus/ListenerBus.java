@@ -7,7 +7,7 @@ import com.google.common.reflect.Reflection;
 import io.demor.nuts.lib.NutsApplication;
 import io.demor.nuts.lib.annotation.eventbus.DeepClone;
 import io.demor.nuts.lib.controller.ControllerUtil;
-import io.demor.nuts.lib.server.ApiServer;
+import io.demor.nuts.lib.server.impl.ApiServer;
 import io.demor.nuts.lib.task.SafeTask;
 
 import java.lang.reflect.InvocationHandler;

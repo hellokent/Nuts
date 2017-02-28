@@ -1,10 +1,8 @@
-package io.demor.nuts.lib.server;
+package io.demor.nuts.lib.server.impl;
 
 import android.app.Application;
 import com.google.common.base.Joiner;
 import com.google.common.base.Strings;
-import io.demor.nuts.common.server.IApi;
-import io.demor.nuts.common.server.Server;
 import io.demor.nuts.lib.eventbus.BaseEvent;
 import io.demor.nuts.lib.eventbus.EventBus;
 import io.demor.nuts.lib.eventbus.IPostListener;
@@ -14,6 +12,8 @@ import io.demor.nuts.lib.module.BaseResponse;
 import io.demor.nuts.lib.module.ControllerInvocationResponse;
 import io.demor.nuts.lib.module.PushObject;
 import io.demor.nuts.lib.module.StorageResponse;
+import io.demor.nuts.lib.server.IApi;
+import io.demor.nuts.lib.server.Server;
 import io.demor.nuts.lib.storage.Storage;
 
 import java.io.IOException;

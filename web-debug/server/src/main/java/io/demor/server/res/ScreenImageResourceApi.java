@@ -1,9 +1,9 @@
 package io.demor.server.res;
 
 import fi.iki.elonen.NanoHTTPD;
-import io.demor.nuts.common.server.IResourceApi;
 import io.demor.nuts.lib.logger.Logger;
 import io.demor.nuts.lib.logger.LoggerFactory;
+import io.demor.nuts.lib.server.IResourceApi;
 import io.demor.server.ScreenHelper;
 
 import java.io.ByteArrayInputStream;
