@@ -45,6 +45,7 @@ public class ClusterExecutor extends ThreadPoolExecutor {
         void onExit(Thread thread);
     }
 
+    @SuppressWarnings("SynchronizationOnLocalVariableOrMethodParameter")
     protected static class ClusterQueue extends LinkedBlockingQueue<Runnable> implements IThreadExit {
 
         public static final Random RANDOM = new Random();
