@@ -66,20 +66,20 @@ public class ControllerTestCase extends AndroidTestCase {
 
         class ListenerImpl implements ControllerListener<BaseResponse> {
             @Override
-            public void onBegin() {
+            public void onPrepare() {
                 assertTrue(TestUtil.inUIThread());
                 begin.countDown();
             }
 
             @Override
-            public void onEnd(final BaseResponse response) {
+            public void onInvoke(final BaseResponse response) {
                 assertTrue(TestUtil.inUIThread());
                 assertNotNull(response);
                 end.countDown();
             }
 
             @Override
-            public void onException(final Throwable throwable) {
+            public void onThrow(final Throwable throwable) {
                 assertTrue(TestUtil.inUIThread());
             }
         }
@@ -103,20 +103,20 @@ public class ControllerTestCase extends AndroidTestCase {
 
         class ListenerImpl implements ControllerListener<BaseResponse> {
             @Override
-            public void onBegin() {
+            public void onPrepare() {
                 assertTrue(TestUtil.inUIThread());
                 begin.countDown();
             }
 
             @Override
-            public void onEnd(final BaseResponse response) {
+            public void onInvoke(final BaseResponse response) {
                 assertTrue(TestUtil.inUIThread());
                 assertNotNull(response);
                 end.countDown();
             }
 
             @Override
-            public void onException(final Throwable throwable) {
+            public void onThrow(final Throwable throwable) {
                 assertNotNull(throwable);
                 assertTrue(TestUtil.inUIThread());
             }

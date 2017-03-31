@@ -1,7 +1,7 @@
-package io.demor.nuts.lib.logger;
+package io.demor.nuts.lib.log;
 
+import com.google.gson.annotations.Expose;
 import io.demor.nuts.lib.annotation.log.LogFormatKeyword;
-import io.demor.nuts.lib.logger.time.LogTime;
 
 public class LogContext {
     @LogFormatKeyword("msg")
@@ -33,7 +33,8 @@ public class LogContext {
 
     public int mLevel;
 
-    Thread mCurrentThread;
+    @Expose(serialize = false, deserialize = false)
+    public Thread mCurrentThread;
 
     public LogContext() {
         mCurrentThread = Thread.currentThread();

@@ -112,8 +112,7 @@ public final class ApiServer extends Server {
                 pushObject.mType = PushObject.TYPE_EVENT;
                 pushObject.mDataClz = o.getClass().getName();
                 pushObject.mData = o;
-                System.out.println("send Message :" + GSON.toJson(pushObject));
-                mWebSocketServer.sendMessage(GSON.toJson(pushObject));
+                mWebSocketServer.sendPushObj(pushObject);
             }
         });
         return this;
@@ -129,7 +128,7 @@ public final class ApiServer extends Server {
         pushObject.mType = PushObject.TYPE_LISTENER;
         pushObject.mDataClz = String.class.getName();
         pushObject.mData = info;
-        mWebSocketServer.sendMessage(GSON.toJson(pushObject));
+        mWebSocketServer.sendPushObj(pushObject);
     }
 
     public void start() {

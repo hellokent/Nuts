@@ -1,10 +1,13 @@
 package io.demor.nuts.lib.server;
 
+import android.util.Log;
 import com.google.common.base.CharMatcher;
 import com.google.common.collect.Sets;
 import fi.iki.elonen.NanoWebSocketServer;
+import io.demor.nuts.lib.controller.ControllerUtil;
 import io.demor.nuts.lib.logger.Logger;
 import io.demor.nuts.lib.logger.LoggerFactory;
+import io.demor.nuts.lib.module.PushObject;
 
 import java.io.IOException;
 import java.util.Set;
@@ -80,5 +83,9 @@ public class BaseWebSocketServer extends NanoWebSocketServer {
                 }
             }
         }
+    }
+
+    public void sendPushObj(final PushObject object) {
+        sendMessage(ControllerUtil.GSON.toJson(object, PushObject.class));
     }
 }

@@ -78,12 +78,12 @@ public class ControllerApiTestCase extends AndroidTestCase {
                     mController.single(mApi, 100)
                             .addListener(new ControllerListener() {
                                 @Override
-                                public void onBegin() {
+                                public void onPrepare() {
 
                                 }
 
                                 @Override
-                                public void onEnd(final Object obj) {
+                                public void onInvoke(final Object obj) {
                                     BaseResponse response = (BaseResponse) obj;
                                     assertNotNull(response);
                                     assertNotSame(0, response.code);
@@ -92,7 +92,7 @@ public class ControllerApiTestCase extends AndroidTestCase {
                                 }
 
                                 @Override
-                                public void onException(final Throwable throwable) {
+                                public void onThrow(final Throwable throwable) {
 
                                 }
                             });

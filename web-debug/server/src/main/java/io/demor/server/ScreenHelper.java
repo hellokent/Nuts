@@ -42,7 +42,11 @@ public final class ScreenHelper {
         try {
             final Class rClz = Class.forName(application.getPackageName() + ".R$id");
             for (Field field : rClz.getDeclaredFields()) {
-                ID_MAP.put(field.getInt(rClz), field.getName());
+                try {
+                    ID_MAP.put(field.getInt(rClz), field.getName());
+                } catch (IllegalArgumentException e) {
+                    LOGGER.e("illegal argument:" + field.getName() + ":" + field.getType());
+                }
             }
         } catch (Exception e) {
             e.printStackTrace();

@@ -3,7 +3,7 @@ package io.demor.nuts.lib.logger.output;
 import android.app.Application;
 import android.os.Handler;
 import android.os.HandlerThread;
-import io.demor.nuts.lib.logger.LogContext;
+import io.demor.nuts.lib.log.LogContext;
 import io.demor.nuts.lib.logger.LogFormatter;
 import org.w3c.dom.DOMException;
 import org.w3c.dom.Element;

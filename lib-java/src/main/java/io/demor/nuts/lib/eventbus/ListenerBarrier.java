@@ -49,15 +49,12 @@ public class ListenerBarrier extends BaseBarrier {
         new Thread() {
             @Override
             public void run() {
-                waitForAll(time, unit, new PushHandler() {
-                    @Override
-                    public void onReceivePush(final PushObject object) {
-                        if (checkPushObject(object, o)) {
-                            try {
-                                parseMethodInfo(o, object.mData.toString()).callImpl();
-                            } catch (Exception e) {
-                                e.printStackTrace();
-                            }
+                waitForAll(time, unit, object -> {
+                    if (checkPushObject(object, o)) {
+                        try {
+                            parseMethodInfo(o, object.mData.toString()).callImpl();
+                        } catch (Exception e) {
+                            e.printStackTrace();
                         }
                     }
                 });

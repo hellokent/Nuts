@@ -1,5 +1,7 @@
 package io.demor.nuts.lib.module;
 
+import com.google.gson.annotations.Expose;
+
 public class PushObject {
 
     public static final int TYPE_EVENT = 1;
@@ -7,7 +9,9 @@ public class PushObject {
     public static final int TYPE_LOG = 3;
 
     public int mType;
+
     public String mDataClz;
+
     public Object mData;
 
     @Override

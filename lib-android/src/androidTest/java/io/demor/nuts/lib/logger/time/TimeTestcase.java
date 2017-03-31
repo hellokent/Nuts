@@ -1,11 +1,15 @@
 package io.demor.nuts.lib.logger.time;
 
+import io.demor.nuts.lib.log.BaseLogTime;
+import io.demor.nuts.lib.log.LogDay;
+import io.demor.nuts.lib.log.LogTime;
 import io.demor.nuts.lib.logger.Logger;
 import io.demor.nuts.lib.logger.LoggerFactory;
 import junit.framework.TestCase;
 
 import java.text.SimpleDateFormat;
 import java.util.Date;
+import java.util.Locale;
 
 public class TimeTestcase extends TestCase {
 
@@ -13,17 +17,16 @@ public class TimeTestcase extends TestCase {
         final LogTime time = new LogTime();
         long timeInMillis = System.currentTimeMillis();
 
-        final SimpleDateFormat format = new SimpleDateFormat("HH:mm:ss.SSS");
         Date date = new Date();
         date.setTime(timeInMillis);
-        assertEquals(format.format(date), time.toString());
+        assertEquals(new SimpleDateFormat("HH:mm:ss.SSS", Locale.getDefault()).format(date), time.toString());
     }
 
     public void testDay() throws Exception {
         final LogDay day = new LogDay();
         long timeInMillis = System.currentTimeMillis();
 
-        final SimpleDateFormat format = new SimpleDateFormat("yyyy-MM-dd");
+        final SimpleDateFormat format = new SimpleDateFormat("yyyy-MM-dd", Locale.getDefault());
         Date date = new Date();
         date.setTime(timeInMillis);
         assertEquals(format.format(date), day.toString());

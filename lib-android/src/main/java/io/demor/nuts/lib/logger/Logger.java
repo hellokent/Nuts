@@ -1,8 +1,11 @@
 package io.demor.nuts.lib.logger;
 
+import android.os.Handler;
+import android.os.HandlerThread;
 import android.util.Log;
 import com.google.common.base.Throwables;
 import com.google.common.collect.Lists;
+import io.demor.nuts.lib.log.LogContext;
 
 import java.util.ArrayList;
 
@@ -14,6 +17,13 @@ public class Logger {
     boolean mNeedTime = false;
     boolean mNeedThreadStack = false;
     private ThreadLocal<LogContext> mLocalLogContext = new ThreadLocal<>();
+    static final Handler LOG_HANDLER;
+
+    static {
+        HandlerThread thread = new HandlerThread("logger");
+        thread.start();
+        LOG_HANDLER = new Handler(thread.getLooper());
+    }
 
     Logger(String path, String tag) {
         mPath = path;
@@ -67,13 +77,20 @@ public class Logger {
         mNeedThreadStack = false;
     }
 
-    protected void log(int level, String msg, Object... arg) {
+    protected void log(final int level, final String msg, final Object... arg) {
         final LogContext context = getLogContext();
-        context.mLevel = level;
-        context.mMsg = arg == null || arg.length == 0 ? msg : String.format(msg, arg);
-        for (LogOutput output : mLogOutputs) {
-            output.append(context);
-        }
+        android.util.Log.e("app", "context:" + context);
+        LOG_HANDLER.post(new Runnable() {
+            @Override
+            public void run() {
+                context.mLevel = level;
+                context.mMsg = arg == null || arg.length == 0 ? msg : String.format(msg, arg);
+                for (LogOutput output : mLogOutputs) {
+                    Log.e("app" , "class:" + output.getClass());
+                    output.append(context);
+                }
+            }
+        });
     }
 
     private LogContext getLogContext() {

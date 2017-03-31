@@ -1,6 +1,7 @@
 package io.demor.nuts.sample;
 
 import io.demor.nuts.lib.NutsApplication;
+import io.demor.nuts.lib.logger.LoggerFactory;
 import io.demor.nuts.sample.config.Const;
 import io.demor.nuts.sample.lib.controller.TestController;
 import io.demor.nuts.sample.lib.module.SimpleObject;
@@ -18,5 +19,6 @@ public class GlobalApplication extends NutsApplication {
                 .registerStorage(SimpleObject.class, Const.SIMPLE_OBJECT_STORAGE)
                 .start();
         WebDebug.init(this, 8888);
+        LoggerFactory.readConfigFromAsset(this, "log.xml");
     }
 }

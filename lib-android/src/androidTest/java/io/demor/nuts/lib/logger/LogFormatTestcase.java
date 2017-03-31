@@ -1,5 +1,6 @@
 package io.demor.nuts.lib.logger;
 
+import io.demor.nuts.lib.log.LogContext;
 import junit.framework.TestCase;
 
 public class LogFormatTestcase extends TestCase {

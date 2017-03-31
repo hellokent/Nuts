@@ -12,7 +12,7 @@ public class DialogListenerImpl<T> implements ControllerListener<T>, Globals {
     }
 
     @Override
-    public void onBegin() {
+    public void onPrepare() {
         UI_HANDLER.post(new Runnable() {
             @Override
             public void run() {
@@ -24,7 +24,7 @@ public class DialogListenerImpl<T> implements ControllerListener<T>, Globals {
     }
 
     @Override
-    public void onEnd(final T response) {
+    public void onInvoke(final T response) {
         UI_HANDLER.post(new Runnable() {
             @Override
             public void run() {
@@ -36,7 +36,7 @@ public class DialogListenerImpl<T> implements ControllerListener<T>, Globals {
     }
 
     @Override
-    public void onException(final Throwable throwable) {
+    public void onThrow(final Throwable throwable) {
 
     }
 }

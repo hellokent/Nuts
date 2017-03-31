@@ -1,5 +1,6 @@
 package io.demor.nuts.lib.logger;
 
+import io.demor.nuts.lib.log.LogContext;
 import org.w3c.dom.DOMException;
 import org.w3c.dom.Element;
 

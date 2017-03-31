@@ -1,7 +1,7 @@
 package io.demor.nuts.lib.logger.output;
 
 import android.util.Log;
-import io.demor.nuts.lib.logger.LogContext;
+import io.demor.nuts.lib.log.LogContext;
 import io.demor.nuts.lib.logger.LogFormatter;
 import io.demor.nuts.lib.logger.LogOutput;
 import org.w3c.dom.DOMException;

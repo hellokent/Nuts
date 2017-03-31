@@ -17,23 +17,15 @@ public class EventBarrier<T extends BaseEvent> extends BaseBarrier {
     }
 
     public T waitForSingleEvent(long timeout, TimeUnit unit) {
-        PushObject o = waitForSingle(timeout, unit, new PushFilter() {
-            @Override
-            public boolean checkPush(final PushObject object) {
-                return object.mType == PushObject.TYPE_EVENT && mClz.getName().equals(object.mDataClz);
-            }
-        });
+        PushObject o = waitForSingle(timeout, unit, object -> object.mType == PushObject.TYPE_EVENT && mClz.getName().equals(object.mDataClz));
         return o == null ? null : (T) o.mData;
     }
 
     public List<T> waitForAllEvent(long timeout, TimeUnit unit) {
         final List<T> list = Lists.newArrayList();
-        waitForAll(timeout, unit, new PushHandler() {
-            @Override
-            public void onReceivePush(final PushObject o) {
-                if (o != null && o.mType == PushObject.TYPE_EVENT && mClz.getName().equals(o.mDataClz)) {
-                    list.add((T) o.mData);
-                }
+        waitForAll(timeout, unit, o -> {
+            if (o != null && o.mType == PushObject.TYPE_EVENT && mClz.getName().equals(o.mDataClz)) {
+                list.add((T) o.mData);
             }
         });
         return list;

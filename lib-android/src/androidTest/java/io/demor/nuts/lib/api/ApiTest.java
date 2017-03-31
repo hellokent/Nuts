@@ -9,6 +9,9 @@ import com.google.gson.GsonBuilder;
 import com.squareup.okhttp.mockwebserver.MockResponse;
 import com.squareup.okhttp.mockwebserver.MockWebServer;
 import com.squareup.okhttp.mockwebserver.RecordedRequest;
+
+import io.demor.nuts.lib.controller.GsonDeserializeExclusionStrategy;
+import io.demor.nuts.lib.controller.GsonSerializeExclusionStrategy;
 import io.demor.nuts.lib.net.*;
 
 import java.lang.reflect.Method;

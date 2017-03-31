@@ -1,4 +1,17 @@
 <?xml version="1.0" encoding="utf-8"?>
-<log_config package="io.demor">
-    <item min="verbose" range=".">log</item>
-</log_config>
+<root>
+    <output id="logcat" type="logcat">
+        <format>%time %threadId[%threadName]-%class.%method():%msg</format>
+    </output>
+    <output id="file" type="file">
+        <format>%time %threadId[%threadName]-%class(%method):%msg</format>
+        <path>%sdcard/%app/logs/%tag_%day.log</path>
+    </output>
+    <output id="web" type="web"/>
+
+    <log path="io.demor" tag="nuts">
+        <output id="file"/>
+        <output id="logcat"/>
+        <output id="web"/>
+    </log>
+</root>

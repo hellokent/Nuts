@@ -7,6 +7,7 @@ import com.google.common.collect.Maps;
 import com.google.common.collect.Sets;
 import io.demor.nuts.lib.logger.output.FileOutput;
 import io.demor.nuts.lib.logger.output.LogcatOutput;
+import io.demor.nuts.lib.logger.output.WebOutput;
 import org.w3c.dom.Element;
 import org.w3c.dom.NodeList;
 
@@ -150,6 +151,9 @@ public final class LoggerFactory {
             case "file":
                 output = new FileOutput(app, node);
                 break;
+            case "web" :
+                output = new WebOutput(node);
+                break;
             default:
                 //TODO LOG EXTENSION
                 output = null;
@@ -159,7 +163,7 @@ public final class LoggerFactory {
 
     public static Logger getLogger(final Class<?> clz) {
         for (Logger logger : LOGGER_SET) {
-            if (logger.mPath.startsWith(clz.getName())) {
+            if (clz.getName().startsWith(logger.mPath)) {
                 return logger;
             }
         }

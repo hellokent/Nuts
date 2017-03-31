@@ -11,13 +11,14 @@ import java.lang.reflect.Method;
 public final class ControllerUtil {
 
     public static final Gson GSON = new GsonBuilder()
+            .setExclusionStrategies(new GsonDeserializeExclusionStrategy(), new GsonSerializeExclusionStrategy())
             .setFieldNamingPolicy(FieldNamingPolicy.LOWER_CASE_WITH_DASHES)
             .setFieldNamingStrategy(new FieldNamingStrategy() {
                 @Override
                 public String translateName(Field f) {
                     String name = f.getName();
                     if (name.length() > 1 && name.startsWith("m") && Character.isUpperCase(name.charAt(1))) {
-                        return ("" + name.charAt(1)).toLowerCase() + name.substring(2);
+                        return String.valueOf(name.charAt(1)).toLowerCase() + name.substring(2);
                     } else {
                         return name;
                     }

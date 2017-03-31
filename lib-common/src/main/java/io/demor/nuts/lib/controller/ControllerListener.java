@@ -1,9 +1,9 @@
 package io.demor.nuts.lib.controller;
 
 public interface ControllerListener<T> {
-    void onBegin();
+    void onPrepare();
 
-    void onEnd(T response);
+    void onInvoke(T response);
 
-    void onException(Throwable throwable);
+    void onThrow(Throwable throwable);
 }

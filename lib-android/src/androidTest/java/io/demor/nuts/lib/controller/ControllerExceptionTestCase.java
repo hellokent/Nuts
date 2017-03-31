@@ -17,17 +17,17 @@ public class ControllerExceptionTestCase extends AndroidTestCase {
         mController.runThrowWrappedException()
                 .addListener(new ControllerListener() {
                     @Override
-                    public void onBegin() {
+                    public void onPrepare() {
                         latch.countDown();
                     }
 
                     @Override
-                    public void onEnd(final Object response) {
+                    public void onInvoke(final Object response) {
                         latch.countDown();
                     }
 
                     @Override
-                    public void onException(final Throwable throwable) {
+                    public void onThrow(final Throwable throwable) {
                         assertNotNull(throwable);
                         throwable.printStackTrace();
                         assertTrue(throwable instanceof IllegalArgumentException);
@@ -62,17 +62,17 @@ public class ControllerExceptionTestCase extends AndroidTestCase {
             mController.runThrowWrappedException()
                     .addListener(new ControllerListener() {
                         @Override
-                        public void onBegin() {
+                        public void onPrepare() {
                             latch.countDown();
                         }
 
                         @Override
-                        public void onEnd(final Object response) {
+                        public void onInvoke(final Object response) {
                             latch.countDown();
                         }
 
                         @Override
-                        public void onException(final Throwable throwable) {
+                        public void onThrow(final Throwable throwable) {
                             assertNotNull(throwable);
                             assertTrue(throwable instanceof IllegalArgumentException);
                             latch.countDown();
@@ -101,17 +101,17 @@ public class ControllerExceptionTestCase extends AndroidTestCase {
             mController.runThrowRuntimeException()
                     .addListener(new ControllerListener() {
                         @Override
-                        public void onBegin() {
+                        public void onPrepare() {
                             latch.countDown();
                         }
 
                         @Override
-                        public void onEnd(final Object response) {
+                        public void onInvoke(final Object response) {
                             latch.countDown();
                         }
 
                         @Override
-                        public void onException(final Throwable throwable) {
+                        public void onThrow(final Throwable throwable) {
                             assertNotNull(throwable);
                             assertTrue(throwable instanceof NullPointerException);
                             latch.countDown();
@@ -139,17 +139,17 @@ public class ControllerExceptionTestCase extends AndroidTestCase {
         mController.runThrowRuntimeException()
                 .addListener(new ControllerListener() {
                     @Override
-                    public void onBegin() {
+                    public void onPrepare() {
                         latch.countDown();
                     }
 
                     @Override
-                    public void onEnd(final Object response) {
+                    public void onInvoke(final Object response) {
                         latch.countDown();
                     }
 
                     @Override
-                    public void onException(final Throwable throwable) {
+                    public void onThrow(final Throwable throwable) {
                         assertNotNull(throwable);
                         throwable.printStackTrace();
                         assertTrue(throwable instanceof NullPointerException);
@@ -193,15 +193,15 @@ public class ControllerExceptionTestCase extends AndroidTestCase {
             Thread.sleep(100);
             voidReturn.addListener(new ControllerListener<Void>() {
                 @Override
-                public void onBegin() {
+                public void onPrepare() {
                 }
 
                 @Override
-                public void onEnd(Void response) {
+                public void onInvoke(Void response) {
                 }
 
                 @Override
-                public void onException(final Throwable throwable) {
+                public void onThrow(final Throwable throwable) {
                     assertTrue(TestUtil.inUIThread());
                     assertTrue(throwable instanceof NullPointerException);
                     latch.countDown();

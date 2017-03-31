@@ -3,7 +3,7 @@ buildscript {
         jcenter()
     }
     dependencies {
-        classpath 'com.android.tools.build:gradle:2.2.2'
+        classpath 'com.android.tools.build:gradle:2.3.0'
 //        classpath 'com.uphyca.gradle:gradle-android-aspectj-plugin:0.9.14'
     }
 }
@@ -16,7 +16,7 @@ repositories {
 
 android {
     compileSdkVersion 23
-    buildToolsVersion "21.1.2"
+    buildToolsVersion "25.0.2"
 
     defaultConfig {
         applicationId "io.demor.nuts.sample"
@@ -36,6 +36,7 @@ android {
 dependencies {
     compile fileTree(include: ['*.jar'], dir: 'libs')
     compile project(':lib-android')
+    compile project(':lib-common')
     compile project(':sample-lib')
     debugCompile project(':web-debug:server')
     releaseCompile project(':web-debug:server-release')

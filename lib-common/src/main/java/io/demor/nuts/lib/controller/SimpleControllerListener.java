@@ -3,17 +3,17 @@ package io.demor.nuts.lib.controller;
 public class SimpleControllerListener implements ControllerListener {
 
     @Override
-    public void onBegin() {
+    public void onPrepare() {
 
     }
 
     @Override
-    public void onEnd(final Object response) {
+    public void onInvoke(final Object response) {
 
     }
 
     @Override
-    public void onException(final Throwable throwable) {
+    public void onThrow(final Throwable throwable) {
 
     }
 }

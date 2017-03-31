@@ -20,7 +20,7 @@ import java.util.concurrent.TimeUnit;
 
 public abstract class BaseBarrier implements WebSocketListener, Closeable {
 
-    protected static final BlockingArrayQueue<PushObject> PUSH_QUEUE = new BlockingArrayQueue<>();
+    protected BlockingArrayQueue<PushObject> mQueue = new BlockingArrayQueue<>();
     final AppInstance mAppInstance;
     final String mId;
     final URI mURI;
@@ -74,7 +74,6 @@ public abstract class BaseBarrier implements WebSocketListener, Closeable {
 
     @Override
     public void onWebSocketText(final String message) {
-        System.out.println("message:" + message);
         final JsonElement element = new JsonParser().parse(message);
         if (!(element instanceof JsonObject)) {
             return;
@@ -85,7 +84,7 @@ public abstract class BaseBarrier implements WebSocketListener, Closeable {
         o.mDataClz = jsonObject.get("dataClz").getAsString();
         try {
             o.mData = ControllerUtil.GSON.fromJson(jsonObject.get("data"), Class.forName(o.mDataClz));
-            PUSH_QUEUE.offer(o);
+            mQueue.offer(o);
         } catch (ClassNotFoundException e) {
             e.printStackTrace();
         }
@@ -114,7 +113,7 @@ public abstract class BaseBarrier implements WebSocketListener, Closeable {
         final long millisTimeout = unit.toMillis(timeout);
         while ((System.currentTimeMillis() - startTime) < millisTimeout) {
             try {
-                final PushObject o = PUSH_QUEUE.poll(millisTimeout - (System.currentTimeMillis() - startTime)
+                final PushObject o = mQueue.poll(millisTimeout - (System.currentTimeMillis() - startTime)
                         , TimeUnit.MILLISECONDS);
                 handler.onReceivePush(o);
             } catch (InterruptedException e) {
@@ -125,11 +124,11 @@ public abstract class BaseBarrier implements WebSocketListener, Closeable {
 
     protected PushObject waitForSingle(long timeout, TimeUnit unit, PushFilter filter) {
         if (timeout <= 0) {
-            return PUSH_QUEUE.peek();
+            return mQueue.peek();
         }
         try {
             long startTime = System.currentTimeMillis();
-            PushObject o = PUSH_QUEUE.poll(timeout, unit);
+            PushObject o = mQueue.poll(timeout, unit);
             if (o == null) {
                 return null;
             } else if (filter.checkPush(o)) {

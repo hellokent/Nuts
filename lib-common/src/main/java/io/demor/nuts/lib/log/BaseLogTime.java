@@ -1,4 +1,4 @@
-package io.demor.nuts.lib.logger.time;
+package io.demor.nuts.lib.log;
 
 import java.util.Calendar;
 

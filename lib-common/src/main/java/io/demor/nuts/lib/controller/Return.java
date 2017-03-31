@@ -41,19 +41,19 @@ public abstract class Return<T> {
 
     protected void callOnException(Throwable t) {
         for (ControllerListener l : mListeners) {
-            l.onException(t);
+            l.onThrow(t);
         }
     }
 
     protected void callOnEnd(T data) {
         for (ControllerListener<T> l : mListeners) {
-            l.onEnd(data);
+            l.onInvoke(data);
         }
     }
 
     protected void callOnBegin() {
         for (ControllerListener l : mListeners) {
-            l.onBegin();
+            l.onPrepare();
         }
     }
 }

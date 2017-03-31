@@ -158,13 +158,13 @@ public class ReturnImpl<T> extends Return<T> implements Globals {
             @Override
             public void run() {
                 if (mStarted) {
-                    listener.onBegin();
+                    listener.onPrepare();
                 }
                 if (mEnded) {
                     if (mHappenedThrowable == null) {
-                        listener.onEnd(mData);
+                        listener.onInvoke(mData);
                     } else {
-                        listener.onException(mHappenedThrowable);
+                        listener.onThrow(mHappenedThrowable);
                     }
                 }
             }

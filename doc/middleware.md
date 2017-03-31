@@ -145,13 +145,13 @@ public interface TestController {
 TEST_CONTROLLER.run(1)
         .addListener(new ControllerListener<String>() {
             @Override
-            public void onBegin() {}
+            public void onPrepare() {}
 
             @Override
-            public void onEnd(final String response) {}
+            public void onInvoke(final String response) {}
 
             @Override
-            public void onException(final Throwable throwable) {}
+            public void onThrow(final Throwable throwable) {}
         })
         .asyncUI(new ControllerCallback<String>() {
             @Override
@@ -201,10 +201,10 @@ TEST_CONTROLLER.run(1)
 
 抛异常的时候，需要用ExceptionWrapper包装过后才能抛出，在接口和实现的方法声明处不需要用throws声明异常。
 
-当是异步调用时，需要实现传入的ControllerListener里面有`onException`的方法：
+当是异步调用时，需要实现传入的ControllerListener里面有`onThrow`的方法：
 
 ```java
-public void onException(Exception e) {}
+public void onThrow(Exception e) {}
 ```
 
 //TODO 异步处理回调，同步异常处理，异常包装 

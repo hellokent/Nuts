@@ -2,7 +2,7 @@ package io.demor.nuts.lib.logger.output;
 
 import android.test.AndroidTestCase;
 import android.util.Log;
-import io.demor.nuts.lib.logger.LogContext;
+import io.demor.nuts.lib.log.LogContext;
 import org.w3c.dom.DOMException;
 import org.w3c.dom.Element;
 import org.w3c.dom.NodeList;
