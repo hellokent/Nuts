@@ -3,8 +3,8 @@ package io.demor.nuts.sample.ui;
 import android.app.Service;
 import android.content.Intent;
 import android.os.IBinder;
-import io.demor.nuts.lib.logger.Logger;
-import io.demor.nuts.lib.logger.LoggerFactory;
+import io.demor.nuts.lib.log.Logger;
+import io.demor.nuts.lib.log.LoggerFactory;
 
 public class DemoService extends Service {
 

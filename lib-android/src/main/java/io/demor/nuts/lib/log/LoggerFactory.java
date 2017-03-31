@@ -1,19 +1,21 @@
-package io.demor.nuts.lib.logger;
+package io.demor.nuts.lib.log;
 
 import android.app.Application;
+import android.media.tv.TvContract;
 import android.text.TextUtils;
 import android.util.Log;
 import com.google.common.collect.Maps;
 import com.google.common.collect.Sets;
-import io.demor.nuts.lib.logger.output.FileOutput;
-import io.demor.nuts.lib.logger.output.LogcatOutput;
-import io.demor.nuts.lib.logger.output.WebOutput;
+import io.demor.nuts.lib.log.output.FileOutput;
+import io.demor.nuts.lib.log.output.LogcatOutput;
+import io.demor.nuts.lib.log.output.WebOutput;
 import org.w3c.dom.Element;
 import org.w3c.dom.NodeList;
 
 import javax.xml.parsers.DocumentBuilderFactory;
 import java.io.IOException;
 import java.io.InputStream;
+import java.lang.reflect.InvocationTargetException;
 import java.util.Comparator;
 import java.util.HashMap;
 import java.util.Map;
@@ -21,9 +23,9 @@ import java.util.Set;
 
 public final class LoggerFactory {
 
-    protected static final HashMap<String, LogOutput> LOG_OUTPUT_MAP = Maps.newHashMap();
-    protected static final HashMap<String, Logger> LOGGER_OUTPUT_MAP = Maps.newHashMap();
-    protected static final Set<Logger> LOGGER_SET = Sets.newTreeSet(new Comparator<Logger>() {
+    private static final HashMap<String, LogOutput> LOG_OUTPUT_MAP = Maps.newHashMap();
+    private static final HashMap<String, Logger> LOGGER_OUTPUT_MAP = Maps.newHashMap();
+    private static final Set<Logger> LOGGER_SET = Sets.newTreeSet(new Comparator<Logger>() {
         @Override
         public int compare(Logger lhs, Logger rhs) {
             final int r = rhs.mPath.length();
@@ -155,15 +157,24 @@ public final class LoggerFactory {
                 output = new WebOutput(node);
                 break;
             default:
-                //TODO LOG EXTENSION
+                try {
+                    Object o = Class.forName(type).getConstructor(Element.class).newInstance(node);
+                    if (o instanceof LogOutput) {
+                        return (LogOutput) o;
+                    }
+                } catch (Exception e) {
+                    e.printStackTrace();
+                    return null;
+                }
                 output = null;
         }
         return output;
     }
 
     public static Logger getLogger(final Class<?> clz) {
+        final String className = clz.getName();
         for (Logger logger : LOGGER_SET) {
-            if (clz.getName().startsWith(logger.mPath)) {
+            if (className.startsWith(logger.mPath)) {
                 return logger;
             }
         }

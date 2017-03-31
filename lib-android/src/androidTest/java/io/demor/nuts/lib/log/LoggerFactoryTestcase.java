@@ -1,4 +1,4 @@
-package io.demor.nuts.lib.logger;
+package io.demor.nuts.lib.log;
 
 import android.app.Application;
 import android.test.AndroidTestCase;

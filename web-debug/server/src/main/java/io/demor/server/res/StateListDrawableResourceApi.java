@@ -2,8 +2,8 @@ package io.demor.server.res;
 
 import android.graphics.drawable.Drawable;
 import android.graphics.drawable.StateListDrawable;
-import io.demor.nuts.lib.logger.Logger;
-import io.demor.nuts.lib.logger.LoggerFactory;
+import io.demor.nuts.lib.log.Logger;
+import io.demor.nuts.lib.log.LoggerFactory;
 import io.demor.nuts.lib.server.IResourceApi;
 import io.demor.server.Constant;
 import org.joor.Reflect;

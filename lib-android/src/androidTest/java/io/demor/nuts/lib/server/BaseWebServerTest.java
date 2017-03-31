@@ -1,4 +1,4 @@
-package io.demor.nuts.common.server;
+package io.demor.nuts.lib.server;
 
 import android.app.Application;
 import android.test.AndroidTestCase;

@@ -1,4 +1,4 @@
-package io.demor.nuts.lib.logger.output;
+package io.demor.nuts.lib.log.output;
 
 import android.content.Context;
 import android.os.Environment;

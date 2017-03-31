@@ -1,10 +1,5 @@
-package io.demor.nuts.lib.logger.time;
+package io.demor.nuts.lib.log;
 
-import io.demor.nuts.lib.log.BaseLogTime;
-import io.demor.nuts.lib.log.LogDay;
-import io.demor.nuts.lib.log.LogTime;
-import io.demor.nuts.lib.logger.Logger;
-import io.demor.nuts.lib.logger.LoggerFactory;
 import junit.framework.TestCase;
 
 import java.text.SimpleDateFormat;

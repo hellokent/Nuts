@@ -1,4 +1,4 @@
-package io.demor.nuts.lib.logger;
+package io.demor.nuts.lib.log;
 
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;

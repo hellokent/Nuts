@@ -1,10 +1,10 @@
-package io.demor.nuts.lib.logger;
+package io.demor.nuts.lib.log;
 
 import android.content.res.AssetManager;
 import android.test.AndroidTestCase;
 import android.util.Log;
 import com.google.common.base.Splitter;
-import io.demor.nuts.lib.logger.output.LogcatOutput;
+import io.demor.nuts.lib.log.output.LogcatOutput;
 import org.w3c.dom.DOMException;
 import org.w3c.dom.Element;
 

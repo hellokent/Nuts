@@ -10,12 +10,17 @@
         <path>%sdcard/%app/logs/%tag_%day.log</path>
     </output>
 
-    <log path="io.demor.nuts.lib.logger" tag="logger">
+    <output id="customer" type="io.demor.nuts.lib.log.CustomerLog">
+        <arg>value</arg>
+    </output>
+
+    <log path="io.demor.nuts.lib.log" tag="logger">
         <output id="total-logcat"/>
         <output id="total-file"/>
+        <output id="customer"/>
     </log>
 
-    <log path="io.demor.nuts.lib.logger.StaticLog" tag="static">
+    <log path="io.demor.nuts.lib.log.StaticLog" tag="static">
         <output id="simple-logcat"/>
     </log>
 </root>

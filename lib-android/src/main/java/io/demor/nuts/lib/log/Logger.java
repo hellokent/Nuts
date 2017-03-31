@@ -1,22 +1,26 @@
-package io.demor.nuts.lib.logger;
+package io.demor.nuts.lib.log;
 
 import android.os.Handler;
 import android.os.HandlerThread;
 import android.util.Log;
 import com.google.common.base.Throwables;
 import com.google.common.collect.Lists;
-import io.demor.nuts.lib.log.LogContext;
 
 import java.util.ArrayList;
 
 public class Logger {
 
-    ArrayList<LogOutput> mLogOutputs = Lists.newArrayList();
     String mPath;
     String mTag;
     boolean mNeedTime = false;
     boolean mNeedThreadStack = false;
-    private ThreadLocal<LogContext> mLocalLogContext = new ThreadLocal<>();
+    ArrayList<LogOutput> mLogOutputs = Lists.newArrayList();
+    private ThreadLocal<LogContext> mLocalLogContext = new ThreadLocal<LogContext>() {
+        @Override
+        protected LogContext initialValue() {
+            return new LogContext();
+        }
+    };
     static final Handler LOG_HANDLER;
 
     static {
@@ -79,14 +83,12 @@ public class Logger {
 
     protected void log(final int level, final String msg, final Object... arg) {
         final LogContext context = getLogContext();
-        android.util.Log.e("app", "context:" + context);
         LOG_HANDLER.post(new Runnable() {
             @Override
             public void run() {
                 context.mLevel = level;
                 context.mMsg = arg == null || arg.length == 0 ? msg : String.format(msg, arg);
                 for (LogOutput output : mLogOutputs) {
-                    Log.e("app" , "class:" + output.getClass());
                     output.append(context);
                 }
             }
@@ -94,16 +96,8 @@ public class Logger {
     }
 
     private LogContext getLogContext() {
-        final LogContext context;
-        if (mLocalLogContext.get() == null) {
-            context = new LogContext();
-            mLocalLogContext.set(context);
-        } else {
-            context = mLocalLogContext.get();
-        }
-
+        final LogContext context = mLocalLogContext.get();
         context.mTag = mTag;
-
         if (mNeedThreadStack) {
             final StackTraceElement element = context.mCurrentThread.getStackTrace()[5];
             context.mMethod = element.getMethodName();

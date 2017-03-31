@@ -1,16 +1,16 @@
-package io.demor.nuts.lib.logger.output;
+package io.demor.nuts.lib.log.output;
 
 import android.util.Log;
 import io.demor.nuts.lib.log.LogContext;
-import io.demor.nuts.lib.logger.LogFormatter;
-import io.demor.nuts.lib.logger.LogOutput;
+import io.demor.nuts.lib.log.LogFormatter;
+import io.demor.nuts.lib.log.LogOutput;
 import org.w3c.dom.DOMException;
 import org.w3c.dom.Element;
 import org.w3c.dom.NodeList;
 
 public class LogcatOutput extends LogOutput {
 
-    protected final LogFormatter<LogContext> mFormatter;
+    final LogFormatter<LogContext> mFormatter;
     private boolean mNeedTime, mNeedThreadStack;
 
     public LogcatOutput(Element element) throws DOMException {

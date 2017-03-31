@@ -1,8 +1,8 @@
 package io.demor.server.res;
 
 import fi.iki.elonen.NanoHTTPD;
-import io.demor.nuts.lib.logger.Logger;
-import io.demor.nuts.lib.logger.LoggerFactory;
+import io.demor.nuts.lib.log.Logger;
+import io.demor.nuts.lib.log.LoggerFactory;
 import io.demor.nuts.lib.server.IResourceApi;
 import io.demor.server.ScreenHelper;
 

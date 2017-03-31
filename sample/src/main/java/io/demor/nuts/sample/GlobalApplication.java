@@ -1,7 +1,7 @@
 package io.demor.nuts.sample;
 
 import io.demor.nuts.lib.NutsApplication;
-import io.demor.nuts.lib.logger.LoggerFactory;
+import io.demor.nuts.lib.log.LoggerFactory;
 import io.demor.nuts.sample.config.Const;
 import io.demor.nuts.sample.lib.controller.TestController;
 import io.demor.nuts.sample.lib.module.SimpleObject;

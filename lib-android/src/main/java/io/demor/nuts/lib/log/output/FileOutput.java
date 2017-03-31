@@ -1,10 +1,10 @@
-package io.demor.nuts.lib.logger.output;
+package io.demor.nuts.lib.log.output;
 
 import android.app.Application;
 import android.os.Handler;
 import android.os.HandlerThread;
 import io.demor.nuts.lib.log.LogContext;
-import io.demor.nuts.lib.logger.LogFormatter;
+import io.demor.nuts.lib.log.LogFormatter;
 import org.w3c.dom.DOMException;
 import org.w3c.dom.Element;
 import org.w3c.dom.NodeList;

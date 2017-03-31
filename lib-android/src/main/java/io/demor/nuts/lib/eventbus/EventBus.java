@@ -6,8 +6,8 @@ import com.google.common.collect.Maps;
 import com.google.common.collect.Multimap;
 import io.demor.nuts.lib.Globals;
 import io.demor.nuts.lib.annotation.eventbus.DeepClone;
-import io.demor.nuts.lib.logger.Logger;
-import io.demor.nuts.lib.logger.LoggerFactory;
+import io.demor.nuts.lib.log.Logger;
+import io.demor.nuts.lib.log.LoggerFactory;
 import io.demor.nuts.lib.task.SafeTask;
 
 import java.lang.reflect.Method;

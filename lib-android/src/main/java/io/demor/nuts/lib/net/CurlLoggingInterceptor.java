@@ -1,8 +1,8 @@
 package io.demor.nuts.lib.net;
 
 import com.squareup.okhttp.*;
-import io.demor.nuts.lib.logger.Logger;
-import io.demor.nuts.lib.logger.LoggerFactory;
+import io.demor.nuts.lib.log.Logger;
+import io.demor.nuts.lib.log.LoggerFactory;
 import okio.Buffer;
 
 import java.io.IOException;

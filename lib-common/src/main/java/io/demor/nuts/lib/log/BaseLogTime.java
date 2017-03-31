@@ -4,7 +4,7 @@ import java.util.Calendar;
 
 public class BaseLogTime {
 
-    protected static final String[] NUMBER_ARRAY;
+    static final String[] NUMBER_ARRAY;
 
     static {
         NUMBER_ARRAY = new String[1000];

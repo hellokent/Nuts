@@ -1,9 +1,9 @@
-package io.demor.nuts.lib.logger.output;
+package io.demor.nuts.lib.log.output;
 
 import io.demor.nuts.lib.NutsApplication;
 import io.demor.nuts.lib.controller.ControllerUtil;
 import io.demor.nuts.lib.log.LogContext;
-import io.demor.nuts.lib.logger.LogOutput;
+import io.demor.nuts.lib.log.LogOutput;
 import io.demor.nuts.lib.module.PushObject;
 import io.demor.nuts.lib.server.impl.ApiWebSocketServer;
 import org.w3c.dom.DOMException;

@@ -2,8 +2,8 @@ package io.demor.nuts.lib.storage;
 
 import com.google.common.base.Joiner;
 import com.google.common.io.Files;
-import io.demor.nuts.lib.logger.Logger;
-import io.demor.nuts.lib.logger.LoggerFactory;
+import io.demor.nuts.lib.log.Logger;
+import io.demor.nuts.lib.log.LoggerFactory;
 
 import java.io.File;
 import java.io.IOException;

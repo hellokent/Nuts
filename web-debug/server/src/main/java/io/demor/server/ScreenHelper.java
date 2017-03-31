@@ -8,8 +8,8 @@ import android.util.SparseArray;
 import android.view.View;
 import android.view.ViewTreeObserver.OnGlobalLayoutListener;
 import android.view.ViewTreeObserver.OnPreDrawListener;
-import io.demor.nuts.lib.logger.Logger;
-import io.demor.nuts.lib.logger.LoggerFactory;
+import io.demor.nuts.lib.log.Logger;
+import io.demor.nuts.lib.log.LoggerFactory;
 import io.demor.server.model.view.ViewModel;
 import io.demor.server.model.view.ViewModelFactory;
 
