@@ -39,6 +39,14 @@ public class TestControllerImpl extends BaseController implements TestController
     }
 
     @Override
+    public Return<String> addAll(int... count) {
+        for (int i : count) {
+            mCount += i;
+        }
+        return of("Count:" + mCount);
+    }
+
+    @Override
     public Return<Void> runCheckActivity() {
         try {
             Thread.sleep(TimeUnit.SECONDS.toMillis(2));
