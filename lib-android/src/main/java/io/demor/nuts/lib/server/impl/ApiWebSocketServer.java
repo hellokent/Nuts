@@ -3,20 +3,22 @@ package io.demor.nuts.lib.server.impl;
 import android.os.Handler;
 import android.os.HandlerThread;
 import android.os.Message;
+
 import com.google.common.base.Strings;
 import com.google.common.collect.Multimap;
 import com.google.common.collect.MultimapBuilder;
-import io.demor.nuts.lib.server.BaseWebSocketServer;
 
 import java.io.IOException;
 import java.util.concurrent.TimeUnit;
+
+import io.demor.nuts.lib.server.BaseWebSocketServer;
 
 public class ApiWebSocketServer extends BaseWebSocketServer {
 
     private final Multimap<String, String> mFailedMessage = MultimapBuilder.hashKeys().linkedListValues().build();
     private final Handler mTimeoutHandler;
 
-    ApiWebSocketServer(final int port) {
+    public ApiWebSocketServer(final int port) {
         super(port);
         final HandlerThread thread = new HandlerThread("websocket-timeout");
         thread.start();

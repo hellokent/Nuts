@@ -3,12 +3,18 @@ package io.demor.nuts.lib.task;
 import android.os.AsyncTask;
 import android.os.Build;
 import android.os.Looper;
+
 import com.google.common.collect.Lists;
-import io.demor.nuts.lib.Globals;
 
 import java.util.List;
-import java.util.concurrent.*;
+import java.util.concurrent.LinkedBlockingQueue;
+import java.util.concurrent.RejectedExecutionHandler;
+import java.util.concurrent.ThreadFactory;
+import java.util.concurrent.ThreadPoolExecutor;
+import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicInteger;
+
+import io.demor.nuts.lib.Globals;
 
 public abstract class SafeTask<Param, Result> extends AsyncTask<Param, Void, Result> {
 

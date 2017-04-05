@@ -1,22 +1,23 @@
 package io.demor.nuts.lib.eventbus;
 
-import io.demor.nuts.lib.storage.Storage;
-import io.demor.nuts.lib.task.RunnableTask;
-
 import java.lang.reflect.Method;
+import java.util.concurrent.Executor;
 
-import static io.demor.nuts.lib.Globals.UI_HANDLER;
+import io.demor.nuts.lib.storage.Storage;
 
 abstract class MethodContext {
 
     final Method mMethod;
-
     private final ThreadType mThreadType;
+    private final Executor mBgExecutor;
+    private final Executor mUiExecutor;
 
-    MethodContext(final Method method, ThreadType threadType) {
+    MethodContext(final Method method, ThreadType threadType, final Executor bgExecutor, final Executor uiExecutor) {
         mMethod = method;
         mMethod.setAccessible(true);
         mThreadType = threadType;
+        mBgExecutor = bgExecutor;
+        mUiExecutor = uiExecutor;
     }
 
     void call(final Object obj, final Object... args) {
@@ -25,7 +26,7 @@ abstract class MethodContext {
                 $call(obj, args);
                 break;
             case MAIN:
-                UI_HANDLER.post(new Runnable() {
+                mUiExecutor.execute(new Runnable() {
                     @Override
                     public void run() {
                         $call(obj, args);
@@ -33,7 +34,7 @@ abstract class MethodContext {
                 });
                 break;
             case BACKGROUND:
-                new RunnableTask().safeExecute(new Runnable() {
+                mBgExecutor.execute(new Runnable() {
                     @Override
                     public void run() {
                         $call(obj, args);

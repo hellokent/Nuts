@@ -1,36 +1,31 @@
 package io.demor.nuts.lib.eventbus;
 
-import com.google.common.collect.ArrayListMultimap;
 import com.google.common.collect.LinkedListMultimap;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
 import com.google.common.collect.Multimap;
-import io.demor.nuts.lib.Globals;
-import io.demor.nuts.lib.annotation.eventbus.DeepClone;
-import io.demor.nuts.lib.log.Logger;
-import io.demor.nuts.lib.log.LoggerFactory;
-import io.demor.nuts.lib.task.SafeTask;
 
 import java.lang.reflect.Method;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
+import java.util.concurrent.Executor;
+
+import io.demor.nuts.lib.annotation.eventbus.DeepClone;
 
 import static io.demor.nuts.lib.ReflectUtils.isSubclassOf;
 
-public final class EventBus implements Globals {
-
-    static final Logger LOGGER = LoggerFactory.getLogger(EventBus.class);
+public final class EventBus{
 
     private final static Map<Class, ClassContext> CACHE_MAP = Maps.newConcurrentMap();
-
     private final Multimap<Object, MethodContext> mSlotMap = LinkedListMultimap.create();
-
     private final List<BaseEvent> mStickEvent = Lists.newCopyOnWriteArrayList();
-
+    private final Executor mBgExecutor, mUiExecutor;
     private IPostListener mPostListener = null;
 
-    public EventBus() {
+    public EventBus(Executor uiExecutor, Executor bgExecutor) {
+        mBgExecutor = bgExecutor;
+        mUiExecutor = uiExecutor;
     }
 
     public synchronized void register(final Object o) {
@@ -75,7 +70,7 @@ public final class EventBus implements Globals {
             return false;
         }
         if (mPostListener != null) {
-            SafeTask.execute(new Runnable() {
+            mBgExecutor.execute(new Runnable() {
                 @Override
                 public void run() {
                     mPostListener.onPostEvent(event);
@@ -83,7 +78,6 @@ public final class EventBus implements Globals {
             });
         }
         final Class<?> clz = event.getClass();
-        LOGGER.v("event:%s from:%s", clz.getSimpleName(), Thread.currentThread().getStackTrace()[3].toString());
         boolean post = false;
         for (Map.Entry<Object, MethodContext> entry : mSlotMap.entries()) {
             final BusMethodContext method = (BusMethodContext) entry.getValue();
@@ -109,7 +103,7 @@ public final class EventBus implements Globals {
         this.mPostListener = postListener;
     }
 
-    private static class BusClassContext extends ClassContext {
+    private class BusClassContext extends ClassContext {
 
 
         public BusClassContext(Class<?> clz) {
@@ -127,13 +121,13 @@ public final class EventBus implements Globals {
         }
     }
 
-    private static class BusMethodContext extends MethodContext {
+    private class BusMethodContext extends MethodContext {
 
         Class<?> mEventType;
         boolean mNeedDeepClone = false;
 
         BusMethodContext(Method method, ThreadType threadType) {
-            super(method, threadType);
+            super(method, threadType, mBgExecutor, mUiExecutor);
             mEventType = method.getParameterTypes()[0];
             if (mEventType.getAnnotation(DeepClone.class) != null) {
                 mNeedDeepClone = true;

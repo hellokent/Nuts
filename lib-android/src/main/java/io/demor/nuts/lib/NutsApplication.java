@@ -3,7 +3,10 @@ package io.demor.nuts.lib;
 import android.app.Application;
 import android.content.pm.PackageInfo;
 import android.content.pm.PackageManager;
-import io.demor.nuts.lib.server.impl.ApiServer;
+
+import io.demor.nuts.lib.server.AndroidServerClient;
+import io.demor.nuts.lib.server.ApiServer;
+import io.demor.nuts.lib.server.impl.ApiWebSocketServer;
 
 public class NutsApplication extends Application {
     public static NutsApplication sApplication;
@@ -36,7 +39,7 @@ public class NutsApplication extends Application {
     }
 
     public ApiServer initApiServer() {
-        sApiServer = new ApiServer(this);
+        sApiServer = new ApiServer(new AndroidServerClient(this), new ApiWebSocketServer(0));
         return sApiServer;
     }
 

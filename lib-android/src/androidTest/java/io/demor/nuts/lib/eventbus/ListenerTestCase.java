@@ -1,22 +1,25 @@
 package io.demor.nuts.lib.eventbus;
 
 import android.test.AndroidTestCase;
-import io.demor.nuts.lib.TestUtil;
-import io.demor.nuts.lib.annotation.eventbus.DeepClone;
-import io.demor.nuts.lib.annotation.eventbus.Event;
 
 import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.TimeUnit;
 
+import io.demor.nuts.lib.Globals;
+import io.demor.nuts.lib.TestUtil;
+import io.demor.nuts.lib.annotation.eventbus.DeepClone;
+import io.demor.nuts.lib.annotation.eventbus.Event;
+
 public class ListenerTestCase extends AndroidTestCase {
 
     private TestListener mListener;
+    private ListenerBus mListenerBus;
 
     @Override
     public void setUp() throws Exception {
         super.setUp();
-
-        mListener = ListenerBus.provide(TestListener.class);
+        mListenerBus = new ListenerBus(Globals.BG_EXECUTOR, Globals.UI_EXECUTOR, null);
+        mListener = mListenerBus.provide(TestListener.class);
     }
 
     public void testSuccess() throws Exception {
@@ -49,7 +52,7 @@ public class ListenerTestCase extends AndroidTestCase {
             }
         };
 
-        ListenerBus.register(TestListener.class, o);
+        mListenerBus.register(TestListener.class, o);
 
         new Thread() {
             @Override
@@ -93,7 +96,7 @@ public class ListenerTestCase extends AndroidTestCase {
             }
         };
 
-        ListenerBus.register(TestListener.class, o);
+        mListenerBus.register(TestListener.class, o);
 
         new Thread() {
             @Override
@@ -115,13 +118,13 @@ public class ListenerTestCase extends AndroidTestCase {
 
     public void testIllegal() throws Exception {
         try {
-            IllegalInterface i = ListenerBus.provide(IllegalInterface.class);
+            IllegalInterface i = mListenerBus.provide(IllegalInterface.class);
             assertTrue(false);
         } catch (Throwable t) {
         }
 
         try {
-            ListenerBus.register(IllegalInterface.class, new IllegalInterface() {
+            mListenerBus.register(IllegalInterface.class, new IllegalInterface() {
                 @Override
                 public void onSuccess() {
 
@@ -164,10 +167,10 @@ public class ListenerTestCase extends AndroidTestCase {
             }
         };
 
-        ListenerBus.register(IDeepClone.class, o);
+        mListenerBus.register(IDeepClone.class, o);
 
-        final IDeepClone provider = ListenerBus.provide(IDeepClone.class);
-        assertTrue(provider == ListenerBus.provide(IDeepClone.class));
+        final IDeepClone provider = mListenerBus.provide(IDeepClone.class);
+        assertTrue(provider == mListenerBus.provide(IDeepClone.class));
 
         new Thread() {
             @Override
@@ -189,7 +192,7 @@ public class ListenerTestCase extends AndroidTestCase {
 
     @Override
     public void tearDown() throws Exception {
-        ListenerBus.clear();
+        mListenerBus.clear();
     }
 
     public void testTwoInterface() throws Exception {
@@ -208,10 +211,10 @@ public class ListenerTestCase extends AndroidTestCase {
             }
         };
 
-        ListenerBus.register(IFoo.class, fooBar);
-        ListenerBus.register(IBar.class, fooBar);
-        final IFoo fooProvider = ListenerBus.provide(IFoo.class);
-        final IBar barProvider = ListenerBus.provide(IBar.class);
+        mListenerBus.register(IFoo.class, fooBar);
+        mListenerBus.register(IBar.class, fooBar);
+        final IFoo fooProvider = mListenerBus.provide(IFoo.class);
+        final IBar barProvider = mListenerBus.provide(IBar.class);
 
         new Thread() {
             @Override

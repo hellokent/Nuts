@@ -1,38 +1,31 @@
-package io.demor.nuts.lib.server.impl;
+package io.demor.nuts.lib.server;
 
-import android.app.Application;
 import com.google.common.base.Joiner;
 import com.google.common.base.Strings;
-import io.demor.nuts.lib.eventbus.BaseEvent;
-import io.demor.nuts.lib.eventbus.EventBus;
-import io.demor.nuts.lib.eventbus.IPostListener;
-import io.demor.nuts.lib.log.Logger;
-import io.demor.nuts.lib.log.LoggerFactory;
-import io.demor.nuts.lib.module.BaseResponse;
-import io.demor.nuts.lib.module.ControllerInvocationResponse;
-import io.demor.nuts.lib.module.PushObject;
-import io.demor.nuts.lib.module.StorageResponse;
-import io.demor.nuts.lib.server.IApi;
-import io.demor.nuts.lib.server.Server;
-import io.demor.nuts.lib.storage.Storage;
 
 import java.io.IOException;
 import java.lang.reflect.InvocationTargetException;
 import java.util.Map;
+
+import io.demor.nuts.lib.eventbus.BaseEvent;
+import io.demor.nuts.lib.eventbus.EventBus;
+import io.demor.nuts.lib.eventbus.IPostListener;
+import io.demor.nuts.lib.module.BaseResponse;
+import io.demor.nuts.lib.module.ControllerInvocationResponse;
+import io.demor.nuts.lib.module.PushObject;
+import io.demor.nuts.lib.module.StorageResponse;
+import io.demor.nuts.lib.storage.Storage;
 
 import static io.demor.nuts.lib.controller.ControllerUtil.GSON;
 import static io.demor.nuts.lib.controller.ControllerUtil.parseMethodInfo;
 
 public final class ApiServer extends Server {
 
-    private static final Logger LOGGER = LoggerFactory.getLogger(ApiServer.class);
-    public Application mApplication;
     public boolean mCanSendListener;
 
-    public ApiServer(Application application) {
-        super(application, GSON);
-        mWebSocketServer = new ApiWebSocketServer(0);
-        mApplication = application;
+    public ApiServer(IClient client, BaseWebSocketServer webSocketServer) {
+        super(client, GSON);
+        mWebSocketServer = webSocketServer;
     }
 
     public <T> ApiServer registerController(final Class<T> api, final T impl) {
@@ -137,9 +130,9 @@ public final class ApiServer extends Server {
             @Override
             public void run() {
                 try {
-                    ConfigServer.initConfig(mApplication, ApiServer.this);
+                    ConfigServer.initConfig(mClient, ApiServer.this);
                 } catch (IOException e) {
-                    LOGGER.exception(e);
+                    e.printStackTrace();
                 }
             }
         }.start();

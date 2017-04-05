@@ -12,16 +12,16 @@ public class Logger {
 
     String mPath;
     String mTag;
-    boolean mNeedTime = false;
-    boolean mNeedThreadStack = false;
     ArrayList<LogOutput> mLogOutputs = Lists.newArrayList();
-    private ThreadLocal<LogContext> mLocalLogContext = new ThreadLocal<LogContext>() {
+    private boolean mNeedTime = false;
+    private boolean mNeedThreadStack = false;
+    ThreadLocal<LogContext> mLocalLogContext = new ThreadLocal<LogContext>() {
         @Override
         protected LogContext initialValue() {
             return new LogContext();
         }
     };
-    static final Handler LOG_HANDLER;
+    private static final Handler LOG_HANDLER;
 
     static {
         HandlerThread thread = new HandlerThread("logger");
@@ -95,7 +95,7 @@ public class Logger {
         });
     }
 
-    private LogContext getLogContext() {
+    LogContext getLogContext() {
         final LogContext context = mLocalLogContext.get();
         context.mTag = mTag;
         if (mNeedThreadStack) {

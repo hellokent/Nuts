@@ -1,12 +1,14 @@
 package io.demor.nuts.lib.eventbus;
 
 import android.test.AndroidTestCase;
-import io.demor.nuts.lib.TestUtil;
-import io.demor.nuts.lib.annotation.eventbus.Event;
 
 import java.lang.reflect.Method;
 import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.TimeUnit;
+
+import io.demor.nuts.lib.Globals;
+import io.demor.nuts.lib.TestUtil;
+import io.demor.nuts.lib.annotation.eventbus.Event;
 
 public class EventBusStickTestCase extends AndroidTestCase {
 
@@ -30,7 +32,7 @@ public class EventBusStickTestCase extends AndroidTestCase {
 
     @Override
     public void setUp() throws Exception {
-        mEventBus = new EventBus();
+        mEventBus = new EventBus(Globals.UI_EXECUTOR, Globals.BG_EXECUTOR);
     }
 
     @Override

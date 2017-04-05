@@ -11,4 +11,6 @@ public interface IClient {
     TemplateProvider getTemplateProvider();
 
     String getIpAddress();
+
+    String getAppId();
 }

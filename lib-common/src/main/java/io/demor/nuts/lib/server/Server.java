@@ -8,7 +8,7 @@ public class Server {
 
     public BaseWebServer mHttpServer;
     public BaseWebSocketServer mWebSocketServer;
-    private IClient mClient;
+    protected IClient mClient;
 
     public Server(final IClient client, final Gson gson) {
         mClient = client;

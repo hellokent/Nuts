@@ -1,53 +1,56 @@
 package io.demor.nuts.lib.eventbus;
 
-import com.google.common.collect.ArrayListMultimap;
 import com.google.common.collect.LinkedListMultimap;
 import com.google.common.collect.Maps;
 import com.google.common.collect.Multimap;
 import com.google.common.reflect.Reflection;
-import io.demor.nuts.lib.NutsApplication;
-import io.demor.nuts.lib.annotation.eventbus.DeepClone;
-import io.demor.nuts.lib.controller.ControllerUtil;
-import io.demor.nuts.lib.server.impl.ApiServer;
-import io.demor.nuts.lib.task.SafeTask;
 
 import java.lang.reflect.InvocationHandler;
 import java.lang.reflect.Method;
 import java.util.HashMap;
+import java.util.concurrent.Executor;
+
+import io.demor.nuts.lib.annotation.eventbus.DeepClone;
+import io.demor.nuts.lib.controller.ControllerUtil;
+import io.demor.nuts.lib.server.ApiServer;
 
 public final class ListenerBus {
 
-    private static final Multimap<Class<?>, Object> METHOD_CONSUMER = LinkedListMultimap.create();
-    private static final HashMap<Class<?>, ListenerClassContext<?>> METHOD_PROVIDER = Maps.newHashMap();
-
-    private ListenerBus() {
+    private final Multimap<Class<?>, Object> mMethodConsumer = LinkedListMultimap.create();
+    private final HashMap<Class<?>, ListenerClassContext<?>> mMethodProvider = Maps.newHashMap();
+    private Executor mBgExecutor, mUiExecutor;
+    private ApiServer mApiServer;
+    ListenerBus(Executor bgExecutor, Executor uiExecutor, ApiServer apiServer) {
+        mBgExecutor = bgExecutor;
+        mUiExecutor = uiExecutor;
+        mApiServer = apiServer;
     }
 
-    public static synchronized <T> void register(Class<T> clz, T obj) {
+    public synchronized <T> void register(Class<T> clz, T obj) {
         if (clz == null || obj == null) {
             return;
         }
         addClz(clz);
-        METHOD_CONSUMER.put(clz, obj);
+        mMethodConsumer.put(clz, obj);
     }
 
-    public static synchronized void unregister(Class<?> clz) {
-        METHOD_CONSUMER.removeAll(clz);
+    public synchronized void unregister(Class<?> clz) {
+        mMethodConsumer.removeAll(clz);
     }
 
-    public static synchronized void clear() {
-        METHOD_CONSUMER.clear();
+    public synchronized void clear() {
+        mMethodConsumer.clear();
     }
 
-    public static synchronized <T> T provide(final Class<T> clz) {
-        if (METHOD_PROVIDER.containsKey(clz)) {
-            return (T) METHOD_PROVIDER.get(clz).mProxy;
+    public synchronized <T> T provide(final Class<T> clz) {
+        if (mMethodProvider.containsKey(clz)) {
+            return (T) mMethodProvider.get(clz).mProxy;
         } else {
             return addClz(clz).mProxy;
         }
     }
 
-    private static <T> ListenerClassContext<T> addClz(Class<T> clz) {
+    private <T> ListenerClassContext<T> addClz(Class<T> clz) {
         if (!clz.isInterface()) {
             throw new IllegalArgumentException("clz must be interface");
         }
@@ -57,11 +60,11 @@ public final class ListenerBus {
         }
 
         ListenerClassContext<T> result = new ListenerClassContext<>(clz);
-        METHOD_PROVIDER.put(clz, result);
+        mMethodProvider.put(clz, result);
         return result;
     }
 
-    private static class ListenerClassContext<T> extends ClassContext implements InvocationHandler {
+    private class ListenerClassContext<T> extends ClassContext implements InvocationHandler {
 
         T mProxy;
         boolean mNeedDeepClone = false;
@@ -78,17 +81,16 @@ public final class ListenerBus {
         public Object invoke(Object proxy, final Method method, final Object[] args) throws Throwable {
             for (MethodContext context : mMethodList) {
                 if (context.mMethod.equals(method)) {
-                    for (Object o : METHOD_CONSUMER.get(mClass)) {
+                    for (Object o : mMethodConsumer.get(mClass)) {
                         context.call(o, args);
                     }
                 }
             }
-            final ApiServer s = NutsApplication.sApiServer;
-            if (s != null && s.mCanSendListener) {
-                SafeTask.execute(new Runnable() {
+            if (mApiServer != null && mApiServer.mCanSendListener) {
+                mBgExecutor.execute(new Runnable() {
                     @Override
                     public void run() {
-                        s.sendListenerMethod(ControllerUtil.generateMethodInfo(method, args));
+                        mApiServer.sendListenerMethod(ControllerUtil.generateMethodInfo(method, args));
                     }
                 });
             }
@@ -106,12 +108,12 @@ public final class ListenerBus {
         }
     }
 
-    private static class ListenerMethodContext extends MethodContext {
+    private class ListenerMethodContext extends MethodContext {
 
         boolean mNeedDeepClone;
 
         ListenerMethodContext(Method method, ThreadType threadType, boolean needDeepClone) {
-            super(method, threadType);
+            super(method, threadType, mBgExecutor, mUiExecutor);
             mNeedDeepClone = needDeepClone;
             if (method.getAnnotation(DeepClone.class) != null) {
                 mNeedDeepClone = true;
