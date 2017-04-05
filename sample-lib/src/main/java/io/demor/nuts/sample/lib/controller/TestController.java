@@ -8,6 +8,8 @@ public interface TestController {
 
     Return<String> add(int count);
 
+    Return<String> addAll(int... count);
+
     Return<Integer> get();
 
     @CheckActivity

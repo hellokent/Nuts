@@ -3,9 +3,7 @@ package io.demor.nuts.lib.eventbus;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
-import io.demor.nuts.lib.controller.AppInstance;
-import io.demor.nuts.lib.controller.ControllerUtil;
-import io.demor.nuts.lib.module.PushObject;
+
 import org.eclipse.jetty.util.BlockingArrayQueue;
 import org.eclipse.jetty.websocket.api.Session;
 import org.eclipse.jetty.websocket.api.WebSocketListener;
@@ -17,6 +15,10 @@ import java.io.IOException;
 import java.net.URI;
 import java.util.Random;
 import java.util.concurrent.TimeUnit;
+
+import io.demor.nuts.lib.controller.AppInstance;
+import io.demor.nuts.lib.controller.ControllerUtil;
+import io.demor.nuts.lib.module.PushObject;
 
 public abstract class BaseBarrier implements WebSocketListener, Closeable {
 
@@ -74,6 +76,7 @@ public abstract class BaseBarrier implements WebSocketListener, Closeable {
 
     @Override
     public void onWebSocketText(final String message) {
+        System.out.println("onWebSocketText:" + message);
         final JsonElement element = new JsonParser().parse(message);
         if (!(element instanceof JsonObject)) {
             return;

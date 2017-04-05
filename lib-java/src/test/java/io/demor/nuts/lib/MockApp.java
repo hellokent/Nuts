@@ -30,6 +30,8 @@ public class MockApp implements IClient, Executor{
         ConfigServer.initConfig(this, mServer);
         sListenerBus = new ListenerBus(this, this, mServer);
         sEventBus = new EventBus(this, this);
+        mServer.registerEventBus(sEventBus);
+        mServer.registerListenBus();
     }
 
     @Override

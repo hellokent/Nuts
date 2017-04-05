@@ -15,5 +15,6 @@ public class BaseMockTest {
     public void setUp() throws Exception {
         mMockApp = new MockApp(APP_ID);
         mAppInstance = new AppInstance(APP_ID, "127.0.0.1");
+        mMockApp.mServer.registerEventBus(MockApp.sEventBus);
     }
 }
