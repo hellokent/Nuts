@@ -1,6 +1,7 @@
 package io.demor.nuts.lib.eventbus;
 
 import com.google.common.collect.ArrayListMultimap;
+import com.google.common.collect.LinkedListMultimap;
 import com.google.common.collect.Maps;
 import com.google.common.collect.Multimap;
 import com.google.common.reflect.Reflection;
@@ -16,7 +17,7 @@ import java.util.HashMap;
 
 public final class ListenerBus {
 
-    private static final Multimap<Class<?>, Object> METHOD_CONSUMER = ArrayListMultimap.create();
+    private static final Multimap<Class<?>, Object> METHOD_CONSUMER = LinkedListMultimap.create();
     private static final HashMap<Class<?>, ListenerClassContext<?>> METHOD_PROVIDER = Maps.newHashMap();
 
     private ListenerBus() {

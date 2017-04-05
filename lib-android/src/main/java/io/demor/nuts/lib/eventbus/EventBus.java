@@ -1,6 +1,7 @@
 package io.demor.nuts.lib.eventbus;
 
 import com.google.common.collect.ArrayListMultimap;
+import com.google.common.collect.LinkedListMultimap;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
 import com.google.common.collect.Multimap;
@@ -23,7 +24,7 @@ public final class EventBus implements Globals {
 
     private final static Map<Class, ClassContext> CACHE_MAP = Maps.newConcurrentMap();
 
-    private final Multimap<Object, MethodContext> mSlotMap = ArrayListMultimap.create();
+    private final Multimap<Object, MethodContext> mSlotMap = LinkedListMultimap.create();
 
     private final List<BaseEvent> mStickEvent = Lists.newCopyOnWriteArrayList();
 

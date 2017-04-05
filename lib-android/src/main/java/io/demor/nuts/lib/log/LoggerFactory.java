@@ -1,7 +1,6 @@
 package io.demor.nuts.lib.log;
 
 import android.app.Application;
-import android.media.tv.TvContract;
 import android.text.TextUtils;
 import android.util.Log;
 import com.google.common.collect.Maps;
@@ -15,7 +14,6 @@ import org.w3c.dom.NodeList;
 import javax.xml.parsers.DocumentBuilderFactory;
 import java.io.IOException;
 import java.io.InputStream;
-import java.lang.reflect.InvocationTargetException;
 import java.util.Comparator;
 import java.util.HashMap;
 import java.util.Map;

@@ -13,11 +13,11 @@ import java.util.concurrent.Future;
 
 final class TagCache {
 
-    public static final String NO_TAG = "no_tag";
+    static final String NO_TAG = "no_tag";
 
-    static final HashMap<Method, String> CACHE_MAP = new HashMap<>();
+    private static final HashMap<Method, String> CACHE_MAP = new HashMap<>();
 
-    static final HashMap<String, Handler> HANDLER_MAP = new HashMap<>();
+    private static final HashMap<String, Handler> HANDLER_MAP = new HashMap<>();
 
     static synchronized String getTag(Method m) {
         if (CACHE_MAP.containsKey(m)) {

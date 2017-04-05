@@ -99,7 +99,6 @@ public class BaseWebServer extends NanoHTTPD {
             try {
                 if (mTemplateMap.containsKey(remainPath)) {
                     ITemplate template = mTemplateMap.get(remainPath);
-
                     final Theme theme = new Theme(mTemplateLoader);
 
                     try {

@@ -13,10 +13,10 @@ import java.util.concurrent.TimeUnit;
 
 public class ApiWebSocketServer extends BaseWebSocketServer {
 
-    protected final Multimap<String, String> mFailedMessage = MultimapBuilder.hashKeys().linkedListValues().build();
-    protected final Handler mTimeoutHandler;
+    private final Multimap<String, String> mFailedMessage = MultimapBuilder.hashKeys().linkedListValues().build();
+    private final Handler mTimeoutHandler;
 
-    public ApiWebSocketServer(final int port) {
+    ApiWebSocketServer(final int port) {
         super(port);
         final HandlerThread thread = new HandlerThread("websocket-timeout");
         thread.start();
