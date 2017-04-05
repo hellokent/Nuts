@@ -5,9 +5,14 @@ import com.google.gson.FieldNamingStrategy;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import com.google.gson.JsonNull;
+import com.x5.util.Base64;
 
 import org.joor.Reflect;
+import org.joor.ReflectException;
 
+import java.io.ByteArrayOutputStream;
+import java.io.IOException;
+import java.io.ObjectOutputStream;
 import java.lang.reflect.Field;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
@@ -134,6 +139,18 @@ public final class ControllerUtil {
         public Class<?>[] mArgTypeArray;
         public Object mImpl;
 
+        public static String encodeExceptionWrapper(Throwable wrapper) {
+            ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
+            try {
+                ObjectOutputStream objectOutputStream = new ObjectOutputStream(outputStream);
+                objectOutputStream.writeObject(wrapper);
+                objectOutputStream.flush();
+                return "#" + Base64.encodeBytes(outputStream.toByteArray());
+            } catch (IOException e) {
+                throw new Error(e);
+            }
+        }
+
         public String callController() {
             final Method m;
             try {
@@ -142,10 +159,14 @@ public final class ControllerUtil {
                 throw new IllegalArgumentException(e);
             }
             if (ReflectUtils.isSubclassOf(m.getReturnType(), Return.class)) {
-                return toJson(Reflect.on(mImpl)
-                        .call(mName, mArgArray)
-                        .call("sync")
-                        .get(), (Class<?>) ReflectUtils.getGenericType(m.getGenericReturnType()));
+                try {
+                    return toJson(Reflect.on(mImpl)
+                            .call(mName, mArgArray)
+                            .call("sync")
+                            .get(), (Class<?>) ReflectUtils.getGenericType(m.getGenericReturnType()));
+                } catch (ExceptionWrapper wrapper) {
+                    return encodeExceptionWrapper(wrapper);
+                }
             } else {
                 try {
                     m.setAccessible(true);
@@ -164,10 +185,19 @@ public final class ControllerUtil {
                 throw new IllegalArgumentException(e);
             }
             if (ReflectUtils.isSubclassOf(m.getReturnType(), Return.class)) {
-                return toJson(Reflect.on(mImpl)
-                        .call(mName, mArgArray)
-                        .field("mData")
-                        .get(), (Class<?>) ReflectUtils.getGenericType(m.getGenericReturnType()));
+                try {
+                    return toJson(Reflect.on(mImpl)
+                            .call(mName, mArgArray)
+                            .field("mData")
+                            .get(), (Class<?>) ReflectUtils.getGenericType(m.getGenericReturnType()));
+                } catch (ReflectException e) {
+                    Throwable throwable = e.getCause();
+                    if (throwable instanceof InvocationTargetException) {
+                        return encodeExceptionWrapper(((InvocationTargetException) throwable).getTargetException());
+                    } else {
+                        throw e;
+                    }
+                }
             } else {
                 try {
                     m.setAccessible(true);

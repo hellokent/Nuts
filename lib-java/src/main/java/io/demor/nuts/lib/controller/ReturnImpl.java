@@ -7,10 +7,14 @@ import com.squareup.okhttp.OkHttpClient;
 import com.squareup.okhttp.Request;
 import com.squareup.okhttp.RequestBody;
 import com.squareup.okhttp.Response;
+import com.x5.util.Base64;
 
+import java.io.ByteArrayInputStream;
 import java.io.IOException;
+import java.io.ObjectInputStream;
 import java.lang.reflect.Method;
 import java.nio.charset.Charset;
+import java.util.Locale;
 
 import io.demor.nuts.lib.ReflectUtils;
 import io.demor.nuts.lib.module.ControllerInvocationResponse;
@@ -83,7 +87,7 @@ public final class ReturnImpl<T> extends Return<T> {
     public T sync() {
         try {
             String resp = mClient.newCall(new Request.Builder()
-                    .url(String.format("http://%s:%d/api/controller/%s", mHost, mPort, mMethod.getDeclaringClass().getName()))
+                    .url(String.format(Locale.getDefault(), "http://%s:%d/api/controller/%s", mHost, mPort, mMethod.getDeclaringClass().getName()))
                     .header("content-type", "application/json")
                     .post(RequestBody.create(MediaType.parse("json"), ControllerUtil.generateMethodInfo(mMethod, mArgs)))
                     .build())
@@ -92,12 +96,19 @@ public final class ReturnImpl<T> extends Return<T> {
                     .string();
             ControllerInvocationResponse response = GSON.fromJson(resp, ControllerInvocationResponse.class);
             if (response.code == 0) {
-                return (T) fromJson(response.mData, (Class<?>) ReflectUtils.getGenericType(mMethod.getGenericReturnType()));
+                if (response.mData.startsWith("#")) {
+                    ObjectInputStream objectInputStream = new ObjectInputStream(new ByteArrayInputStream(Base64.decode(response.mData.substring(1))));
+                    throw (ExceptionWrapper) objectInputStream.readObject();
+                } else {
+                    return (T) fromJson(response.mData, (Class<?>) ReflectUtils.getGenericType(mMethod.getGenericReturnType()));
+                }
             } else {
                 throw new Error("bad response:" + response.message);
             }
         } catch (IOException e) {
             throw new Error("bad network", e);
+        } catch (ClassNotFoundException e) {
+            throw new Error("throw class not foune", e);
         }
     }
 

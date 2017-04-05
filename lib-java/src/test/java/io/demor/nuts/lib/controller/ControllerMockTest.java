@@ -16,38 +16,49 @@ import io.demor.nuts.sample.lib.event.TestEvent;
 
 public class ControllerMockTest extends BaseMockTest{
 
+    private TestController mController;
     @Before
     public void setUp() throws Exception {
         super.setUp();
         mMockApp.mServer.registerController(TestController.class, TestControllerImpl.IMPL);
+        mController = Reflection.newProxy(TestController.class, new ControllerInvokeHandler(mAppInstance));
     }
 
     @Test
     public void simple() throws Exception {
-        final TestController controller = Reflection.newProxy(TestController.class, new ControllerInvokeHandler(mAppInstance));
-        int count = controller.get().sync();
-        controller.add(10).sync();
-        Assert.assertEquals(10 + count, controller.getCount());
+        int count = mController.get().sync();
+        mController.add(10).sync();
+        Assert.assertEquals(10 + count, mController.getCount());
     }
 
     @Test
     public void arrayArgument() throws Exception {
-        final TestController controller = Reflection.newProxy(TestController.class, new ControllerInvokeHandler(mAppInstance));
-        int count = controller.get().sync();
-        controller.addAll(10, 20, 30).sync();
-        Assert.assertEquals(60 + count, controller.getCount());
+        int count = mController.get().sync();
+        mController.addAll(10, 20, 30).sync();
+        Assert.assertEquals(60 + count, mController.getCount());
     }
 
     @Test
     public void waitForSingle() throws Exception {
-        final TestController controller = Reflection.newProxy(TestController.class, new ControllerInvokeHandler(mAppInstance));
-        final int count = controller.get().sync();
+        final int count = mController.get().sync();
         try (EventBarrier<TestEvent> barrier = new EventBarrier<>(mAppInstance, TestEvent.class)) {
-            controller.sendEvent().sync();
+            mController.sendEvent().sync();
             final TestEvent event = barrier.waitForSingleEvent(10, TimeUnit.SECONDS);
 
             Assert.assertNotNull(event);
             Assert.assertEquals(String.valueOf(count), event.getData());
+        }
+    }
+
+    @Test
+    public void throwException() throws Exception {
+        try {
+            mController.runWithException().sync();
+            Assert.assertTrue(false);
+        } catch (ExceptionWrapper wrapper) {
+            //wrapper.printStackTrace();
+            Assert.assertNotNull(wrapper);
+            Assert.assertNotNull(wrapper.getCause());
         }
     }
 }
