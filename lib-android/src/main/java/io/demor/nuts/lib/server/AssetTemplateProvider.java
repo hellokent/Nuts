@@ -10,11 +10,11 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 
-public class AssetTemplateLoader extends TemplateProvider {
+public class AssetTemplateProvider extends TemplateProvider {
 
     final AssetManager mAssetManager;
 
-    public AssetTemplateLoader(final AssetManager assetManager) {
+    public AssetTemplateProvider(final AssetManager assetManager) {
         mAssetManager = assetManager;
     }
 

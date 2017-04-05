@@ -1,7 +1,5 @@
 package io.demor.nuts.lib.server;
 
-import android.app.Application;
-import android.content.res.AssetManager;
 import com.google.common.base.Joiner;
 import com.google.common.base.Splitter;
 import com.google.common.base.Strings;
@@ -10,16 +8,8 @@ import com.google.common.collect.Maps;
 import com.google.common.io.ByteStreams;
 import com.google.common.io.Closeables;
 import com.google.gson.Gson;
-import com.google.gson.internal.Streams;
 import com.x5.template.Chunk;
 import com.x5.template.Theme;
-import fi.iki.elonen.NanoHTTPD;
-import fi.iki.elonen.NanoHTTPD.Response.Status;
-import io.demor.nuts.lib.log.Logger;
-import io.demor.nuts.lib.log.LoggerFactory;
-import io.demor.nuts.lib.module.BaseResponse;
-import io.demor.nuts.lib.server.annotation.Request;
-import io.demor.nuts.lib.server.annotation.Url;
 
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
@@ -29,35 +19,35 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import fi.iki.elonen.NanoHTTPD;
+import fi.iki.elonen.NanoHTTPD.Response.Status;
+import io.demor.nuts.lib.annotation.server.Request;
+import io.demor.nuts.lib.annotation.server.Url;
+import io.demor.nuts.lib.module.BaseResponse;
+
 public class BaseWebServer extends NanoHTTPD {
 
-    static final Logger LOGGER = LoggerFactory.getLogger(BaseWebServer.class);
+    private final HashMap<String, IApiMethod> mApiRequestMap = Maps.newHashMap();
+    private final HashMap<String, ITemplate> mTemplateMap = Maps.newHashMap();
+    private final HashMap<String, IResourceApi> mResMap = Maps.newHashMap();
+    private final Gson mGson;
+    private final IClient mClient;
 
-    final HashMap<String, IApiMethod> mApiRequestMap = Maps.newHashMap();
-    final HashMap<String, ITemplate> mTemplateMap = Maps.newHashMap();
-    final HashMap<String, IResourceApi> mResMap = Maps.newHashMap();
-    final AssetManager mAssetManager;
-    final AssetTemplateLoader mTemplateLoader;
-    final Gson mGson;
-
-    public BaseWebServer(Application application, Gson gson, int port) {
-        super(port);
-        mGson = gson;
-        mAssetManager = application.getAssets();
-        mTemplateLoader = new AssetTemplateLoader(mAssetManager);
-    }
-
-    public static String toUrlPath(Url origin) {
+    private static String toUrlPath(Url origin) {
         if (origin == null) {
             return "";
         }
         return Strings.nullToEmpty(origin.value()).replaceAll("[/\\\\]", "");
     }
 
+    public BaseWebServer(IClient client, Gson gson, int port) {
+        super(port);
+        mGson = gson;
+        mClient = client;
+    }
+
     @Override
     public Response serve(final IHTTPSession session) {
-
-        LOGGER.v("server:%s", session.getUri());
 
         final String uri = session.getUri();
         final List<String> path = Splitter.on("/")
@@ -102,7 +92,7 @@ public class BaseWebServer extends NanoHTTPD {
             try {
                 if (mTemplateMap.containsKey(remainPath)) {
                     ITemplate template = mTemplateMap.get(remainPath);
-                    final Theme theme = new Theme(mTemplateLoader);
+                    final Theme theme = new Theme(mClient.getTemplateProvider());
 
                     try {
                         final Chunk chunk = theme.makeChunk(remainPath);
@@ -114,10 +104,9 @@ public class BaseWebServer extends NanoHTTPD {
                         return newFixedLengthResponse(Status.INTERNAL_ERROR, MIME_PLAINTEXT, "");
                     }
                 } else {
-                    InputStream stream = mAssetManager.open("web/" + remainPath);
+                    InputStream stream = mClient.getResource("web/" + remainPath);
                     final String data = new String(ByteStreams.toByteArray(stream));
                     Closeables.closeQuietly(stream);
-                    LOGGER.v("url:%s", session.getUri());
                     Response response = newFixedLengthResponse(Status.OK, null, data);
                     if (uri.endsWith("css")) {
                         response.setMimeType(MIME_CSS);
@@ -129,7 +118,6 @@ public class BaseWebServer extends NanoHTTPD {
                     return response;
                 }
             } catch (IOException e) {
-                LOGGER.exception(e);
                 return newFixedLengthResponse(Status.NOT_FOUND, MIME_PLAINTEXT, "404 not found");
             }
         } else if ("res".equals(firstWordInPath)) {
@@ -154,10 +142,10 @@ public class BaseWebServer extends NanoHTTPD {
         } else if ("favicon.ico".equals(firstWordInPath)) {
             InputStream stream = null;
             try {
-                stream = mAssetManager.open("favicon.ico");
+                stream = mClient.getResource("favicon.ico");
                 return newChunkedResponse(Status.OK, "x-icon", new ByteArrayInputStream(ByteStreams.toByteArray(stream)));
             } catch (IOException e) {
-                LOGGER.exception(e);
+                e.printStackTrace();
             } finally {
                 Closeables.closeQuietly(stream);
             }
@@ -187,7 +175,6 @@ public class BaseWebServer extends NanoHTTPD {
                 }
             }
             final String urlPath = Joiner.on('/').skipNulls().join(globalPath, toUrlPath(method.getAnnotation(Url.class)));
-            LOGGER.v("register api:%s class:%s", urlPath, apiMethod.mMethod.getName());
             if (mApiRequestMap.containsKey(urlPath)) {
                 throw new MultiPathLoadedException(urlPath);
             } else {

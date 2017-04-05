@@ -5,10 +5,10 @@ import com.google.gson.Gson;
 import java.util.Map;
 
 class GsonApiImpl implements IApiMethod {
-    IApi mIApi;
-    Gson mGson;
+    private IApi mIApi;
+    private Gson mGson;
 
-    public GsonApiImpl(final Gson gson, final IApi api) {
+    GsonApiImpl(final Gson gson, final IApi api) {
         mIApi = api;
         mGson = gson;
     }

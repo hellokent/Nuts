@@ -6,7 +6,7 @@ import android.os.Build;
 import android.os.Build.VERSION;
 import android.view.Display;
 import android.view.WindowManager;
-import io.demor.nuts.lib.server.annotation.Url;
+import io.demor.nuts.lib.annotation.server.Url;
 import io.demor.server.ScreenHelper;
 import io.demor.server.WebDebug;
 import io.demor.server.model.PhoneInfo;
