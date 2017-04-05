@@ -5,6 +5,8 @@ import android.text.TextUtils;
 import android.util.Log;
 import com.google.common.collect.Maps;
 import com.google.common.collect.Sets;
+import com.google.common.io.Closeables;
+
 import io.demor.nuts.lib.log.output.FileOutput;
 import io.demor.nuts.lib.log.output.LogcatOutput;
 import io.demor.nuts.lib.log.output.WebOutput;
@@ -51,12 +53,7 @@ public final class LoggerFactory {
         } catch (IOException e) {
             e.printStackTrace();
         } finally {
-            if (stream != null) {
-                try {
-                    stream.close();
-                } catch (IOException ignored) {
-                }
-            }
+            Closeables.closeQuietly(stream);
         }
 
     }

@@ -1,11 +1,14 @@
 package io.demor.nuts.lib.server;
 
 import android.content.res.AssetManager;
+
+import com.google.common.io.CharStreams;
+import com.google.common.io.Closeables;
 import com.x5.template.providers.TemplateProvider;
 
 import java.io.IOException;
 import java.io.InputStream;
-import java.util.Scanner;
+import java.io.InputStreamReader;
 
 public class AssetTemplateLoader extends TemplateProvider {
 
@@ -24,15 +27,9 @@ public class AssetTemplateLoader extends TemplateProvider {
     public String loadContainerDoc(final String docName) throws IOException {
         final InputStream in = mAssetManager.open("web/temp-" + docName.replaceAll(".chtml", "") + ".html");
         try {
-            final Scanner scanner = new Scanner(in);
-            final StringBuilder result = new StringBuilder();
-            while (scanner.hasNextLine()) {
-                result.append(scanner.nextLine())
-                        .append('\n');
-            }
-            return result.toString();
+            return CharStreams.toString(new InputStreamReader(in));
         } finally {
-            in.close();
+            Closeables.closeQuietly(in);
         }
     }
 }

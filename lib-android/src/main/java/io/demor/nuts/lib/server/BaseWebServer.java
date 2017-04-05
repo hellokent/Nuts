@@ -8,7 +8,9 @@ import com.google.common.base.Strings;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
 import com.google.common.io.ByteStreams;
+import com.google.common.io.Closeables;
 import com.google.gson.Gson;
+import com.google.gson.internal.Streams;
 import com.x5.template.Chunk;
 import com.x5.template.Theme;
 import fi.iki.elonen.NanoHTTPD;
@@ -19,6 +21,7 @@ import io.demor.nuts.lib.module.BaseResponse;
 import io.demor.nuts.lib.server.annotation.Request;
 import io.demor.nuts.lib.server.annotation.Url;
 
+import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.lang.annotation.Annotation;
@@ -111,7 +114,9 @@ public class BaseWebServer extends NanoHTTPD {
                         return newFixedLengthResponse(Status.INTERNAL_ERROR, MIME_PLAINTEXT, "");
                     }
                 } else {
-                    final String data = new String(ByteStreams.toByteArray(mAssetManager.open("web/" + remainPath)));
+                    InputStream stream = mAssetManager.open("web/" + remainPath);
+                    final String data = new String(ByteStreams.toByteArray(stream));
+                    Closeables.closeQuietly(stream);
                     LOGGER.v("url:%s", session.getUri());
                     Response response = newFixedLengthResponse(Status.OK, null, data);
                     if (uri.endsWith("css")) {
@@ -130,19 +135,31 @@ public class BaseWebServer extends NanoHTTPD {
         } else if ("res".equals(firstWordInPath)) {
             if (mResMap.containsKey(remainPath)) {
                 final IResourceApi api = mResMap.get(remainPath);
-                InputStream stream = api.getContent(session.getParms());
-                if (stream == null) {
+                InputStream stream = null;
+                try {
+                    stream = api.getContent(session.getParms());
+                    if (stream == null) {
+                        throw new IOException("");
+                    }
+                    stream = new ByteArrayInputStream(ByteStreams.toByteArray(stream));
+                } catch (IOException e) {
                     return newFixedLengthResponse(Status.INTERNAL_ERROR, MIME_PLAINTEXT, "error in get stream");
+                }  finally {
+                    Closeables.closeQuietly(stream);
                 }
                 return newChunkedResponse(Status.OK, api.mediaType(), stream);
             } else {
                 return newFixedLengthResponse(Status.NOT_FOUND, MIME_PLAINTEXT, "not found");
             }
         } else if ("favicon.ico".equals(firstWordInPath)) {
+            InputStream stream = null;
             try {
-                return newChunkedResponse(Status.OK, "x-icon", mAssetManager.open("favicon.ico"));
+                stream = mAssetManager.open("favicon.ico");
+                return newChunkedResponse(Status.OK, "x-icon", new ByteArrayInputStream(ByteStreams.toByteArray(stream)));
             } catch (IOException e) {
                 LOGGER.exception(e);
+            } finally {
+                Closeables.closeQuietly(stream);
             }
         }
         return newFixedLengthResponse("error");
