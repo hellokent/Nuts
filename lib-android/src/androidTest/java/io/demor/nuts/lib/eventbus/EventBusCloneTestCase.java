@@ -2,9 +2,11 @@ package io.demor.nuts.lib.eventbus;
 
 import android.test.AndroidTestCase;
 
-import io.demor.nuts.lib.Globals;
 import io.demor.nuts.lib.annotation.eventbus.DeepClone;
 import io.demor.nuts.lib.annotation.eventbus.Event;
+
+import static io.demor.nuts.lib.Globals.BG_EXECUTOR;
+import static io.demor.nuts.lib.Globals.UI_EXECUTOR;
 
 public class EventBusCloneTestCase extends AndroidTestCase {
 
@@ -17,7 +19,7 @@ public class EventBusCloneTestCase extends AndroidTestCase {
     @Override
     public void setUp() throws Exception {
         super.setUp();
-        mEventBus = new EventBus(Globals.UI_EXECUTOR, Globals.BG_EXECUTOR);
+        mEventBus = new EventBus(BG_EXECUTOR, UI_EXECUTOR);
         mEventBus.register(this);
     }
 

@@ -19,7 +19,7 @@ import io.demor.nuts.lib.storage.Storage;
 import static io.demor.nuts.lib.controller.ControllerUtil.GSON;
 import static io.demor.nuts.lib.controller.ControllerUtil.parseMethodInfo;
 
-public final class ApiServer extends Server {
+public class ApiServer extends Server {
 
     public boolean mCanSendListener;
 

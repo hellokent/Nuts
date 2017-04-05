@@ -1,9 +1,10 @@
 package io.demor.nuts.lib;
 
-import io.demor.nuts.lib.controller.AppInstance;
 import org.junit.Before;
 
-public class BaseTest {
+import io.demor.nuts.lib.controller.AppInstance;
+
+public class BasePhoneTest {
 
     protected AppInstance mAppInstance;
 

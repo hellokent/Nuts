@@ -23,7 +23,7 @@ public final class EventBus{
     private final Executor mBgExecutor, mUiExecutor;
     private IPostListener mPostListener = null;
 
-    public EventBus(Executor uiExecutor, Executor bgExecutor) {
+    public EventBus(Executor bgExecutor, Executor uiExecutor) {
         mBgExecutor = bgExecutor;
         mUiExecutor = uiExecutor;
     }

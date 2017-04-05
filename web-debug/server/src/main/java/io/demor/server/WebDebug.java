@@ -12,13 +12,24 @@ import android.content.res.Resources;
 import android.graphics.drawable.BitmapDrawable;
 import android.graphics.drawable.Drawable;
 import android.graphics.drawable.StateListDrawable;
-import android.os.*;
+import android.os.Build;
+import android.os.Bundle;
+import android.os.Handler;
 import android.os.Handler.Callback;
+import android.os.HandlerThread;
+import android.os.Message;
 import android.view.ViewGroup;
 import android.view.Window;
+
 import com.google.common.collect.Maps;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
+
+import java.lang.reflect.Field;
+import java.util.HashMap;
+import java.util.concurrent.atomic.AtomicInteger;
+
+import io.demor.nuts.lib.server.AndroidServerClient;
 import io.demor.nuts.lib.server.Server;
 import io.demor.server.api.StateListDrawableInfoApi;
 import io.demor.server.api.WidgetApi;
@@ -31,10 +42,6 @@ import io.demor.server.sniff.SimpleSniffer;
 import io.demor.server.template.SnifferTemplate;
 import io.demor.server.template.WidgetTemplate;
 import io.demor.server.template.WsTemplate;
-
-import java.lang.reflect.Field;
-import java.util.HashMap;
-import java.util.concurrent.atomic.AtomicInteger;
 
 public class WebDebug {
 
@@ -61,7 +68,7 @@ public class WebDebug {
 
     public static void init(Application application, int httpPort) {
         sApplication = application;
-        sServer = new Server(sApplication, GSON);
+        sServer = new Server(new AndroidServerClient(application), GSON);
         sServer.mHttpServer.setPort(httpPort);
         sServer.mHttpServer.registerApi(new WidgetApi());
         sServer.mHttpServer.registerTemplate("ws", new WsTemplate());

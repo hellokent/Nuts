@@ -1,4 +1,4 @@
-package io.demor.nuts.sample.controller;
+package io.demor.nuts.sample.lib.controller;
 
 public class DemoException extends Exception {
 

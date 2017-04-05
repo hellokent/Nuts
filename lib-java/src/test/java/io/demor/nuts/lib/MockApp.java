@@ -1,47 +1,35 @@
 package io.demor.nuts.lib;
 
-import com.google.common.base.Splitter;
 import com.x5.template.providers.TemplateProvider;
 
 import java.io.IOException;
 import java.io.InputStream;
 import java.net.Inet4Address;
 import java.net.UnknownHostException;
-import java.util.List;
+import java.util.concurrent.Executor;
 
-import fi.iki.elonen.NanoHTTPD;
-import io.demor.nuts.lib.controller.AppInstance;
-import io.demor.nuts.lib.controller.ControllerUtil;
-import io.demor.nuts.lib.module.AppInstanceResponse;
+import io.demor.nuts.lib.eventbus.EventBus;
+import io.demor.nuts.lib.eventbus.ListenerBus;
+import io.demor.nuts.lib.server.ApiServer;
+import io.demor.nuts.lib.server.BaseWebSocketServer;
+import io.demor.nuts.lib.server.ConfigServer;
 import io.demor.nuts.lib.server.IClient;
-import io.demor.nuts.lib.server.Server;
 
-public class MockApp extends NanoHTTPD implements IClient{
+public class MockApp implements IClient, Executor{
 
-    Server mServer;
+    public ApiServer mServer;
+    private String mAppId;
+    public static ListenerBus sListenerBus;
+    public static EventBus sEventBus;
 
-
-    public MockApp() {
-        super(8888);
-        mServer = new Server(this, ControllerUtil.GSON);
-    }
-
-    @Override
-    public Response serve(IHTTPSession session) {
-        final String uri = session.getUri();
-        final List<String> path = Splitter.on("/")
-                .omitEmptyStrings()
-                .trimResults()
-                .splitToList(uri);
-
-        if (uri.startsWith("api/application")) {
-            AppInstanceResponse response = new AppInstanceResponse();
-            response.mInstance = new AppInstance("localhost", 8888, 8889);
-            return newFixedLengthResponse(Response.Status.OK, MIME_JSON, ControllerUtil.GSON.toJson(response));
-        }
-
-        return super.serve(session);
-
+    public MockApp(String appId) throws IOException {
+        mAppId = appId;
+        mServer = new MockApiServer(this, new BaseWebSocketServer(0));
+        mServer.mHttpServer.start();
+        mServer.mWebSocketServer.start();
+        ConfigServer.initConfig(this, mServer);
+        sListenerBus = new ListenerBus(this, this, mServer);
+        sEventBus = new EventBus(this, this);
     }
 
     @Override
@@ -62,5 +50,15 @@ public class MockApp extends NanoHTTPD implements IClient{
             e.printStackTrace();
             return "";
         }
+    }
+
+    @Override
+    public String getAppId() {
+        return mAppId;
+    }
+
+    @Override
+    public void execute(Runnable runnable) {
+        runnable.run();
     }
 }

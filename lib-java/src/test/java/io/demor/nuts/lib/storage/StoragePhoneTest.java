@@ -1,14 +1,16 @@
 package io.demor.nuts.lib.storage;
 
 import com.google.common.reflect.Reflection;
-import io.demor.nuts.lib.BaseTest;
-import io.demor.nuts.lib.controller.ControllerInvokeHandler;
-import io.demor.nuts.sample.lib.controller.TestController;
-import io.demor.nuts.sample.lib.module.SimpleObject;
+
 import org.junit.Assert;
 import org.junit.Test;
 
-public class StorageTest extends BaseTest {
+import io.demor.nuts.lib.BasePhoneTest;
+import io.demor.nuts.lib.controller.ControllerInvokeHandler;
+import io.demor.nuts.sample.lib.controller.TestController;
+import io.demor.nuts.sample.lib.module.SimpleObject;
+
+public class StoragePhoneTest extends BasePhoneTest {
 
     @Test
     public void simple() throws Exception {

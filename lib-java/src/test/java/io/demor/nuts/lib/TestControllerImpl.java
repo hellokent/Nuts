@@ -1,25 +1,26 @@
-package io.demor.nuts.sample.controller.impl;
+package io.demor.nuts.lib;
 
 import java.util.concurrent.TimeUnit;
 
 import io.demor.nuts.lib.controller.BaseController;
 import io.demor.nuts.lib.controller.ExceptionWrapper;
 import io.demor.nuts.lib.controller.Return;
-import io.demor.nuts.lib.log.Logger;
-import io.demor.nuts.lib.log.LoggerFactory;
+import io.demor.nuts.lib.storage.MemoryEngine;
+import io.demor.nuts.lib.storage.Storage;
 import io.demor.nuts.sample.lib.controller.DemoException;
 import io.demor.nuts.sample.lib.controller.TestController;
+import io.demor.nuts.sample.lib.event.SimpleListener;
 import io.demor.nuts.sample.lib.event.TestEvent;
 import io.demor.nuts.sample.lib.module.SimpleObject;
 
-import static io.demor.nuts.lib.Globals.BUS;
-import static io.demor.nuts.sample.config.Const.SIMPLE_LISTENER;
-import static io.demor.nuts.sample.config.Const.SIMPLE_OBJECT_STORAGE;
-
 public class TestControllerImpl extends BaseController implements TestController {
-
-    static final Logger LOGGER = LoggerFactory.getLogger(TestControllerImpl.class);
-    int mCount;
+    public static final TestController IMPL = new TestControllerImpl();
+    private static SimpleListener sSimpleListener = MockApp.sListenerBus.provide(SimpleListener.class);
+    private static Storage<SimpleObject> sStorage = new Storage.Builder<SimpleObject>()
+            .setClass(SimpleObject.class)
+            .setStorageEngine(new MemoryEngine())
+            .build();
+    private int mCount;
 
     @Override
     public Return<Integer> get() {
@@ -28,12 +29,11 @@ public class TestControllerImpl extends BaseController implements TestController
 
     @Override
     public Return<String> add(final int count) {
-        LOGGER.v("add count:%s", count);
         try {
             Thread.sleep(TimeUnit.SECONDS.toMillis(2));
             mCount += count;
         } catch (InterruptedException e) {
-            LOGGER.exception(e);
+            e.printStackTrace();
         }
         return of("Count:" + mCount);
     }
@@ -60,19 +60,19 @@ public class TestControllerImpl extends BaseController implements TestController
 
     @Override
     public Return<Void> sendEvent() {
-        BUS.post(new TestEvent(String.valueOf(mCount)));
+        MockApp.sEventBus.post(new TestEvent(String.valueOf(mCount)));
         return ofVoid();
     }
 
     @Override
     public Return<Void> callListenerInt(final int count) {
-        SIMPLE_LISTENER.onGotInt(count);
+        sSimpleListener.onGotInt(count);
         return ofVoid();
     }
 
     @Override
     public Return<Void> callListenerString(final String msg) {
-        SIMPLE_LISTENER.onGotString(msg);
+        sSimpleListener.onGotString(msg);
         return ofVoid();
     }
 
@@ -83,6 +83,6 @@ public class TestControllerImpl extends BaseController implements TestController
 
     @Override
     public SimpleObject getStorage() {
-        return SIMPLE_OBJECT_STORAGE.get();
+        return sStorage.get();
     }
 }

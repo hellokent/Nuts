@@ -20,7 +20,7 @@ public final class ListenerBus {
     private final HashMap<Class<?>, ListenerClassContext<?>> mMethodProvider = Maps.newHashMap();
     private Executor mBgExecutor, mUiExecutor;
     private ApiServer mApiServer;
-    ListenerBus(Executor bgExecutor, Executor uiExecutor, ApiServer apiServer) {
+    public ListenerBus(Executor bgExecutor, Executor uiExecutor, ApiServer apiServer) {
         mBgExecutor = bgExecutor;
         mUiExecutor = uiExecutor;
         mApiServer = apiServer;

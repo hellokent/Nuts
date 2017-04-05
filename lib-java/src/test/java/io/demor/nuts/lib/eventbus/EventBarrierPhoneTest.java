@@ -1,7 +1,7 @@
 package io.demor.nuts.lib.eventbus;
 
 import com.google.common.reflect.Reflection;
-import io.demor.nuts.lib.BaseTest;
+import io.demor.nuts.lib.BasePhoneTest;
 import io.demor.nuts.lib.controller.ControllerInvokeHandler;
 import io.demor.nuts.sample.lib.controller.TestController;
 import io.demor.nuts.sample.lib.event.TestEvent;
@@ -11,7 +11,7 @@ import org.junit.Test;
 import java.util.List;
 import java.util.concurrent.TimeUnit;
 
-public class EventBarrierTest extends BaseTest {
+public class EventBarrierPhoneTest extends BasePhoneTest {
 
     @Test
     public void waitForSingle() throws Exception {

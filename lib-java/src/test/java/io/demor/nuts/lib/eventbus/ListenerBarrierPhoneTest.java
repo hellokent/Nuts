@@ -1,7 +1,7 @@
 package io.demor.nuts.lib.eventbus;
 
 import com.google.common.reflect.Reflection;
-import io.demor.nuts.lib.BaseTest;
+import io.demor.nuts.lib.BasePhoneTest;
 import io.demor.nuts.lib.controller.ControllerInvokeHandler;
 import io.demor.nuts.sample.lib.controller.TestController;
 import io.demor.nuts.sample.lib.event.SimpleListener;
@@ -11,7 +11,7 @@ import org.junit.Test;
 import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.TimeUnit;
 
-public class ListenerBarrierTest extends BaseTest {
+public class ListenerBarrierPhoneTest extends BasePhoneTest {
 
     @Test
     public void simple() throws Exception {

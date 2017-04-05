@@ -1,12 +1,14 @@
 package io.demor.nuts.lib.controller;
 
 import com.google.common.reflect.Reflection;
-import io.demor.nuts.lib.BaseTest;
-import io.demor.nuts.sample.lib.controller.TestController;
+
 import org.junit.Assert;
 import org.junit.Test;
 
-public class ControllerTest extends BaseTest {
+import io.demor.nuts.lib.BasePhoneTest;
+import io.demor.nuts.sample.lib.controller.TestController;
+
+public class ControllerPhoneTest extends BasePhoneTest {
 
     @Test
     public void simple() throws Exception {

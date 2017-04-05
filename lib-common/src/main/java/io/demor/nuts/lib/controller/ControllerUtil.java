@@ -1,12 +1,18 @@
 package io.demor.nuts.lib.controller;
 
-import com.google.gson.*;
-import io.demor.nuts.lib.ReflectUtils;
+import com.google.gson.FieldNamingPolicy;
+import com.google.gson.FieldNamingStrategy;
+import com.google.gson.Gson;
+import com.google.gson.GsonBuilder;
+import com.google.gson.JsonNull;
+
 import org.joor.Reflect;
 
 import java.lang.reflect.Field;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
+
+import io.demor.nuts.lib.ReflectUtils;
 
 public final class ControllerUtil {
 
@@ -139,6 +145,28 @@ public final class ControllerUtil {
                 return toJson(Reflect.on(mImpl)
                         .call(mName, mArgArray)
                         .call("sync")
+                        .get(), (Class<?>) ReflectUtils.getGenericType(m.getGenericReturnType()));
+            } else {
+                try {
+                    m.setAccessible(true);
+                    return toJson(m.invoke(mImpl, mArgArray), m.getReturnType());
+                } catch (IllegalAccessException | InvocationTargetException e) {
+                    throw new IllegalStateException(e);
+                }
+            }
+        }
+
+        public String directCall() {
+            final Method m;
+            try {
+                m = mImpl.getClass().getInterfaces()[0].getDeclaredMethod(mName, mArgTypeArray);
+            } catch (NoSuchMethodException e) {
+                throw new IllegalArgumentException(e);
+            }
+            if (ReflectUtils.isSubclassOf(m.getReturnType(), Return.class)) {
+                return toJson(Reflect.on(mImpl)
+                        .call(mName, mArgArray)
+                        .field("mData")
                         .get(), (Class<?>) ReflectUtils.getGenericType(m.getGenericReturnType()));
             } else {
                 try {

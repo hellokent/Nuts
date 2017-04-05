@@ -1,23 +1,34 @@
 package io.demor.nuts.lib.controller;
 
-import com.squareup.okhttp.*;
-import io.demor.nuts.lib.ReflectUtils;
-import io.demor.nuts.lib.module.ControllerInvocationResponse;
-import okio.Buffer;
+import com.squareup.okhttp.Headers;
+import com.squareup.okhttp.Interceptor;
+import com.squareup.okhttp.MediaType;
+import com.squareup.okhttp.OkHttpClient;
+import com.squareup.okhttp.Request;
+import com.squareup.okhttp.RequestBody;
+import com.squareup.okhttp.Response;
 
 import java.io.IOException;
 import java.lang.reflect.Method;
 import java.nio.charset.Charset;
+
+import io.demor.nuts.lib.ReflectUtils;
+import io.demor.nuts.lib.module.ControllerInvocationResponse;
+import okio.Buffer;
 
 import static io.demor.nuts.lib.controller.ControllerUtil.GSON;
 import static io.demor.nuts.lib.controller.ControllerUtil.fromJson;
 
 public final class ReturnImpl<T> extends Return<T> {
 
-    private final String mHost;
-    private final int mPort;
-    private final OkHttpClient mClient;
-    private final Object[] mArgs;
+    private String mHost;
+    private int mPort;
+    private OkHttpClient mClient;
+    private Object[] mArgs;
+
+    public ReturnImpl(final T data) {
+        super(data);
+    }
 
     public ReturnImpl(Method method, String host, int port, Object[] args) {
         super(null, method);

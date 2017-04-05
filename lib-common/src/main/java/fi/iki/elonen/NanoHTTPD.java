@@ -33,19 +33,56 @@ package fi.iki.elonen;
  * #L%
  */
 
-import fi.iki.elonen.NanoHTTPD.Response.IStatus;
-import fi.iki.elonen.NanoHTTPD.Response.Status;
-
-import javax.net.ssl.*;
-import java.io.*;
-import java.net.*;
+import java.io.BufferedReader;
+import java.io.BufferedWriter;
+import java.io.ByteArrayInputStream;
+import java.io.Closeable;
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.InputStreamReader;
+import java.io.OutputStream;
+import java.io.OutputStreamWriter;
+import java.io.PrintWriter;
+import java.io.PushbackInputStream;
+import java.io.RandomAccessFile;
+import java.io.UnsupportedEncodingException;
+import java.net.InetAddress;
+import java.net.InetSocketAddress;
+import java.net.ServerSocket;
+import java.net.Socket;
+import java.net.SocketException;
+import java.net.SocketTimeoutException;
+import java.net.URLDecoder;
 import java.nio.ByteBuffer;
 import java.nio.channels.FileChannel;
 import java.security.KeyStore;
 import java.text.SimpleDateFormat;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Calendar;
+import java.util.Collections;
+import java.util.Date;
+import java.util.HashMap;
+import java.util.Iterator;
+import java.util.List;
+import java.util.Locale;
+import java.util.Map;
+import java.util.StringTokenizer;
+import java.util.TimeZone;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+
+import javax.net.ssl.KeyManager;
+import javax.net.ssl.KeyManagerFactory;
+import javax.net.ssl.SSLContext;
+import javax.net.ssl.SSLServerSocket;
+import javax.net.ssl.SSLServerSocketFactory;
+import javax.net.ssl.TrustManagerFactory;
+
+import fi.iki.elonen.NanoHTTPD.Response.IStatus;
+import fi.iki.elonen.NanoHTTPD.Response.Status;
 
 /**
  * A simple, tiny, nicely embeddable HTTP server in Java
@@ -1073,6 +1110,7 @@ public abstract class NanoHTTPD {
                 // than the expected SocketException OR a
                 // SocketTimeoutException, print the
                 // stacktrace
+                e.printStackTrace();
                 if (!(e instanceof SocketException && "NanoHttpd Shutdown".equals(e.getMessage())) && !(e instanceof SocketTimeoutException)) {
                     NanoHTTPD.LOG.log(Level.FINE, "Communication with the client broken", e);
                 }
