@@ -1,5 +1,5 @@
 package io.demor.nuts.lib.module;
 
-public class StorageResponse {
+public class StorageResponse extends BaseResponse {
     public String mData;
 }

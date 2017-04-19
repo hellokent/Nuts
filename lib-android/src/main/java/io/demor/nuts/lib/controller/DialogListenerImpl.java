@@ -5,7 +5,7 @@ import io.demor.nuts.lib.Globals;
 
 public class DialogListenerImpl<T> implements ControllerListener<T>, Globals {
 
-    final Dialog mDialog;
+    private final Dialog mDialog;
 
     public DialogListenerImpl(final Dialog dialog) {
         mDialog = dialog;

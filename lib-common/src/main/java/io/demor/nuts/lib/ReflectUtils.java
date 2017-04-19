@@ -55,7 +55,7 @@ public final class ReflectUtils {
             argumentClasses[i] = arg[i].getClass();
         }
 
-        return (T) clazz.getDeclaredConstructor(argumentClasses)
+        return clazz.getDeclaredConstructor(argumentClasses)
                 .newInstance(arg);
     }
 

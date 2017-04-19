@@ -1,12 +1,8 @@
 package io.demor.nuts.lib.controller;
 
-import com.google.gson.FieldNamingPolicy;
-import com.google.gson.FieldNamingStrategy;
-import com.google.gson.Gson;
-import com.google.gson.GsonBuilder;
-import com.google.gson.JsonNull;
+import com.google.gson.*;
 import com.x5.util.Base64;
-
+import io.demor.nuts.lib.ReflectUtils;
 import org.joor.Reflect;
 import org.joor.ReflectException;
 
@@ -17,9 +13,7 @@ import java.lang.reflect.Field;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 
-import io.demor.nuts.lib.ReflectUtils;
-
-public final class ControllerUtil {
+public final class MethodInfoUtil {
 
     public static final Gson GSON = new GsonBuilder()
             .setExclusionStrategies(new GsonDeserializeExclusionStrategy(), new GsonSerializeExclusionStrategy())
@@ -135,11 +129,11 @@ public final class ControllerUtil {
     }
 
     public static class InvokeMethodInfo extends ControllerMethodInfo {
-        public Object[] mArgArray;
-        public Class<?>[] mArgTypeArray;
-        public Object mImpl;
+        Object[] mArgArray;
+        Class<?>[] mArgTypeArray;
+        Object mImpl;
 
-        public static String encodeExceptionWrapper(Throwable wrapper) {
+        static String encodeExceptionWrapper(Throwable wrapper) {
             ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
             try {
                 ObjectOutputStream objectOutputStream = new ObjectOutputStream(outputStream);

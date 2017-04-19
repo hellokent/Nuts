@@ -1,8 +1,7 @@
 package io.demor.nuts.lib.eventbus;
 
-import com.google.gson.JsonObject;
 import io.demor.nuts.lib.controller.AppInstance;
-import io.demor.nuts.lib.controller.ControllerUtil;
+import io.demor.nuts.lib.controller.MethodInfoUtil;
 import io.demor.nuts.lib.log.LogContext;
 import io.demor.nuts.lib.module.PushObject;
 
@@ -27,7 +26,7 @@ public class LogBarrier extends BaseBarrier{
                     if (pushObject.mType != PushObject.TYPE_LOG) {
                         continue;
                     }
-                    LogContext logContext = ControllerUtil.GSON.fromJson(pushObject.mData.toString(), LogContext.class);
+                    LogContext logContext = MethodInfoUtil.GSON.fromJson(pushObject.mData.toString(), LogContext.class);
                     System.out.println(String.format("instance: %s:%b\n%s:%s %s.%s(%s)\t%s",
                             mAppInstance.mHost, mAppInstance.mHttpPort,
                             logContext.mThreadName,

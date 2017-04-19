@@ -1,10 +1,6 @@
 package io.demor.nuts.lib;
 
 import com.google.common.base.Joiner;
-
-import java.lang.reflect.InvocationTargetException;
-import java.util.Map;
-
 import io.demor.nuts.lib.module.BaseResponse;
 import io.demor.nuts.lib.module.ControllerInvocationResponse;
 import io.demor.nuts.lib.server.ApiServer;
@@ -12,7 +8,10 @@ import io.demor.nuts.lib.server.BaseWebSocketServer;
 import io.demor.nuts.lib.server.IApi;
 import io.demor.nuts.lib.server.IClient;
 
-import static io.demor.nuts.lib.controller.ControllerUtil.parseMethodInfo;
+import java.lang.reflect.InvocationTargetException;
+import java.util.Map;
+
+import static io.demor.nuts.lib.controller.MethodInfoUtil.parseMethodInfo;
 
 public class MockApiServer extends ApiServer {
 

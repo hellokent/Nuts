@@ -53,7 +53,6 @@ public class ClusterExecutor extends ThreadPoolExecutor {
         static {
             RANDOM.setSeed(System.currentTimeMillis());
         }
-
         public Multimap<String, Runnable> mRunnableMap = MultimapBuilder.hashKeys().linkedListValues().build();
         public Multimap<Thread, String> mAffineThreadMap = MultimapBuilder.hashKeys().linkedListValues().build();
         public Multimap<Thread, String> mAffineLockMap = MultimapBuilder.hashKeys().linkedListValues().build();

@@ -1,7 +1,7 @@
 package io.demor.nuts.lib.log.output;
 
 import io.demor.nuts.lib.NutsApplication;
-import io.demor.nuts.lib.controller.ControllerUtil;
+import io.demor.nuts.lib.controller.MethodInfoUtil;
 import io.demor.nuts.lib.log.LogContext;
 import io.demor.nuts.lib.log.LogOutput;
 import io.demor.nuts.lib.module.PushObject;
@@ -27,7 +27,7 @@ public class WebOutput extends LogOutput {
         final PushObject pushObject = new PushObject();
         pushObject.mType = PushObject.TYPE_LOG;
         pushObject.mDataClz = String.class.getName();
-        pushObject.mData = ControllerUtil.GSON.toJson(context);
+        pushObject.mData = MethodInfoUtil.GSON.toJson(context);
         socketServer.sendPushObj(pushObject);
     }
 }

@@ -1,6 +1,6 @@
 package io.demor.nuts.lib.module;
 
-import com.google.gson.annotations.Expose;
+import com.google.common.base.MoreObjects;
 
 public class PushObject {
 
@@ -16,10 +16,11 @@ public class PushObject {
 
     @Override
     public String toString() {
-        return "PushObject{" +
-                "mType=" + mType +
-                ", mDataClz='" + mDataClz + '\'' +
-                ", mData=" + mData +
-                '}';
+        return MoreObjects.toStringHelper(this)
+                .add("type", mType)
+                .add("dataClz", mDataClz)
+                .add("data", mData)
+                .omitNullValues()
+                .toString();
     }
 }

@@ -1,19 +1,17 @@
 package io.demor.nuts.lib.server;
 
 import android.test.AndroidTestCase;
-
 import com.google.gson.Gson;
 import com.squareup.okhttp.OkHttpClient;
 import com.squareup.okhttp.Request;
+import io.demor.nuts.lib.annotation.server.Url;
 
 import java.io.IOException;
 import java.util.Map;
 
-import io.demor.nuts.lib.annotation.server.Url;
-
 public class BaseWebServerTest extends AndroidTestCase {
 
-    BaseWebServer mWebServer;
+    private BaseWebServer mWebServer;
 
     @Override
     public void setUp() throws Exception {

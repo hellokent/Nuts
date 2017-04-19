@@ -23,7 +23,7 @@ public class AppInstance {
                 .body()
                 .string();
         System.out.println("resp:" + resp);
-        AppInstanceResponse response = ControllerUtil.GSON.fromJson(resp, AppInstanceResponse.class);
+        AppInstanceResponse response = MethodInfoUtil.GSON.fromJson(resp, AppInstanceResponse.class);
         mHttpPort = response.mInstance.mHttpPort;
         mSocketPort = response.mInstance.mSocketPort;
     }

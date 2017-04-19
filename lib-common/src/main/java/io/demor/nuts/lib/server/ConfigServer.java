@@ -3,23 +3,22 @@ package io.demor.nuts.lib.server;
 import com.google.common.collect.Maps;
 import com.squareup.okhttp.OkHttpClient;
 import com.squareup.okhttp.Request;
+import io.demor.nuts.lib.controller.AppInstance;
+import io.demor.nuts.lib.controller.MethodInfoUtil;
+import io.demor.nuts.lib.module.AppInstanceResponse;
+import io.demor.nuts.lib.module.BaseResponse;
 
 import java.io.IOException;
 import java.util.HashMap;
 import java.util.Locale;
 import java.util.Map;
 
-import io.demor.nuts.lib.controller.AppInstance;
-import io.demor.nuts.lib.controller.ControllerUtil;
-import io.demor.nuts.lib.module.AppInstanceResponse;
-import io.demor.nuts.lib.module.BaseResponse;
-
 public final class ConfigServer {
     public static final int CONFIG_SERVER_PORT = 8080;
     private static final HashMap<String, AppInstance> APPLICATION_MAP = Maps.newHashMap();
 
     public static void initConfig(final IClient client, Server server) throws IOException {
-        BaseWebServer localServer = new BaseWebServer(client, ControllerUtil.GSON, CONFIG_SERVER_PORT);
+        BaseWebServer localServer = new BaseWebServer(client, MethodInfoUtil.GSON, CONFIG_SERVER_PORT);
         localServer.registerApi(new IApi() {
             @Override
             public String name() {

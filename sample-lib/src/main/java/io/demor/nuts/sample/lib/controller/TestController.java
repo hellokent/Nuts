@@ -26,4 +26,6 @@ public interface TestController {
     int getCount();
 
     SimpleObject getStorage();
+
+    Return<Void> doForLongTime();
 }

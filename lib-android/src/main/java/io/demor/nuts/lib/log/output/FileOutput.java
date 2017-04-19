@@ -15,13 +15,9 @@ import java.io.IOException;
 
 public class FileOutput extends LogcatOutput {
 
-    private static final Handler FILE_WRITE_HANDLER;
-
-    static {
-        final HandlerThread thread = new HandlerThread("file-output");
-        thread.start();
-        FILE_WRITE_HANDLER = new Handler(thread.getLooper());
-    }
+    private static final Handler FILE_WRITE_HANDLER = new Handler(new HandlerThread("file-output") {{
+        start();
+    }}.getLooper());
 
     private final LogFormatter<LogFileContext> mPathFormatter;
     private LogFileContext mLogFileContext;

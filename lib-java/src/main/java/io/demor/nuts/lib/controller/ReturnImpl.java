@@ -1,13 +1,10 @@
 package io.demor.nuts.lib.controller;
 
-import com.squareup.okhttp.Headers;
-import com.squareup.okhttp.Interceptor;
-import com.squareup.okhttp.MediaType;
-import com.squareup.okhttp.OkHttpClient;
-import com.squareup.okhttp.Request;
-import com.squareup.okhttp.RequestBody;
-import com.squareup.okhttp.Response;
+import com.squareup.okhttp.*;
 import com.x5.util.Base64;
+import io.demor.nuts.lib.ReflectUtils;
+import io.demor.nuts.lib.module.ControllerInvocationResponse;
+import okio.Buffer;
 
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
@@ -16,12 +13,8 @@ import java.lang.reflect.Method;
 import java.nio.charset.Charset;
 import java.util.Locale;
 
-import io.demor.nuts.lib.ReflectUtils;
-import io.demor.nuts.lib.module.ControllerInvocationResponse;
-import okio.Buffer;
-
-import static io.demor.nuts.lib.controller.ControllerUtil.GSON;
-import static io.demor.nuts.lib.controller.ControllerUtil.fromJson;
+import static io.demor.nuts.lib.controller.MethodInfoUtil.GSON;
+import static io.demor.nuts.lib.controller.MethodInfoUtil.fromJson;
 
 public final class ReturnImpl<T> extends Return<T> {
 
@@ -89,7 +82,7 @@ public final class ReturnImpl<T> extends Return<T> {
             String resp = mClient.newCall(new Request.Builder()
                     .url(String.format(Locale.getDefault(), "http://%s:%d/api/controller/%s", mHost, mPort, mMethod.getDeclaringClass().getName()))
                     .header("content-type", "application/json")
-                    .post(RequestBody.create(MediaType.parse("json"), ControllerUtil.generateMethodInfo(mMethod, mArgs)))
+                    .post(RequestBody.create(MediaType.parse("json"), MethodInfoUtil.generateMethodInfo(mMethod, mArgs)))
                     .build())
                     .execute()
                     .body()

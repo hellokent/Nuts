@@ -10,24 +10,20 @@ import java.util.ArrayList;
 
 public class Logger {
 
+    private static final Handler LOG_HANDLER = new Handler(new HandlerThread("logger") {{
+        start();
+    }}.getLooper());
     String mPath;
     String mTag;
     ArrayList<LogOutput> mLogOutputs = Lists.newArrayList();
-    private boolean mNeedTime = false;
-    private boolean mNeedThreadStack = false;
     ThreadLocal<LogContext> mLocalLogContext = new ThreadLocal<LogContext>() {
         @Override
         protected LogContext initialValue() {
             return new LogContext();
         }
     };
-    private static final Handler LOG_HANDLER;
-
-    static {
-        HandlerThread thread = new HandlerThread("logger");
-        thread.start();
-        LOG_HANDLER = new Handler(thread.getLooper());
-    }
+    private boolean mNeedTime = false;
+    private boolean mNeedThreadStack = false;
 
     Logger(String path, String tag) {
         mPath = path;

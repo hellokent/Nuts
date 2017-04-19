@@ -4,7 +4,7 @@ import com.google.common.base.Strings;
 import com.google.common.collect.Maps;
 import com.google.gson.Gson;
 import com.rits.cloning.Cloner;
-import io.demor.nuts.lib.controller.ControllerUtil;
+import io.demor.nuts.lib.controller.MethodInfoUtil;
 
 import java.util.Map;
 
@@ -13,19 +13,27 @@ public class Storage<T> {
     public static final Cloner CLONER = new Cloner();
     private static final Map<String, Object> CACHE_MAP = Maps.newConcurrentMap();
 
-    IStorageEngine mStorageEngine;
+    private IStorageEngine mStorageEngine;
 
-    Class<T> mClass;
+    private Class<T> mClass;
 
-    String mKey = null;
+    private String mKey = null;
 
-    Gson mGson = ControllerUtil.GSON;
+    private Gson mGson = MethodInfoUtil.GSON;
 
     protected Storage() {
     }
 
     public synchronized boolean contains() {
         return mStorageEngine.contains(mKey);
+    }
+
+    public Class<T> getObjectClass() {
+        return mClass;
+    }
+
+    public String getKey() {
+        return mKey;
     }
 
     public synchronized T get() {
@@ -67,8 +75,8 @@ public class Storage<T> {
             return this;
         }
 
-        public Builder<R> setName(String name) {
-            mStorage.mKey = name;
+        public Builder<R> setKey(String key) {
+            mStorage.mKey = key;
             return this;
         }
 

@@ -5,15 +5,15 @@ import com.squareup.okhttp.OkHttpClient;
 import com.squareup.okhttp.Request;
 import com.squareup.okhttp.RequestBody;
 import io.demor.nuts.lib.controller.AppInstance;
-import io.demor.nuts.lib.controller.ControllerUtil;
+import io.demor.nuts.lib.controller.MethodInfoUtil;
 import io.demor.nuts.lib.module.StorageResponse;
 
 import java.io.IOException;
 
 public class RemoteMobileStorageEngine implements IStorageEngine {
 
-    final AppInstance mInstance;
-    final OkHttpClient mClient;
+    private final AppInstance mInstance;
+    private final OkHttpClient mClient;
 
     public RemoteMobileStorageEngine(final AppInstance instance) {
         mInstance = instance;
@@ -37,7 +37,7 @@ public class RemoteMobileStorageEngine implements IStorageEngine {
     @Override
     public String get(final String key) {
         try {
-            StorageResponse response = ControllerUtil.GSON.fromJson(mClient.newCall(new Request.Builder()
+            StorageResponse response = MethodInfoUtil.GSON.fromJson(mClient.newCall(new Request.Builder()
                     .get()
                     .url(mInstance.getApiUrl() + "storage/" + key + "?action=get")
                     .build())
@@ -65,7 +65,7 @@ public class RemoteMobileStorageEngine implements IStorageEngine {
     @Override
     public boolean contains(final String key) {
         try {
-            StorageResponse response = ControllerUtil.GSON.fromJson(mClient.newCall(new Request.Builder()
+            StorageResponse response = MethodInfoUtil.GSON.fromJson(mClient.newCall(new Request.Builder()
                     .get()
                     .url(mInstance.getApiUrl() + "storage/" + key + "?action=contains")
                     .build())

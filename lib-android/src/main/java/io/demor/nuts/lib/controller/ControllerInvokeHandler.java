@@ -29,8 +29,7 @@ public class ControllerInvokeHandler<I> implements InvocationHandler {
     public Object invoke(final Object proxy, final Method method, final Object[] args) throws Throwable {
         Class<?> returnClz = method.getReturnType();
         if (returnClz == Return.class) {
-            return ReturnImpl.class.getConstructor(Callable.class, Method.class)
-                    .newInstance(new ControllerCallable(method, mImpl, args), method);
+            return new ReturnImpl(new ControllerCallable(method, mImpl, args), method);
         } else if (ReflectUtils.isSubclassOf(returnClz, Return.class)) {
             return returnClz.getConstructor(Callable.class, Method.class)
                     .newInstance(new ControllerCallable(method, mImpl, args), method);

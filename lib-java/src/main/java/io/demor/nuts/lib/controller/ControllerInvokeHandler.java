@@ -11,7 +11,7 @@ import org.joor.Reflect;
 import java.lang.reflect.InvocationHandler;
 import java.lang.reflect.Method;
 
-import static io.demor.nuts.lib.controller.ControllerUtil.GSON;
+import static io.demor.nuts.lib.controller.MethodInfoUtil.GSON;
 
 public class ControllerInvokeHandler implements InvocationHandler {
 
@@ -31,7 +31,7 @@ public class ControllerInvokeHandler implements InvocationHandler {
             String resp = new OkHttpClient().newCall(new Request.Builder()
                     .url(mApp.getApiUrl() + "controller/" + method.getDeclaringClass().getName())
                     .header("content-type", "application/json")
-                    .post(RequestBody.create(MediaType.parse("application/json"), ControllerUtil.generateMethodInfo(method, args)))
+                    .post(RequestBody.create(MediaType.parse("application/json"), MethodInfoUtil.generateMethodInfo(method, args)))
                     .build())
                     .execute()
                     .body()

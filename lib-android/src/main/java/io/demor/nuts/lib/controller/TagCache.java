@@ -2,9 +2,10 @@ package io.demor.nuts.lib.controller;
 
 import android.os.Handler;
 import android.os.HandlerThread;
-import io.demor.nuts.lib.annotation.controller.ThreadTag;
-import com.google.common.util.concurrent.SettableFuture;
 import com.google.common.base.Strings;
+import com.google.common.util.concurrent.SettableFuture;
+import io.demor.nuts.lib.annotation.controller.ThreadTag;
+
 import java.lang.reflect.Method;
 import java.util.HashMap;
 import java.util.concurrent.Callable;
@@ -16,7 +17,6 @@ final class TagCache {
     static final String NO_TAG = "no_tag";
 
     private static final HashMap<Method, String> CACHE_MAP = new HashMap<>();
-
     private static final HashMap<String, Handler> HANDLER_MAP = new HashMap<>();
 
     static synchronized String getTag(Method m) {
@@ -64,13 +64,12 @@ final class TagCache {
             throw new Error("invalid tag:" + tag);
         }
 
-        if (HANDLER_MAP.containsKey(tag)) {
-            HANDLER_MAP.get(tag).post(runnable);
-        } else {
-            Handler handler = new Handler(new HandlerThread(tag + "-handler").getLooper());
-            HANDLER_MAP.put(tag, handler);
-            handler.post(runnable);
+        if (!HANDLER_MAP.containsKey(tag)) {
+            HANDLER_MAP.put(tag, new Handler(new HandlerThread(tag + "-thread") {{
+                start();
+            }}.getLooper()));
         }
+        HANDLER_MAP.get(tag).post(runnable);
 
         return result;
     }

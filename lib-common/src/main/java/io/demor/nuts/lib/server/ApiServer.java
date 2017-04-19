@@ -2,11 +2,6 @@ package io.demor.nuts.lib.server;
 
 import com.google.common.base.Joiner;
 import com.google.common.base.Strings;
-
-import java.io.IOException;
-import java.lang.reflect.InvocationTargetException;
-import java.util.Map;
-
 import io.demor.nuts.lib.eventbus.BaseEvent;
 import io.demor.nuts.lib.eventbus.EventBus;
 import io.demor.nuts.lib.eventbus.IPostListener;
@@ -16,8 +11,12 @@ import io.demor.nuts.lib.module.PushObject;
 import io.demor.nuts.lib.module.StorageResponse;
 import io.demor.nuts.lib.storage.Storage;
 
-import static io.demor.nuts.lib.controller.ControllerUtil.GSON;
-import static io.demor.nuts.lib.controller.ControllerUtil.parseMethodInfo;
+import java.io.IOException;
+import java.lang.reflect.InvocationTargetException;
+import java.util.Map;
+
+import static io.demor.nuts.lib.controller.MethodInfoUtil.GSON;
+import static io.demor.nuts.lib.controller.MethodInfoUtil.parseMethodInfo;
 
 public class ApiServer extends Server {
 
@@ -58,11 +57,11 @@ public class ApiServer extends Server {
         return this;
     }
 
-    public <T> ApiServer registerStorage(final Class<T> typeClz, final Storage<T> storage) {
+    public <T> ApiServer registerStorage(final Storage<T> storage) {
         mHttpServer.registerApi(new IApi() {
             @Override
             public String name() {
-                return "storage/" + typeClz.getName();
+                return "storage/" + storage.getObjectClass().getName();
             }
 
             @Override
@@ -78,7 +77,7 @@ public class ApiServer extends Server {
                         response.mData = GSON.toJson(storage.get());
                         return response;
                     case "save":
-                        storage.save(GSON.fromJson(body, typeClz));
+                        storage.save(GSON.fromJson(body, storage.getObjectClass()));
                         return new BaseResponse();
                     case "delete":
                         storage.delete();

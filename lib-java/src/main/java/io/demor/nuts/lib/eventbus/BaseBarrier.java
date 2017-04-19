@@ -3,7 +3,9 @@ package io.demor.nuts.lib.eventbus;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
-
+import io.demor.nuts.lib.controller.AppInstance;
+import io.demor.nuts.lib.controller.MethodInfoUtil;
+import io.demor.nuts.lib.module.PushObject;
 import org.eclipse.jetty.util.BlockingArrayQueue;
 import org.eclipse.jetty.websocket.api.Session;
 import org.eclipse.jetty.websocket.api.WebSocketListener;
@@ -16,16 +18,12 @@ import java.net.URI;
 import java.util.Random;
 import java.util.concurrent.TimeUnit;
 
-import io.demor.nuts.lib.controller.AppInstance;
-import io.demor.nuts.lib.controller.ControllerUtil;
-import io.demor.nuts.lib.module.PushObject;
-
 public abstract class BaseBarrier implements WebSocketListener, Closeable {
 
-    protected BlockingArrayQueue<PushObject> mQueue = new BlockingArrayQueue<>();
     final AppInstance mAppInstance;
     final String mId;
     final URI mURI;
+    protected BlockingArrayQueue<PushObject> mQueue = new BlockingArrayQueue<>();
     protected boolean mStopped = false;
     WebSocketClient mClient;
 
@@ -86,7 +84,7 @@ public abstract class BaseBarrier implements WebSocketListener, Closeable {
         o.mType = jsonObject.get("type").getAsInt();
         o.mDataClz = jsonObject.get("dataClz").getAsString();
         try {
-            o.mData = ControllerUtil.GSON.fromJson(jsonObject.get("data"), Class.forName(o.mDataClz));
+            o.mData = MethodInfoUtil.GSON.fromJson(jsonObject.get("data"), Class.forName(o.mDataClz));
             mQueue.offer(o);
         } catch (ClassNotFoundException e) {
             e.printStackTrace();

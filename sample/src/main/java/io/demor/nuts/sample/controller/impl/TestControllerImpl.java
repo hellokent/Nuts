@@ -1,7 +1,5 @@
 package io.demor.nuts.sample.controller.impl;
 
-import java.util.concurrent.TimeUnit;
-
 import io.demor.nuts.lib.controller.BaseController;
 import io.demor.nuts.lib.controller.ExceptionWrapper;
 import io.demor.nuts.lib.controller.Return;
@@ -11,6 +9,8 @@ import io.demor.nuts.sample.lib.controller.DemoException;
 import io.demor.nuts.sample.lib.controller.TestController;
 import io.demor.nuts.sample.lib.event.TestEvent;
 import io.demor.nuts.sample.lib.module.SimpleObject;
+
+import java.util.concurrent.TimeUnit;
 
 import static io.demor.nuts.lib.Globals.BUS;
 import static io.demor.nuts.sample.config.Const.SIMPLE_LISTENER;
@@ -92,5 +92,19 @@ public class TestControllerImpl extends BaseController implements TestController
     @Override
     public SimpleObject getStorage() {
         return SIMPLE_OBJECT_STORAGE.get();
+    }
+
+    @Override
+    public Return<Void> doForLongTime() {
+        for (int i = 0; i < 10; i++) {
+            try {
+                Thread.sleep(100);
+
+            } catch (InterruptedException e) {
+                e.printStackTrace();
+            }
+
+        }
+        return null;
     }
 }

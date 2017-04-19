@@ -18,23 +18,20 @@ import java.util.Date;
 import java.util.HashMap;
 import java.util.concurrent.*;
 
-public class ReturnImpl<T> extends Return<T> implements Globals {
+class ReturnImpl<T> extends Return<T> implements Globals {
 
-    static final HashMap<Class, Field> CONTEXT_FIELD_MAP = Maps.newHashMap();
-    static final Class[] CHECK_CLASSES = {Activity.class, Fragment.class, View.class};
-
-    final boolean mCreatedByConstructor;
-
-    volatile ControllerCallback<T> mCallback;
-    volatile boolean mStarted;
-    volatile boolean mEnded;
-    boolean mNeedCheckActivity = false;
-    Activity mActivity;
-
-    Future<T> mFuture;
-    Throwable mWrappedException;
-    Throwable mHappenedThrowable;
-    final Runnable mResultRunnable = new Runnable() {
+    private static final HashMap<Class, Field> CONTEXT_FIELD_MAP = Maps.newHashMap();
+    private static final Class[] CHECK_CLASSES = {Activity.class, Fragment.class, View.class};
+    private final boolean mCreatedByConstructor;
+    private volatile ControllerCallback<T> mCallback;
+    private volatile boolean mStarted;
+    private volatile boolean mEnded;
+    private boolean mNeedCheckActivity = false;
+    private Activity mActivity;
+    private Future<T> mFuture;
+    private Throwable mWrappedException;
+    private Throwable mHappenedThrowable;
+    private final Runnable mResultRunnable = new Runnable() {
         @Override
         public void run() {
             if (exceptionHappened()) {
@@ -44,17 +41,17 @@ public class ReturnImpl<T> extends Return<T> implements Globals {
             }
         }
     };
-    Date mBeginTime, mEndTime;
-    long mTimeoutMillis = -1;
-    TimeoutListener mTimeoutListener;
+    private Date mBeginTime, mEndTime;
+    private long mTimeoutMillis = -1;
+    private TimeoutListener mTimeoutListener;
 
-    public ReturnImpl(final T data) {
+    ReturnImpl(final T data) {
         super(data);
         mData = data;
         mCreatedByConstructor = true;
     }
 
-    public ReturnImpl(final Callable<Object> callable, Method method) {
+    ReturnImpl(final Callable<Object> callable, Method method) {
         super(callable, method);
         mCreatedByConstructor = false;
         mNeedCheckActivity = method.getAnnotation(CheckActivity.class) != null;

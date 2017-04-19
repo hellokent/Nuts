@@ -1,13 +1,13 @@
 package io.demor.nuts.lib.eventbus;
 
 import io.demor.nuts.lib.controller.AppInstance;
-import io.demor.nuts.lib.controller.ControllerUtil;
+import io.demor.nuts.lib.controller.MethodInfoUtil;
 import io.demor.nuts.lib.module.PushObject;
 
 import java.lang.reflect.InvocationTargetException;
 import java.util.concurrent.TimeUnit;
 
-import static io.demor.nuts.lib.controller.ControllerUtil.parseMethodInfo;
+import static io.demor.nuts.lib.controller.MethodInfoUtil.parseMethodInfo;
 
 public class ListenerBarrier extends BaseBarrier {
 
@@ -66,7 +66,7 @@ public class ListenerBarrier extends BaseBarrier {
         if (object == null || object.mType != PushObject.TYPE_LISTENER) {
             return false;
         }
-        ControllerUtil.ControllerMethodInfo methodInfo = ControllerUtil.GSON.fromJson(object.mData.toString(), ControllerUtil.ControllerMethodInfo.class);
+        MethodInfoUtil.ControllerMethodInfo methodInfo = MethodInfoUtil.GSON.fromJson(object.mData.toString(), MethodInfoUtil.ControllerMethodInfo.class);
         boolean in = false;
         for (Class<?> i : o.getClass().getInterfaces()) {
             if (methodInfo.mClz.equals(i.getName())) {

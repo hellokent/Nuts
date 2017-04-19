@@ -4,15 +4,14 @@ import com.google.common.collect.LinkedListMultimap;
 import com.google.common.collect.Maps;
 import com.google.common.collect.Multimap;
 import com.google.common.reflect.Reflection;
+import io.demor.nuts.lib.annotation.eventbus.DeepClone;
+import io.demor.nuts.lib.controller.MethodInfoUtil;
+import io.demor.nuts.lib.server.ApiServer;
 
 import java.lang.reflect.InvocationHandler;
 import java.lang.reflect.Method;
 import java.util.HashMap;
 import java.util.concurrent.Executor;
-
-import io.demor.nuts.lib.annotation.eventbus.DeepClone;
-import io.demor.nuts.lib.controller.ControllerUtil;
-import io.demor.nuts.lib.server.ApiServer;
 
 public final class ListenerBus {
 
@@ -90,7 +89,7 @@ public final class ListenerBus {
                 mBgExecutor.execute(new Runnable() {
                     @Override
                     public void run() {
-                        mApiServer.sendListenerMethod(ControllerUtil.generateMethodInfo(method, args));
+                        mApiServer.sendListenerMethod(MethodInfoUtil.generateMethodInfo(method, args));
                     }
                 });
             }

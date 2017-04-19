@@ -3,41 +3,41 @@ package io.demor.nuts.lib.controller;
 import org.junit.Assert;
 import org.junit.Test;
 
-public class ControllerUtilTest {
+public class MethodInfoUtilTest {
 
     @Test
     public void invoke() throws Exception {
         final TestObject testObject = new TestObject();
-        String str = ControllerUtil.generateMethodInfo(testObject.getClass().getMethod("add", int.class, int.class),
+        String str = MethodInfoUtil.generateMethodInfo(testObject.getClass().getMethod("add", int.class, int.class),
                 new Object[]{1, 2});
-        Object resp = ControllerUtil.parseMethodInfo(testObject, str).callImpl();
+        Object resp = MethodInfoUtil.parseMethodInfo(testObject, str).callImpl();
         Assert.assertEquals(3, resp);
     }
 
     @Test
     public void argsArray() throws Exception {
         final TestObject testObject = new TestObject();
-        String str = ControllerUtil.generateMethodInfo(testObject.getClass().getMethod("addArray", int[].class),
+        String str = MethodInfoUtil.generateMethodInfo(testObject.getClass().getMethod("addArray", int[].class),
                 new Object[]{new int[]{1, 1, 1}});
-        Object resp = ControllerUtil.parseMethodInfo(testObject, str).callImpl();
+        Object resp = MethodInfoUtil.parseMethodInfo(testObject, str).callImpl();
         Assert.assertEquals(3, resp);
     }
 
     @Test
     public void fromObj() throws Exception {
         final TestObject testObject = new TestObject();
-        String str = ControllerUtil.generateMethodInfo(testObject.getClass().getMethod("fromInt", int.class),
+        String str = MethodInfoUtil.generateMethodInfo(testObject.getClass().getMethod("fromInt", int.class),
                 new Object[]{3});
-        Object resp = ControllerUtil.parseMethodInfo(testObject, str).callImpl();
+        Object resp = MethodInfoUtil.parseMethodInfo(testObject, str).callImpl();
         Assert.assertEquals("3", resp);
     }
 
     @Test
     public void toObj() throws Exception {
         final TestObject testObject = new TestObject();
-        String str = ControllerUtil.generateMethodInfo(testObject.getClass().getMethod("toInt", String.class),
+        String str = MethodInfoUtil.generateMethodInfo(testObject.getClass().getMethod("toInt", String.class),
                 new Object[]{"3"});
-        Object resp = ControllerUtil.parseMethodInfo(testObject, str).callImpl();
+        Object resp = MethodInfoUtil.parseMethodInfo(testObject, str).callImpl();
         Assert.assertEquals(3, resp);
     }
 
